@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:14:18Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+        <group>
+            <name>Templates/Modules</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template Module CPU Logical Zabbix Agent</template>
+            <name>Additional Template Module CPU Logical Zabbix Agent</name>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+                <group>
+                    <name>Templates/Modules</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>CPU</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Number of CPUs</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>system.cpu.num</key>
+                    <delay>1h</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>CPU</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>CPU Logical</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>system.cpu.discovery</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>CPU {#CPU.NUMBER} utilisation</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>system.cpu.util[&quot;{#CPU.NUMBER}&quot;]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>%</units>
+                            <applications>
+                                <application>
+                                    <name>CPU</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>

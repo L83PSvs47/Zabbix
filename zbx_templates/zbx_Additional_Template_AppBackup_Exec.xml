@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:09:34Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+        <group>
+            <name>Templates/Applications</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template App Backup Exec</template>
+            <name>Additional Template App Backup Exec</name>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+                <group>
+                    <name>Templates/Applications</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Backup Exec jobs</name>
+                </application>
+                <application>
+                    <name>Backup Exec services</name>
+                </application>
+                <application>
+                    <name>Backup Exec storage</name>
+                </application>
+                <application>
+                    <name>PowerShell raw items</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Backup Exec job discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Request-BackupExec,jobname,]</key>
+                    <delay>1d</delay>
+                    <description>Обнаружение заданий Symantec Backup Exec</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>End time {#BE.JOBNAME}</name>
+                            <type>DEPENDENT</type>
+                            <key>be.end.time[{#BE.JOBNAME},JobUnixEndTime]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <units>unixtime</units>
+                            <applications>
+                                <application>
+                                    <name>Backup Exec jobs</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.JobUnixEndTime</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-BackupExecJob,{#BE.JOBNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Start time {#BE.JOBNAME}</name>
+                            <type>DEPENDENT</type>
+                            <key>be.start.time[{#BE.JOBNAME},JobUnixStartTime]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <units>unixtime</units>
+                            <applications>
+                                <application>
+                                    <name>Backup Exec jobs</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.JobUnixStartTime</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-BackupExecJob,{#BE.JOBNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Status {#BE.JOBNAME}</name>
+                            <type>DEPENDENT</type>
+                            <key>be.task.status[{#BE.JOBNAME},JobStatus]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Backup Exec jobs</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>Symantec Job Status</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.JobStatus</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-BackupExecJob,{#BE.JOBNAME}]</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;&gt;2 and {last(#1,1d)}&lt;&gt;2</expression>
+                                    <name>Task failed {#BE.JOBNAME}</name>
+                                    <priority>WARNING</priority>
+                                    <description>Если два последних задания пропущены - выдавать предупреждение</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Type {#BE.JOBNAME}</name>
+                            <type>DEPENDENT</type>
+                            <key>be.task.type[{#BE.JOBNAME},JobType]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <applications>
+                                <application>
+                                    <name>Backup Exec jobs</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>Symantec Job Type</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.JobType</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-BackupExecJob,{#BE.JOBNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>PowerShell get Backup Exec job {#BE.JOBNAME}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>powershell[Get-BackupExecJob,{#BE.JOBNAME}]</key>
+                            <delay>1h</delay>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>PowerShell raw items</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Backup Exec library discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Request-BackupExec,libraryname,]</key>
+                    <delay>1d</delay>
+                    <status>DISABLED</status>
+                    <description>Обнаружение ленточных библиотек Symantec Backup Exec</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>PowerShell get robotic library {#BE.LIBRARYNAME} free space</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>powershell[Get-BackupExecLibrary,{#BE.LIBRARYNAME}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <units>B</units>
+                            <applications>
+                                <application>
+                                    <name>PowerShell raw items</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;{$SPACE_THRESHOLD}</expression>
+                                    <name>Заканчивается место в библиотеке{#BE.LIBRARYNAME} (&lt;{$SPACE_THRESHOLD})</name>
+                                    <priority>AVERAGE</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$SPACE_THRESHOLD}</macro>
+                    <value>1099511627776</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+    <value_maps>
+        <value_map>
+            <name>Symantec Job Status</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Error</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Warning</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Succeeded</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>idle</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>Canceled</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>Missed</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>Active</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Symantec Job Type</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Full</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Differential</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Incremental</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

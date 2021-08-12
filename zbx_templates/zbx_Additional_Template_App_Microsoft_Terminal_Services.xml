@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:13:38Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template App Microsoft Terminal Services</template>
+            <name>Additional Template App Microsoft Terminal Services</name>
+            <description>Terminal Services has been renamed Remote Desktop Services</description>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Terminal Services</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Active sessions</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Terminal Services\Active Sessions&quot;]</key>
+                    <history>1w</history>
+                    <description>Количество активных сессий&#13;
+perf_counter_en[&quot;\Terminal Services\Active Sessions&quot;]&#13;
+perf_counter[&quot;\Службы терминалов\Активных сеансов&quot;]&#13;
+perf_counter[&quot;\5700\5702&quot;]</description>
+                    <applications>
+                        <application>
+                            <name>Terminal Services</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Inactives sessions</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Terminal Services\Inactive Sessions&quot;]</key>
+                    <history>1w</history>
+                    <description>Количество неактивных сессий&#13;
+perf_counter_en[&quot;\Terminal Services\Inactive Sessions&quot;]&#13;
+perf_counter[&quot;\Службы терминалов\Неактивных сеансов&quot;]&#13;
+perf_counter[&quot;\5700\5704&quot;]</description>
+                    <applications>
+                        <application>
+                            <name>Terminal Services</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Total sessions</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Terminal Services\Total Sessions&quot;]</key>
+                    <history>1w</history>
+                    <description>Общее количество сессий&#13;
+perf_counter_en[&quot;\Terminal Services\Total Sessions&quot;]&#13;
+perf_counter[&quot;\Службы терминалов\Всего сеансов&quot;]&#13;
+perf_counter[&quot;\5700\5706&quot;]</description>
+                    <applications>
+                        <application>
+                            <name>Terminal Services</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+        </template>
+    </templates>
+</zabbix_export>

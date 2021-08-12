@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:22:34Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template SNMP Synology RS816</template>
+            <name>Additional Template SNMP Synology RS816</name>
+            <description>Cameras Server</description>
+            <templates>
+                <template>
+                    <name>Template Module Generic SNMP</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Disk</name>
+                </application>
+                <application>
+                    <name>Raid</name>
+                </application>
+                <application>
+                    <name>System</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>CPU fan status</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.6574.1.4.2.0</snmp_oid>
+                    <key>cpu.fan.status</key>
+                    <history>1w</history>
+                    <description>Synology cpu fan status&#13;
+Each meanings of status represented describe below.&#13;
+Normal(1):All CPU fans functional normally.&#13;
+Failed(2):One of CPU fan stopped</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>SynologyCPUFanStatus</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=2</expression>
+                            <name>One of CPU fan stopped</name>
+                            <url>https://pth-ic-01:5001/</url>
+                            <priority>WARNING</priority>
+                            <description>One of CPU fan stopped</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Fan status</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.6574.1.4.1.0</snmp_oid>
+                    <key>fan.status</key>
+                    <history>1w</history>
+                    <description>Synology system fan status&#13;
+Each meanings of status represented describe below.&#13;
+Normal(1):All Internal fans functional normally.&#13;
+Failed(2):One of internal fan stopped</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>SynologyFanStatus</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=2</expression>
+                            <name>One of internal fan stopped</name>
+                            <url>https://pth-ic-01:5001/</url>
+                            <priority>WARNING</priority>
+                            <description>One of internal fan stopped.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>OS version</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.6574.1.5.3.0</snmp_oid>
+                    <key>os.version</key>
+                    <delay>1d</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <description>The version of this DSM</description>
+                    <applications>
+                        <application>
+                            <name>General</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Overall temperature</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.6574.1.2.0</snmp_oid>
+                    <key>overall.temp</key>
+                    <history>1w</history>
+                    <units>°C</units>
+                    <description>Synology system temperature&#13;
+The temperature of Disk Station uses Celsius degree</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&gt;=65</expression>
+                            <name>Overall temp too high</name>
+                            <url>https://pth-ic-01:5001/</url>
+                            <priority>WARNING</priority>
+                            <description>Synology system temperature&#13;
+The temperature of Disk Station uses Celsius degree.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Power status</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.6574.1.3.0</snmp_oid>
+                    <key>power.status</key>
+                    <history>1w</history>
+                    <description>Synology power status&#13;
+Each meanings of status represented describe below.&#13;
+Normal(1):All power supplies functional normally.&#13;
+Failed(2):One of power supply has failed.</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>SysnologyPowerStatus</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=2</expression>
+                            <name>One of power supply has failed</name>
+                            <url>https://pth-ic-01:5001/</url>
+                            <priority>WARNING</priority>
+                            <description>Failed(2):One of power supply has failed</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Overall status</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.6574.1.1.0</snmp_oid>
+                    <key>system.status</key>
+                    <history>1w</history>
+                    <description>Synology system status&#13;
+Each meanings of status represented describe below.&#13;
+Normal(1):System functionals normally.&#13;
+Failed(2):Volume has crashed</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>SynologySystemStatus</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=2</expression>
+                            <name>Volume has crashed</name>
+                            <url>https://pth-ic-01:5001/</url>
+                            <priority>WARNING</priority>
+                            <description>Failed(2):Volume has crashed.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Upgrade available</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.6574.1.5.4.0</snmp_oid>
+                    <key>Upgrade.Available</key>
+                    <delay>1d</delay>
+                    <history>1w</history>
+                    <description>This oid is for checking whether there is a latest DSM can be upgraded.&#13;
+Available(1):There is version ready for download.&#13;
+Unavailable(2):The DSM is latest version.&#13;
+Connecting(3):Checking for the latest DSM.&#13;
+Disconnected(4):Failed to connect to server.&#13;
+Others(5):If DSM is upgrading or downloading, the status will show others</description>
+                    <applications>
+                        <application>
+                            <name>General</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>SynologyUpgradeAvailable</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=1</expression>
+                            <name>There is a new OS version ready for download</name>
+                            <url>https://pth-ic-01:5001/</url>
+                            <priority>WARNING</priority>
+                            <description>There is version ready for download.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Disk</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#DISKMODEL}, .1.3.6.1.4.1.6574.2.1.1.2, {#DISKSTATUS}, .1.3.6.1.4.1.6574.2.1.1.5, {#DISKTEMP}, .1.3.6.1.4.1.6574.2.1.1.6]</snmp_oid>
+                    <key>disk.discovery</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#DISKMODEL}: Status</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.6574.2.1.1.5.{#SNMPINDEX}</snmp_oid>
+                            <key>disk.status.[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <description>Synology disk status&#13;
+Each meanings of status represented describe below.&#13;
+Normal(1):The hard disk functions normally.&#13;
+Initialized(2):The hard disk has system partition but no data.&#13;
+NotInitialized(3):The hard disk does not have system in system partition.&#13;
+SystemPartitionFailed(4):The system partitions on the hard disks are damaged.&#13;
+Crashed(5):The hard disk has damaged.</description>
+                            <applications>
+                                <application>
+                                    <name>Disk</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>SynologyDiskStatus</name>
+                            </valuemap>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}=5</expression>
+                                    <name>{#DISKMODEL}: The hard disk has damaged</name>
+                                    <priority>AVERAGE</priority>
+                                    <description>The hard disk has damaged</description>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=4</expression>
+                                    <name>{#DISKMODEL}: The system partitions on the hard disks are damaged</name>
+                                    <priority>WARNING</priority>
+                                    <description>The system partitions on the hard disks are damaged</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#DISKMODEL}: Temp</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.6574.2.1.1.6.{#SNMPINDEX}</snmp_oid>
+                            <key>disk.temp.[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>°C</units>
+                            <description>Synology disk temperature&#13;
+The temperature of each disk uses Celsius degree.</description>
+                            <applications>
+                                <application>
+                                    <name>Disk</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Load</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#DEVICE}, .1.3.6.1.4.1.6574.101.1.1.2, {#DISKLOAD}, .1.3.6.1.4.1.6574.101.1.1.8, {#DISKLOADAVG1}, .1.3.6.1.4.1.6574.101.1.1.9, {#DISKLOADAVG5}, .1.3.6.1.4.1.6574.101.1.1.10, {#DISKLOADAVG15}, .1.3.6.1.4.1.6574.101.1.1.11]</snmp_oid>
+                    <key>load.discovery</key>
+                    <delay>1h</delay>
+                    <description>The load of disk (%)</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#DEVICE}: Load 1 min</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.6574.101.1.1.9.{#SNMPINDEX}</snmp_oid>
+                            <key>load.disk.1min[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>%</units>
+                            <description>The 1 minute average load of disk (%)</description>
+                            <applications>
+                                <application>
+                                    <name>Disk</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#DEVICE}: Load 5 min</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.6574.101.1.1.10.{#SNMPINDEX}</snmp_oid>
+                            <key>load.disk.5min[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>%</units>
+                            <description>The 5 minute average load of disk (%)</description>
+                            <applications>
+                                <application>
+                                    <name>Disk</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#DEVICE}: Load 15 min</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.6574.101.1.1.11.{#SNMPINDEX}</snmp_oid>
+                            <key>load.disk.15min[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>%</units>
+                            <description>The 15 minute average load of disk (%)</description>
+                            <applications>
+                                <application>
+                                    <name>Disk</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#DEVICE}: Load</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.6574.101.1.1.8.{#SNMPINDEX}</snmp_oid>
+                            <key>load.disk[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>%</units>
+                            <description>The load of disk (%)</description>
+                            <applications>
+                                <application>
+                                    <name>Disk</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&gt;=50</expression>
+                                    <name>{#DEVICE}: High load of disk</name>
+                                    <url>https://pth-ic-01:5001/</url>
+                                    <priority>WARNING</priority>
+                                    <description>High load of disk</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Raid</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#RAIDNAME}, .1.3.6.1.4.1.6574.3.1.1.2, {#RAIDSTATUS}, .1.3.6.1.4.1.6574.3.1.1.3]</snmp_oid>
+                    <key>raid.discovery</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#RAIDNAME}: Status</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.6574.3.1.1.3.{#SNMPINDEX}</snmp_oid>
+                            <key>raid.status.[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <description>Synology Raid status&#13;
+Each meanings of status represented describe below.&#13;
+Normal(1):The raid functions normally.&#13;
+Degrade(11):Degrade happens when a tolerable failure of disk(s) occurs.&#13;
+Crashed(12):Raid has crashed and just uses for read-only operation.&#13;
+** 2018/6/15 add **&#13;
+DataScrubbing(13):Raid status is DATASCRUBBING&#13;
+RaidDeploying(14) :Deploying Single volume on pool&#13;
+RaidUnDeploying(15):Undeploying Single volume on pool&#13;
+RaidMountCache(16):Mounting SSD cache&#13;
+RaidUnmountCache(17):Unmounting SSD cache&#13;
+RaidExpandingUnfinishedSHR(18):Continue expand SHR if interrupted&#13;
+RaidConvertSHRToPool(19):Converting Single volume on SHR to mutiple volume on SHR&#13;
+RaidMigrateSHR1ToSHR2(20):Migrating SHR1 to SHR2&#13;
+RaidUnknownStatus(21):Unknown raid status&#13;
+** END **&#13;
+Note:&#13;
+Other status will be showed when creating or deleting raids, including below status, Repairing(2), Migrating(3), Expanding(4), Deleting(5), Creating(6), RaidSyncing(7), RaidParityChecking(8), RaidAssembling(9) and Canceling(10).</description>
+                            <applications>
+                                <application>
+                                    <name>Raid</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>SynologyRaidStatus</name>
+                            </valuemap>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}=12</expression>
+                                    <name>{#RAIDNAME}: Raid has crashed and just uses for read-only operation</name>
+                                    <priority>WARNING</priority>
+                                    <description>Crashed(12):Raid has crashed and just uses for read-only operation.</description>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=21</expression>
+                                    <name>{#RAIDNAME}: Unknown raid status, needs attention.</name>
+                                    <priority>AVERAGE</priority>
+                                    <description>RaidUnknownStatus(21):Unknown raid status</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$SNMP_COMMUNITY}</macro>
+                    <value>public</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+    <value_maps>
+        <value_map>
+            <name>SynologyCPUFanStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Normal</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Failed</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>SynologyDiskStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Normal</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Initialized</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>NotInitialized</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>System Partition Failed</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>Crashed</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>SynologyFanStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Normal</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Failed</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>SynologyRaidStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Normal</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Repairing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>Migrating</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>Expanding</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>Deleting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>Creating</newvalue>
+                </mapping>
+                <mapping>
+                    <value>7</value>
+                    <newvalue>Raid Syncing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>8</value>
+                    <newvalue>Raid Parity Checking</newvalue>
+                </mapping>
+                <mapping>
+                    <value>9</value>
+                    <newvalue>Raid Assembling</newvalue>
+                </mapping>
+                <mapping>
+                    <value>10</value>
+                    <newvalue>Canceling</newvalue>
+                </mapping>
+                <mapping>
+                    <value>11</value>
+                    <newvalue>Degrade</newvalue>
+                </mapping>
+                <mapping>
+                    <value>12</value>
+                    <newvalue>Crashed</newvalue>
+                </mapping>
+                <mapping>
+                    <value>13</value>
+                    <newvalue>Data Scrubbing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>14</value>
+                    <newvalue>Raid Deploying</newvalue>
+                </mapping>
+                <mapping>
+                    <value>15</value>
+                    <newvalue>Raid Un Deploying</newvalue>
+                </mapping>
+                <mapping>
+                    <value>16</value>
+                    <newvalue>Raid Mount Cache</newvalue>
+                </mapping>
+                <mapping>
+                    <value>17</value>
+                    <newvalue>Raid Unmount Cache</newvalue>
+                </mapping>
+                <mapping>
+                    <value>18</value>
+                    <newvalue>Raid Expanding Unfinished SHR</newvalue>
+                </mapping>
+                <mapping>
+                    <value>19</value>
+                    <newvalue>Raid Convert SHR To Pool</newvalue>
+                </mapping>
+                <mapping>
+                    <value>20</value>
+                    <newvalue>Raid Migrate SHR1 To SHR2</newvalue>
+                </mapping>
+                <mapping>
+                    <value>21</value>
+                    <newvalue>Raid Unknown Status</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>SynologySystemStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Normal</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Failed</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>SynologyUpgradeAvailable</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Available</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Unavailable</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>Connecting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>Disconnected</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>Upgrading or Downloading</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>SysnologyPowerStatus</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Normal</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Failed</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

@@ -1,0 +1,1099 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:11:29Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+        <group>
+            <name>Templates/Applications</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template App Microsoft Exchange Server 2010</template>
+            <name>Additional Template App Microsoft Exchange Server 2010</name>
+            <description>MS Exchange Server template&#13;
+&#13;
+LLD: Databases (with PowerShell script)</description>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+                <group>
+                    <name>Templates/Applications</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Exchange CAS metrics</name>
+                </application>
+                <application>
+                    <name>Exchange databases summary</name>
+                </application>
+                <application>
+                    <name>Exchange EDB files</name>
+                </application>
+                <application>
+                    <name>Exchange frontend transport</name>
+                </application>
+                <application>
+                    <name>Exchange processes</name>
+                </application>
+                <application>
+                    <name>Exchange services</name>
+                </application>
+                <application>
+                    <name>Exchange transport</name>
+                </application>
+                <application>
+                    <name>PowerShell raw items</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Exchange mounted databases count</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchange Active Manager(_total)\Database Mounted&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of active database copies on the server.&#13;
+MSExchange Active Manager(_total)\Database Mounted&#13;
+&#13;
+&quot;\MSExchange Active Manager(_total)\Database Mounted&quot;&#13;
+&quot;\11196(_total)\11198&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange databases summary</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{change()}&lt;&gt;0</expression>
+                            <name>Number of mounted databases has changed</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>ActiveSync ping command pending</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchange ActiveSync\Ping Commands Pending&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of ping commands currently pending in the queue.&#13;
+MSExchange ActiveSync\Ping Commands Pending&#13;
+&#13;
+&quot;\MSExchange ActiveSync\Ping Commands Pending&quot;&#13;
+&quot;\10946\11090&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>ActiveSync requests per second</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchange ActiveSync\Requests/sec&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of HTTP requests received from the client via ASP.NET per second. Determines the current Exchange ActiveSync request rate. Used only to determine current user load.&#13;
+MSExchange ActiveSync\Requests/sec&#13;
+&#13;
+&quot;\MSExchange ActiveSync\Requests/sec&quot;&#13;
+&quot;\10946\10964&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>ActiveSync sync commands per second</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchange ActiveSync\Sync Commands/sec&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of sync commands processed per second. Clients use this command to synchronize items within a folder.&#13;
+MSExchange ActiveSync\Sync Commands/sec&#13;
+&#13;
+&quot;\MSExchange ActiveSync\Sync Commands/sec&quot;&#13;
+&quot;\10946\10980&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Autodiscover requests per second</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeAutodiscover\Requests/sec&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of Autodiscover service requests processed each second. Determines current user load.&#13;
+MSExchangeAutodiscover\Requests/sec&#13;
+&#13;
+&quot;\MSExchangeAutodiscover\Requests/sec&quot;&#13;
+&quot;\8034\8038&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Availability Service availability requests per second</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchange Availability Service\Availability Requests (sec)&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of requests serviced per second. The request can be only for free/ busy information or include suggestions. One request may contain multiple mailboxes. Determines the rate at which Availability service requests are occurring.&#13;
+MSExchange Availability Service\Availability Requests (sec)&#13;
+&#13;
+&quot;\MSExchange Availability Service\Availability Requests (sec)&quot;&#13;
+&quot;\10446\10468&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>OWA current unique users</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchange OWA\Current Unique Users&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of unique users currently logged on to Outlook Web App. This value monitors the number of unique active user sessions, so that users are only removed from this counter after they log off or their session times out. Determines current user load.&#13;
+MSExchange OWA\Current Unique Users&#13;
+&#13;
+# There are many problems with that performance counter - it can starts to show huge numbers of connected users randomly. So trigger is disabled by default.&#13;
+&#13;
+&quot;\MSExchange OWA\Current Unique Users&quot;&#13;
+&quot;\9312\9316&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&gt;2000000000</expression>
+                            <name>Perfomance Counter for OWA Unique Users</name>
+                            <status>DISABLED</status>
+                            <priority>WARNING</priority>
+                            <description>Счётчик &quot;\MSExchange OWA\Current Unique Users&quot; показывает дичь. Известный баг, iisreset помогает.&#13;
+&#13;
+Триггер для наблюдения за поведением счётчика!</description>
+                            <tags>
+                                <tag>
+                                    <tag>exchange</tag>
+                                    <value>owa</value>
+                                </tag>
+                            </tags>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>OWA requests per second</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchange OWA\Requests/sec&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of requests handled by Outlook Web App per second. Determines current user load.&#13;
+MSExchange OWA\Requests/sec&#13;
+&#13;
+&quot;\MSExchange OWA\Requests/sec&quot;&#13;
+&quot;\9312\9384&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Shows the number of messages in the active mailbox queues.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Active Mailbox Delivery Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Active Mailbox Delivery Queue Length&quot;&#13;
+&quot;\4800(_total)\4806&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Active Mailbox Delivery Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Active Mailbox Delivery Queue Length is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;250</expression>
+                            <name>Active Mailbox Delivery Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Active Mailbox Delivery Queue Length is too high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&lt;&gt;0</expression>
+                            <name>Poison Queue Length is high.</name>
+                            <priority>WARNING</priority>
+                            <description>Poison Queue Length is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages in the drop directory used by a Foreign connector.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Active Non-Smtp Delivery Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Active Non-Smtp Delivery Queue Length&quot;&#13;
+&quot;\4800(_total)\4810&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Active Non-Smtp Delivery Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Active Non-Smtp Delivery Queue Length is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;250</expression>
+                            <name>Active Non-Smtp Delivery Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Active Non-Smtp Delivery Queue Length is too high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages in the active remote delivery queues.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Active Remote Delivery Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Active Remote Delivery Queue Length&quot;&#13;
+&quot;\4800(_total)\4802&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Active Remote Delivery Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Active Remote Delivery Queue Length is high.&#13;
+ttp://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;250</expression>
+                            <name>Active Remote Delivery Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Active Remote Delivery Queue Length is too high.&#13;
+ttp://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages queued for delivery in all queues.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Aggregate Delivery Queue Length (All Queues)&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Aggregate Delivery Queue Length (All Queues)&quot;&#13;
+&quot;\4800(_total)\4814&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;3000</expression>
+                            <name>Aggregate Delivery Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Aggregate Delivery Queue Length is higher then the microsoft recommednded. http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;5000</expression>
+                            <name>Aggregate Delivery Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Aggregate Delivery Queue Length is too high.&#13;
+ http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages in the largest delivery queues.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Largest Delivery Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Largest Delivery Queue Length&quot;&#13;
+&quot;\4800(_total)\4816&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Largest Delivery Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Largest Delivery Queue Length is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;200</expression>
+                            <name>Largest Delivery Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Largest Delivery Queue Length is too high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages in a retry state attempting to deliver a message to a remote mailbox.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Retry Mailbox Delivery Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Retry Mailbox Delivery Queue Length&quot;&#13;
+&quot;\4800(_total)\4808&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Retry Mailbox Delivery Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Retry Mailbox Delivery Queue Length is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;250</expression>
+                            <name>Retry Mailbox Delivery Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Retry Mailbox Delivery Queue Length is too high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages in a retry state in the non-SMTP gateway delivery queues.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Retry Non-Smtp Delivery Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Retry Non-Smtp Delivery Queue Length&quot;&#13;
+&quot;\4800(_total)\4812&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Shows the number of messages in a retry state in the remote delivery queues.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Retry Remote Delivery Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Retry Remote Delivery Queue Length&quot;&#13;
+&quot;\4800(_total)\4804&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;50</expression>
+                            <name>Retry Remote Delivery Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Retry Remote Delivery Queue Length is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Retry Remote Delivery Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Retry Remote Delivery Queue Length is too high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages in the submission queue.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Submission Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Submission Queue Length&quot;&#13;
+&quot;\4800(_total)\4848&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;50</expression>
+                            <name>Submission Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Submission Queue Length is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Submission Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Submission Queue Length is too high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Shows the number of messages in the Unreachable queue.</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeTransport Queues(_total)\Unreachable Queue Length&quot;]</key>
+                    <history>1w</history>
+                    <description>&quot;\MSExchangeTransport Queues(_total)\Unreachable Queue Length&quot;&#13;
+&quot;\4800(_total)\4844&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange transport</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;50</expression>
+                            <name>Unreachable Queue Length is high.</name>
+                            <priority>AVERAGE</priority>
+                            <description>Unreachable Queue is high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{last(0)}&gt;100</expression>
+                            <name>Unreachable Queue Length is too high.</name>
+                            <priority>HIGH</priority>
+                            <description>Unreachable Queue is too high.&#13;
+http://technet.microsoft.com/en-us/library/ff367923.aspx</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>MSExchangeWS requests per second</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\MSExchangeWS\Requests/sec&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the number of requests processed each second. Determines current user load.&#13;
+MSExchangeWS\Requests/sec&#13;
+&#13;
+&quot;\MSExchangeWS\Requests/sec&quot;&#13;
+&quot;\3908\4402&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Web Service Default Web Site Current Connections</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Web Service(Default Web Site)\Current Connections&quot;,{$PERIOD}]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>Shows the current number of connections established to the Default website which corresponds to the number of connections hitting the Front End CAS server role. Determines current user load.&#13;
+Web Service(Default Web Site)\Current Connections&#13;
+&#13;
+&quot;\Web Service(Default Web Site)\Current Connections&quot;&#13;
+&quot;\2104(Default Web Site)\2146&quot;</description>
+                    <applications>
+                        <application>
+                            <name>Exchange CAS metrics</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Processes Microsoft.Exchange.Store.Worker.exe count</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>proc.num[&quot;Microsoft.Exchange.Store.Worker.exe&quot;]</key>
+                    <history>1w</history>
+                    <description>Microsoft.Exchange.Store.Worker.exe processes count</description>
+                    <applications>
+                        <application>
+                            <name>Exchange processes</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Processes Microsoft.Exchange.Store.Worker.exe wkset summary</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>proc_info[&quot;Microsoft.Exchange.Store.Worker.exe&quot;,wkset,sum]</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>Microsoft.Exchange.Store.Worker.exe processes working set summary</description>
+                    <applications>
+                        <application>
+                            <name>Exchange processes</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1024</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Processes MSExchangeFrontendTransport.exe wkset</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>proc_info[&quot;MSExchangeFrontendTransport.exe&quot;,wkset]</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>MSExchangeFrontendTransport.exe process working set.</description>
+                    <applications>
+                        <application>
+                            <name>Exchange processes</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1024</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Processes MSExchangeTransport.exe wkset</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>proc_info[&quot;MSExchangeTransport.exe&quot;,wkset]</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>MSExchangeTransport.exe process working set.</description>
+                    <applications>
+                        <application>
+                            <name>Exchange processes</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1024</params>
+                        </step>
+                    </preprocessing>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Exchange database discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Request-ExchangeMailboxDatabase,,{$EXCHANGE.VERSION}]</key>
+                    <delay>1h</delay>
+                    <lifetime>2d</lifetime>
+                    <description>Discovery all Exchange databases</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#EDB.NAME} database copy status</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Active Manager({#EDB.NAME})\Database Copy Role Active&quot;]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <description>Is the database {#DB.NAME} copy active?&#13;
+0 - passive&#13;
+1 - active&#13;
+&#13;
+&quot;\MSExchange Active Manager({#EDB.NAME})\Database Copy Role Active&quot;&#13;
+&quot;\11196({#EDB.NAME})\11200&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Active Manager: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Exchange Server 2016 Database Copy State</name>
+                            </valuemap>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} database mounted state</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Active Manager({#EDB.NAME})\Database Mounted&quot;]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <description>Database {#DB.NAME} mounted state.&#13;
+0 - not mounted&#13;
+1 - mounted&#13;
+&#13;
+&quot;\MSExchange Active Manager({#EDB.NAME})\Database Mounted&quot;&#13;
+&quot;\11196({#EDB.NAME})\11198&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Active Manager: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Exchange Server 2016 Database Mounted State</name>
+                            </valuemap>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} page faults per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database(Information Store - {#EDB.NAME})\Database Page Fault Stalls/sec&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Indicates the rate of page faults that can't be serviced because there are no pages available for allocation from the database cache.&#13;
+If this counter is above 0, it's an indication that the MSExchange Database\I/O Database Writes (Attached) Average Latency is too high.&#13;
+&#13;
+&quot;\MSExchange Database(Information Store - {#DB.NAME})\Database Page Fault Stalls/sec&quot;&#13;
+&quot;\12654(Information Store - {#DB.NAME})\13042&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Information Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} log record stalls</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database(Information Store - {#EDB.NAME})\Log Record Stalls/sec&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Indicates the number of log records that can't be added to the log buffers per second because the log buffers are full.&#13;
+&#13;
+The average value should be below 10 per second.&#13;
+Spikes (maximum values) shouldn't be higher than 100 per second.&#13;
+&#13;
+&quot;\MSExchange Database(Information Store - {#EDB.NAME})\Log Record Stalls/sec&quot;&#13;
+&quot;\12654(Information Store - {#EDB.NAME})\12862&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Information Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} log threads waiting</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database(Information Store - {#EDB.NAME})\Log Threads Waiting&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Indicates the number of threads waiting to complete an update of the database by writing their data to the log.&#13;
+&#13;
+The average value should be less than 10 threads waiting.&#13;
+&#13;
+&quot;\MSExchange Database(Information Store - {#EDB.NAME})\Log Threads Waiting&quot;&#13;
+&quot;\12654(Information Store - {#EDB.NAME})\12816&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Information Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} active database read operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Reads (Attached)/sec&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <description>Shows the number of database read operations per second for each attached database instance.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Database Reads (Attached)/sec&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Reads (Attached)/sec&quot;&#13;
+&quot;\13572({#EDB.NAME}/_Total)\14024&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} active database read operations latency</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Reads (Attached) Average Latency&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <description>Shows the average length of time, in milliseconds (ms), per database read operation. Should be less than 20ms on average.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Database Reads (Attached) Average Latency&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Reads (Attached) Average Latency&quot;&#13;
+&quot;\13572({#EDB.NAME})\14026&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{min(10m)}&gt;20</expression>
+                                    <name>{#EDB.NAME} read time latency too high: {ITEM.VALUE}</name>
+                                    <priority>WARNING</priority>
+                                    <description>&quot;{#DB.NAME}&quot; average read time latency too high for 5 min.</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} passive database read operation latency</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Reads (Recovery) Average Latency&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <description>Shows the average length of time, in ms, per passive database read operation.&#13;
+Should be less than 200ms on average.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Database Reads (Recovery) Average Latency&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Reads (Recovery) Average Latency&quot;&#13;
+&quot;\13572({#EDB.NAME})\14042&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} active database writes operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Writes (Attached)/sec&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <description>Shows the number of database write operations per second for each attached database instance.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Database Writes (Attached)/sec&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Writes (Attached)/sec&quot;&#13;
+&quot;\13572({#EDB.NAME})\14088&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME}active database writes operations latency</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Writes (Attached) Average Latency&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <description>Shows the average length of time, in ms, per database write operation.&#13;
+Should be less than 50ms on average.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Database Writes (Attached) Average Latency&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Writes (Attached) Average Latency&quot;&#13;
+&quot;\13572({#EDB.NAME})\14090&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{avg(10m)}&gt;50</expression>
+                                    <name>{#EDB.NAME} write time latency too high: {ITEM.VALUE}</name>
+                                    <priority>WARNING</priority>
+                                    <description>&quot;{#DB.NAME}&quot; average write latency too high.&#13;
+In general, this latency should be less than the &quot;MSExchange Database\I/O Database Reads (Attached) Average Latency&quot; when battery-backed write caching is utilized.</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} passive database writes operation latency</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Writes (Recovery) Average Latency&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <description>Shows the average length of time, in ms, per passive database write operation.&#13;
+Should be less than the read latency for the same instance, as measured by the MSExchange Database ==&gt; Instances(\*)\I/O Database Reads (Recovery) Average Latency counter.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Database Writes (Recovery) Average Latency&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Database Writes (Recovery) Average Latency&quot;&#13;
+&quot;\13572({#EDB.NAME})\14106&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} log writes operations per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Log Writes/sec&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <description>Shows the number of log writes per second for each database instance.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Log Writes/sec&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Log Writes/sec&quot;&#13;
+&quot;\13572({#EDB.NAME})\14136&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} log writes operations latency</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Log Writes Average Latency&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <description>Shows the average length of time, in ms, per Log write operation.&#13;
+Should be less than 10ms on average.&#13;
+MSExchange Database ==&gt; Instances(\*)\I/O Log Writes Average Latency&#13;
+&#13;
+&quot;\MSExchange Database ==&gt; Instances({#EDB.NAME})\I/O Log Writes Average Latency&quot;&#13;
+&quot;\13572({#EDB.NAME})\14138&quot;</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Database Instances: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{min(10m)}&gt;10</expression>
+                                    <name>{#EDB.NAME} log write latency too high: {ITEM.VALUE}</name>
+                                    <priority>WARNING</priority>
+                                    <description>Log writes latency too high for database &quot;{#DB.NAME}&quot;.</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} active mailboxes count</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchangeIS Store({#EDB.NAME})\Active mailboxes&quot;]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Database {#EDB.NAME} number of active mailboxes.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>ExchangeIS Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} database state</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchangeIS Store({#EDB.NAME})\Database State&quot;]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Database {#EDB.NAME} state</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>ExchangeIS Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Exchange Server 2016 Database State</name>
+                            </valuemap>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} RPC requests latency</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchangeIS Store({#EDB.NAME})\RPC Average Latency&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <units>ms</units>
+                            <description>RPC Latency average (msec) is the average latency in milliseconds of RPC requests per database. Average is calculated over all RPCs since exrpc32 was loaded. Should be less than 50ms at all times, with spikes less than 100ms.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>ExchangeIS Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} RPC requests per second</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchangeIS Store({#EDB.NAME})\RPC Operations/sec&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Shows the number of RPC operations per second for each database instance.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>ExchangeIS Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} RPC requests total</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchangeIS Store({#EDB.NAME})\RPC requests&quot;,{$PERIOD}]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Indicates the overall RPC requests currently executing within the information store process.&#13;
+Should be below 70 at all times.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>ExchangeIS Store: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} content index state</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\MSExchange Search Indexes({#EDB.NAME})\Indexing Status&quot;]</key>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <value_type>FLOAT</value_type>
+                            <description>Database {#EDB.NAME} content index state.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Exchange Search Indexes: {#EDB.NAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Exchange Server 2016 Database Content Index States</name>
+                            </valuemap>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#EDB.NAME} edb file size</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>vfs.file.size[{#EDB.PATH}]</key>
+                            <history>1w</history>
+                            <units>B</units>
+                            <description>Database {#DB.NAME} edb file size.</description>
+                            <applications>
+                                <application>
+                                    <name>Exchange EDB files</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>10m</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$EXCHANGE.VERSION}</macro>
+                    <value>2010</value>
+                </macro>
+                <macro>
+                    <macro>{$PERIOD}</macro>
+                    <value>60</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+    <value_maps>
+        <value_map>
+            <name>Exchange Server 2016 Database Content Index States</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Unknown</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Healthy</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Crawling</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>Failed</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>Seeding</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>FailedAndSuspended</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>Suspended</newvalue>
+                </mapping>
+                <mapping>
+                    <value>7</value>
+                    <newvalue>Disabled</newvalue>
+                </mapping>
+                <mapping>
+                    <value>8</value>
+                    <newvalue>AutoSuspended</newvalue>
+                </mapping>
+                <mapping>
+                    <value>9</value>
+                    <newvalue>HealthyAndUpgrading</newvalue>
+                </mapping>
+                <mapping>
+                    <value>10</value>
+                    <newvalue>DiskUnavailable</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Exchange Server 2016 Database Copy State</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Passive</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Active</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Exchange Server 2016 Database Mounted State</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Not mounted</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Mounted</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Exchange Server 2016 Database State</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Dismounted</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Mounted</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Healthy</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

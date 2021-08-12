@@ -1,0 +1,1855 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:12:57Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+        <group>
+            <name>Templates/Virtualization</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template App Microsoft Hyper-V</template>
+            <name>Additional Template App Microsoft Hyper-V</name>
+            <description>Template for monitoring node from Microsoft Failover cluster with Hyper-V role or standalone Hyper-V.&#13;
+&#13;
+Read this before:&#13;
+&#13;
+Main concept&#13;
+https://blogs.msdn.microsoft.com/tvoellm/2009/04/22/monitoring-hyper-v-performance/&#13;
+&#13;
+CPU&#13;
+https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/&#13;
+&#13;
+Memory&#13;
+https://blogs.technet.microsoft.com/neales/2016/11/22/hyper-v-performance-memory/&#13;
+&#13;
+Performance&#13;
+https://docs.microsoft.com/en-us/windows-server/administration/performance-tuning/role/hyper-v-server/detecting-virtualized-environment-bottlenecks&#13;
+&#13;
+WMI classes&#13;
+http://wutils.com/wmi/root/cimv2/win32_perfrawdata/</description>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+                <group>
+                    <name>Templates/Virtualization</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Hyper-V CPU</name>
+                </application>
+                <application>
+                    <name>Hyper-V host</name>
+                </application>
+                <application>
+                    <name>Hyper-V hypervisor</name>
+                </application>
+                <application>
+                    <name>Hyper-V memory</name>
+                </application>
+                <application>
+                    <name>Hyper-V virtual machine</name>
+                </application>
+                <application>
+                    <name>Hyper-V virtual switch</name>
+                </application>
+                <application>
+                    <name>Hyper-V vms</name>
+                </application>
+                <application>
+                    <name>PowerShell raw items</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Calc host free physical memory</name>
+                    <type>CALCULATED</type>
+                    <key>hyperv.free.physical.memory</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <params>last(vm.memory.size[total])-last(vm.memory.size[used])</params>
+                    <applications>
+                        <application>
+                            <name>Hyper-V host</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Calc root memory assigned</name>
+                    <type>CALCULATED</type>
+                    <key>hyperv.root.memory.assigned</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <params>last(vm.memory.size[total])-last(&quot;hyperv.vms.memory.assigned&quot;)-last(hyperv.free.physical.memory)</params>
+                    <applications>
+                        <application>
+                            <name>Hyper-V host</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Calc virtual CPU ratio</name>
+                    <type>CALCULATED</type>
+                    <key>hyperv.virtual.cpu.ratio</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <params>last(perf_counter_en[&quot;\Hyper-V Hypervisor\Virtual Processors&quot;])/last(perf_counter_en[&quot;\Hyper-V Hypervisor\Logical Processors&quot;])</params>
+                    <applications>
+                        <application>
+                            <name>Hyper-V host</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&gt;8</expression>
+                            <name>Calc Hyper-V Virtual to Logical CPU Ratio &gt; 8:1</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Depend VMs cluster state off</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.cluster.state.off</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsClusterStateOff</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs cluster state other</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.cluster.state.other</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsClusterStateOther</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs cluster state paused</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.cluster.state.paused</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsClusterStatePaused</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&gt;{last(#2)} and {last(#2)}&gt;{last(#3)}</expression>
+                            <name>{ITEM.LASTVALUE1} VMs changed state to paused</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Depend VMs cluster state running</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.cluster.state.running</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsClusterStateRunning</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs cluster state saved</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.cluster.state.saved</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsClusterStateSaved</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs host state off</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.host.state.off</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsHostStateOff</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs host state other</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.host.state.other</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsHostStateOther</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs host state paused</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.host.state.paused</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsHostStatePaused</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs host state running</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.host.state.running</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsHostStateRunning</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs host state saved</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.host.state.saved</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsHostStateSaved</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs memory assigned</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.memory.assigned</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsMemoryAssigned</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs memory demand</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.memory.demand</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>Memory is need for VMs</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsMemoryDemand</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs memory maximum</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.memory.maximum</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsMemoryMaximum</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs memory minimum</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.memory.minimum</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsMemoryMinimum</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Depend VMs memory startup</name>
+                    <type>DEPENDENT</type>
+                    <key>hyperv.vms.memory.startup</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>Memory is need for VMs</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V vms</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.vmsMemoryStartup</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-HyperV,all]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Calc virtual machines online</name>
+                    <type>CALCULATED</type>
+                    <key>hyperv.vms.online</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <params>last(perf_counter_en[&quot;\Hyper-V Hypervisor\Partitions&quot;]) -1</params>
+                    <applications>
+                        <application>
+                            <name>Hyper-V host</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Calc virtual machines used physical memory  %</name>
+                    <type>CALCULATED</type>
+                    <key>hyperv.vms.used.physical.memory.percent</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <params>(last(&quot;hyperv.vms.memory.assigned&quot;) * 100) / last(vm.memory.size[total])</params>
+                    <applications>
+                        <application>
+                            <name>Hyper-V host</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Host dynamic memory balancer available memory</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Dynamic Memory Balancer(*)\Available Memory&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>This counter represents the amount of memory left on the node.&#13;
+&#13;
+wmi.get[root\cimv2, select AvailableMemory FROM Win32_PerfFormattedData_BalancerStats_HyperVDynamicMemoryBalancer]</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V host</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1048576</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Hypervisor logical processor guest run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Guest Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the processor in guest code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentGuestRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor logical processor hypervisor run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Hypervisor Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the processor in hypervisor code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentHypervisorRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor logical processor idle run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Idle Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the processor in an idle state.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentIdleTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{avg(#3)}&lt;10</expression>
+                            <name>Hypervisor logical processor idle time &lt; 10%</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Hypervisor logical processor total run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the processor in guest code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentTotalRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{avg(5)}&gt;50</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{avg(15)}&lt;50</recovery_expression>
+                            <name>Hypervisor logical processor total runtime &gt; 50%</name>
+                            <url>https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/</url>
+                            <priority>WARNING</priority>
+                            <description>If _Total meets this, identify sources of CPU load (sounds obvious but.. )&#13;
+&#13;
+If single / small % of CPUs consistently affected, especially (but not necessarily) CPU 0 look for VMQ / RSS config issues, or other hardware issue.&#13;
+&#13;
+If a small number of CPUs are impacted, but the busy CPU does vary, then check the two &quot;% Guest Run Time&quot; processor counters below</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{avg(5)}&gt;75</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{avg(15)}&lt;75</recovery_expression>
+                            <name>Hypervisor logical processor total runtime &gt; 75%</name>
+                            <url>https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/</url>
+                            <priority>AVERAGE</priority>
+                            <description>If _Total meets this, identify sources of CPU load (sounds obvious but.. )&#13;
+&#13;
+If single / small % of CPUs consistently affected, especially (but not necessarily) CPU 0 look for VMQ / RSS config issues, or other hardware issue.&#13;
+&#13;
+If a small number of CPUs are impacted, but the busy CPU does vary, then check the two &quot;% Guest Run Time&quot; processor counters below</description>
+                            <dependencies>
+                                <dependency>
+                                    <name>Hypervisor logical processor total runtime &gt; 50%</name>
+                                    <expression>{Additional Template App Microsoft Hyper-V:perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time&quot;].avg(5)}&gt;50</expression>
+                                    <recovery_expression>{Additional Template App Microsoft Hyper-V:perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time&quot;].avg(15)}&lt;50</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                        <trigger>
+                            <expression>{avg(5)}&gt;85</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{avg(15)}&lt;85</recovery_expression>
+                            <name>Hypervisor logical processor total runtime &gt; 85%</name>
+                            <url>https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/</url>
+                            <priority>HIGH</priority>
+                            <description>If _Total meets this, identify sources of CPU load (sounds obvious but.. )&#13;
+&#13;
+If single / small % of CPUs consistently affected, especially (but not necessarily) CPU 0 look for VMQ / RSS config issues, or other hardware issue.&#13;
+&#13;
+If a small number of CPUs are impacted, but the busy CPU does vary, then check the two &quot;% Guest Run Time&quot; processor counters below</description>
+                            <dependencies>
+                                <dependency>
+                                    <name>Hypervisor logical processor total runtime &gt; 75%</name>
+                                    <expression>{Additional Template App Microsoft Hyper-V:perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time&quot;].avg(5)}&gt;75</expression>
+                                    <recovery_expression>{Additional Template App Microsoft Hyper-V:perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time&quot;].avg(15)}&lt;75</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Hypervisor logical processor context switching /sec</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Logical Processor(_total)\Context Switches/sec&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>The rate of virtual processor context switches on the processor.&#13;
+&#13;
+wmi.get[root\cimv2, select ContextSwitchesPersec FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor]</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{avg(5m)}&gt;20000</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{avg(15m)}&lt;20000</recovery_expression>
+                            <name>Hypervisor logical processor context switches/sec &gt; 20000</name>
+                            <url>https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/</url>
+                            <priority>WARNING</priority>
+                            <description>Why: We use this as a general health &amp; performance indicator for the host &amp; virtual machines. This counter must be used in context with all other activity based counters (CPU, Disk &amp; Network, latency &amp; throughput).&#13;
+&#13;
+What to do if threshold is exceeded:&#13;
+Check VM config (particularly remove / disable any active &amp; busy emulated devices)&#13;
+Check that the VM is using the correct version of the integration components.&#13;
+Check host operating system utilization Root VP CPU usage (host OS utilization) - see the &quot;Hyper-V Hypervisor Root Virtual Processor&quot; counter section for the specifics.&#13;
+Check drivers - particularly network and storage drivers, but other too.&#13;
+Check for significant inconsistency across your hosts - it can indicate significant configuration or load differences.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Hypervisor root virtual processor guest run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Guest Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor in guest code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentGuestRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor root virtual processor hypervisor run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Hypervisor Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor in hypervisor code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentHypervisorRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor root virtual processor remote run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Remote Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor running on a remote node.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentRemoteRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor root virtual processor total run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Total Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor in guest and hypervisor code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentTotalRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor virtual processor guest run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor in guest code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentGuestRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{avg(5m)}&gt;5</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{avg(15m)}&lt;5</recovery_expression>
+                            <name>Hypervisor root virtual processor guest runtime &gt; 5%</name>
+                            <url>https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/</url>
+                            <priority>AVERAGE</priority>
+                            <description>Why: The host OS doesn't compete for CPU time in Hyper-V. It always immediately gets any CPU time it needs, which is necessary to provide great performance for virtual machines. This means any unnecessary CPU usage in the host OS can have a significant negative performance impact on all virtual machines - which is why the guidance is to install as little as possible on the host OS (absolute minimum of agents, services &amp; applications).&#13;
+&#13;
+What to do if threshold is exceeded:&#13;
+Check for any non-default OS running services / agents / processes in this OS, and review if they are really necessary.&#13;
+Check VMQ/RSS configuration (if 10GB NICs are in use) and for bad drivers - especially if this the CPU usage is focused on a small percentage of the hosts OS's VPs.&#13;
+Standard CPU performance troubleshooting - as if it was a physical machine.&#13;
+For general administration, use remote management tools instead of locally or via RDP on the host.</description>
+                        </trigger>
+                        <trigger>
+                            <expression>{avg(5m)}&gt;10</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{avg(15m)}&lt;10</recovery_expression>
+                            <name>Hypervisor root virtual processor guest runtime &gt; 10%</name>
+                            <url>https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/</url>
+                            <priority>HIGH</priority>
+                            <description>Why: The host OS doesn't compete for CPU time in Hyper-V. It always immediately gets any CPU time it needs, which is necessary to provide great performance for virtual machines. This means any unnecessary CPU usage in the host OS can have a significant negative performance impact on all virtual machines - which is why the guidance is to install as little as possible on the host OS (absolute minimum of agents, services &amp; applications).&#13;
+&#13;
+What to do if threshold is exceeded:&#13;
+Check for any non-default OS running services / agents / processes in this OS, and review if they are really necessary.&#13;
+Check VMQ/RSS configuration (if 10GB NICs are in use) and for bad drivers - especially if this the CPU usage is focused on a small percentage of the hosts OS's VPs.&#13;
+Standard CPU performance troubleshooting - as if it was a physical machine.&#13;
+For general administration, use remote management tools instead of locally or via RDP on the host.</description>
+                            <dependencies>
+                                <dependency>
+                                    <name>Hypervisor root virtual processor guest runtime &gt; 5%</name>
+                                    <expression>{Additional Template App Microsoft Hyper-V:perf_counter_en[&quot;\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time&quot;].avg(5m)}&gt;5</expression>
+                                    <recovery_expression>{Additional Template App Microsoft Hyper-V:perf_counter_en[&quot;\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time&quot;].avg(15m)}&lt;5</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Hypervisor virtual processor hypervisor run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Virtual Processor(_Total)\% Hypervisor Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor in hypervisor code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentHypervisorRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor virtual processor remote run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Virtual Processor(_Total)\% Remote Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor running on a remote node.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentRemoteRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor virtual processor total run time %</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor Virtual Processor(_Total)\% Total Run Time&quot;]</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <units>%</units>
+                    <description>The percentage of time spent by the virtual processor in guest and hypervisor code.&#13;
+&#13;
+wmi.get[root\cimv2, select PercentTotalRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor logical processors</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor\Logical Processors&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>The number of logical processors present in the system.&#13;
+&#13;
+wmi.get[root\cimv2, select LogicalProcessors FROM Win32_PerfFormattedData_HvStats_HyperVHypervisor]</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor monitored notifications</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor\Monitored Notifications&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>This parameter displays the number of monitored notifications registered with the Hypervisor.</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor partitions (virtual machines)</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor\Partitions&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>The number of partitions (virtual machines) present in the system.&#13;
+&#13;
+Partitions – Each virtual machine on the system is run in a container called a partition.   If you have no VM’s running this value will be set to 1 because the “host OS” called the “root” in Hyper-V is also running in a partition.  So if you have 2 guest VM’s running this value will be 3.  +1 for each guest and +1 for the root.&#13;
+&#13;
+wmi.get[root\cimv2, select Partitions FROM Win32_PerfFormattedData_HvStats_HyperVHypervisor]</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor total pages</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor\Total Pages&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>Displays the number of pages bootstrapped and deposited in the Hypervisor.</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Hypervisor virtual processors</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Hypervisor\Virtual Processors&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>The number of virtual processors present in the partition.&#13;
+&#13;
+wmi.get[root\cimv2, select VirtualProcessors FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorPartition]</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V hypervisor</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Virtual machine health critical</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Virtual Machine Health Summary\Health Critical&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>The number of critical VMs on a host.&#13;
+&#13;
+This counter represents the number of virtual machines with critical health.&#13;
+http://wutils.com/wmi/root/cimv2/win32_perfrawdata_vmmsvirtualmachinestats_hypervvirtualmachinehealthsummary/&#13;
+&#13;
+wmi.get[root\cimv2, select HealthCritical FROM Win32_PerfFormattedData_VmmsVirtualMachineStats_HyperVVirtualMachineHealthSummary]</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V virtual machine</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(0)}&gt;0</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last(0)}=0</recovery_expression>
+                            <name>Host has critical VMs</name>
+                            <priority>HIGH</priority>
+                            <description>The number of VMs running in a critical state.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Virtual machine health OK</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V Virtual Machine Health Summary\Health Ok&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>The number of OK VM's on a host.&#13;
+&#13;
+This counter represents the number of virtual machines with ok health.&#13;
+http://wutils.com/wmi/root/cimv2/win32_perfrawdata_vmmsvirtualmachinestats_hypervvirtualmachinehealthsummary/&#13;
+&#13;
+wmi.get[root\cimv2, select HealthOk FROM Win32_PerfFormattedData_VmmsVirtualMachineStats_HyperVVirtualMachineHealthSummary]</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V virtual machine</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <name>Host has 0 VMs in OK state</name>
+                            <priority>AVERAGE</priority>
+                            <description>Number of VMs in an OK state.</description>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Host VM VID partition physical pages allocated</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>perf_counter_en[&quot;\Hyper-V VM VID Partition(_total)\Physical Pages Allocated&quot;]</key>
+                    <delay>5m</delay>
+                    <history>1w</history>
+                    <description>The number of physical pages allocated. Pages = 4Kb&#13;
+&#13;
+The Physical Pages Allocated counter enables you to determine the percentage of the virtual machine’s memory that is split between more than one physical NUMA node.&#13;
+&#13;
+wmi.get[root\cimv2, select PhysicalPagesAllocated FROM Win32_PerfFormattedData_VidPerfProvider_HyperVVMVidPartition WHERE Name='_Total']</description>
+                    <applications>
+                        <application>
+                            <name>Hyper-V host</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>PowerShell get Hyper-V host</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Get-HyperV,all]</key>
+                    <delay>10m</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>Get statistics from PowerShell script</description>
+                    <applications>
+                        <application>
+                            <name>PowerShell raw items</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <params>1h</params>
+                        </step>
+                    </preprocessing>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Virtual machine discover</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Request-HyperV,vmname]</key>
+                    <delay>1h</delay>
+                    <status>DISABLED</status>
+                    <description>Under constructions</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Uptime</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},&quot;vmUptime&quot;]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <units>s</units>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmUptime</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} At another node</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmAtAnotherNode]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmAtAnotherNode</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Chekpoint сount</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmChekpointCount]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmChekpointCount</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} CPU usage</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmCPUUsage]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmCPUUsage</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Integration services state</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmIntegrationServicesState]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Hyper-V VM Integration Services State</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmIntegrationServicesState</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Integration services version</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmIntegrationServicesVersion]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <status>DISABLED</status>
+                            <value_type>CHAR</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmIntegrationServicesVersion</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Is clustered</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmIsClustered]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmIsClustered</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Memory assigned</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmMemoryAssigned]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <units>B</units>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmMemoryAssigned</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Memory status</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmMemoryStatus]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <status>DISABLED</status>
+                            <value_type>TEXT</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmMemoryStatus</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Numa nodes count</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmNumaNodesCount]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmNumaNodesCount</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Numa sockets count</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmNumaSocketCount]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmNumaSocketCount</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Owner</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmOwner]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <status>DISABLED</status>
+                            <value_type>TEXT</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmOwner</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Processor count</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmProcessorCount]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmProcessorCount</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Replication health</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmReplicationHealth]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Hyper-V VM Replication Health</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmReplicationHealth</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Replication mode</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmReplicationMode]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Hyper-V VM Replication Mode</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmReplicationMode</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Replication state</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmReplicationState]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Hyper-V VM Replication State</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmReplicationState</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} State</name>
+                            <type>DEPENDENT</type>
+                            <key>hyperv[{#HV.VMNAME},vmState]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <valuemap>
+                                <name>Hyper-V VM State</name>
+                            </valuemap>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.vmState</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>PowerShell get VM {#HV.VMNAME}</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>powershell[Get-HyperV,{#HV.VMNAME}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <status>DISABLED</status>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>PowerShell raw items</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>1h</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Average memory pressure</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>wmi.get[root\cimv2, select AveragePressure FROM Win32_PerfFormattedData_BalancerStats_HyperVDynamicMemoryVM WHERE Name='{#HV.VMNAME}']</key>
+                            <delay>3m</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <units>%</units>
+                            <description>This counter represents the average pressure in the VM. This displays the ratio of committed memory within the VM to the memory allocated to the virtual machine. This indicates whether the virtual machine has enough memory for its current needs, and values close to and over 100 indicate performance impacting page file use within the virtual machine.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VMNAME} Physical memory</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>wmi.get[root\cimv2, select PhysicalMemory  FROM Win32_PerfFormattedData_BalancerStats_HyperVDynamicMemoryVM WHERE Name='{#HV.VMNAME}']</key>
+                            <delay>3m</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <units>B</units>
+                            <description>This counter represents the current amount of memory in the VM.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Virtual machine {#HV.VMNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>1048576</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Virtual switch discover</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Request-HyperV,vsname]</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#HV.VSNAME} bytes received /sec</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\Hyper-V Virtual Switch({#HV.VSNAME})\Bytes Received/sec&quot;]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>Bits/sec</units>
+                            <description>This counter indicates the total bytes received per second on all ports of your Virtual Switch.&#13;
+&#13;
+wmi.get[root\cimv2, select BytesReceivedPersec FROM Win32_PerfFormattedData_NvspSwitchStats_HyperVVirtualSwitch WHERE Name='{#HV.VSNAME}']</description>
+                            <applications>
+                                <application>
+                                    <name>Hyper-V virtual switch</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VSNAME} bytes sent /sec</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>perf_counter_en[&quot;\Hyper-V Virtual Switch({#HV.VSNAME})\Bytes Sent/sec&quot;]</key>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>Bits/sec</units>
+                            <description>This counter indicates the total bytes sent per second on all ports of your Virtual Switch.&#13;
+&#13;
+wmi.get[root\cimv2, select BytesSentPersec FROM Win32_PerfFormattedData_NvspSwitchStats_HyperVVirtualSwitch  WHERE Name='{#HV.VSNAME}']</description>
+                            <applications>
+                                <application>
+                                    <name>Hyper-V virtual switch</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VSNAME} Dropped incoming packets/sec</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>wmi.get[root\cimv2, select DroppedPacketsIncomingPersec FROM Win32_PerfFormattedData_NvspSwitchStats_HyperVVirtualSwitch WHERE Name='{#HV.VSNAME}']</key>
+                            <delay>3m</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <discover>NO_DISCOVER</discover>
+                            <description>This counter represents the total number of packet dropped per second by the virtual switch in the incoming direction.</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Hyper-V virtual switch {#HV.VSNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#HV.VSNAME} Dropped outgoing packets/sec</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>wmi.get[root\cimv2, select DroppedPacketsOutgoingPersec FROM Win32_PerfFormattedData_NvspSwitchStats_HyperVVirtualSwitch WHERE Name='{#HV.VSNAME}']</key>
+                            <delay>3m</delay>
+                            <history>1w</history>
+                            <status>DISABLED</status>
+                            <discover>NO_DISCOVER</discover>
+                            <description>This counter represents the total number of packet dropped per second by the virtual switch in the outgoing direction</description>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>Hyper-V virtual switch {#HV.VSNAME}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$HYPERV_LP_CONTEXT_SWITCHES}</macro>
+                    <value>20000</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_LP_TOTAL_RUNTIME}</macro>
+                    <value>50</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_MEMORY_MIN_AVAILABLE}</macro>
+                    <value>2G</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_NETWORK_MAX_UTILIZE}</macro>
+                    <value>80</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_NETWORK_OUTPUT_DISCARDED}</macro>
+                    <value>100</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_NETWORK_OUTPUT_QUEUE_LENGHT}</macro>
+                    <value>2</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_RVP_GUEST_RUNTIME}</macro>
+                    <value>5</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_VL_CPU_RATIO}</macro>
+                    <value>8</value>
+                </macro>
+                <macro>
+                    <macro>{$HYPERV_VM_AVERAGE_MEMORY_PREASURE}</macro>
+                    <value>85</value>
+                </macro>
+            </macros>
+            <screens>
+                <screen>
+                    <name>Hyper-V Host Overview</name>
+                    <hsize>2</hsize>
+                    <vsize>4</vsize>
+                    <screen_items>
+                        <screen_item>
+                            <resourcetype>0</resourcetype>
+                            <style>0</style>
+                            <resource>
+                                <name>Hyper-V Host Memory used</name>
+                                <host>Additional Template App Microsoft Hyper-V</host>
+                            </resource>
+                            <width>500</width>
+                            <height>100</height>
+                            <x>0</x>
+                            <y>1</y>
+                            <colspan>1</colspan>
+                            <rowspan>1</rowspan>
+                            <elements>0</elements>
+                            <valign>0</valign>
+                            <halign>0</halign>
+                            <dynamic>0</dynamic>
+                            <sort_triggers>0</sort_triggers>
+                            <url/>
+                            <application/>
+                            <max_columns>3</max_columns>
+                        </screen_item>
+                    </screen_items>
+                </screen>
+            </screens>
+        </template>
+    </templates>
+    <graphs>
+        <graph>
+            <name>Hyper-V Host Memory used</name>
+            <show_work_period>NO</show_work_period>
+            <show_triggers>NO</show_triggers>
+            <type>STACKED</type>
+            <graph_items>
+                <graph_item>
+                    <drawtype>GRADIENT_LINE</drawtype>
+                    <color>DDDD00</color>
+                    <item>
+                        <host>Additional Template App Microsoft Hyper-V</host>
+                        <key>hyperv.root.memory.assigned</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+    <value_maps>
+        <value_map>
+            <name>Hyper-V VM Integration Services State</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Up to date</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Update required</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Unknown</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Hyper-V VM Replication Health</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>NotApplicable</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Normal</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Warning</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>Critical</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Hyper-V VM Replication Mode</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>None</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Primary</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Replica</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>TestReplica</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>ExtendedReplica</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Hyper-V VM Replication State</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>Disabled</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>ReadyForInitialReplication</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>InitialReplicationInProgress</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>WaitingForInitialReplication</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>Replicating</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>PreparedForFailover</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>FailedOverWaitingCompletion</newvalue>
+                </mapping>
+                <mapping>
+                    <value>7</value>
+                    <newvalue>FailedOver</newvalue>
+                </mapping>
+                <mapping>
+                    <value>8</value>
+                    <newvalue>Suspended</newvalue>
+                </mapping>
+                <mapping>
+                    <value>9</value>
+                    <newvalue>Error</newvalue>
+                </mapping>
+                <mapping>
+                    <value>10</value>
+                    <newvalue>WaitingForStartResynchronize</newvalue>
+                </mapping>
+                <mapping>
+                    <value>11</value>
+                    <newvalue>Resynchronizing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>12</value>
+                    <newvalue>ResynchronizeSuspended</newvalue>
+                </mapping>
+                <mapping>
+                    <value>13</value>
+                    <newvalue>RecoveryInProgress</newvalue>
+                </mapping>
+                <mapping>
+                    <value>14</value>
+                    <newvalue>FailbackInProgress</newvalue>
+                </mapping>
+                <mapping>
+                    <value>15</value>
+                    <newvalue>FailbackComplete</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Hyper-V VM State</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>Other</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>Running</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>Off</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>Stopping</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>Saved</newvalue>
+                </mapping>
+                <mapping>
+                    <value>9</value>
+                    <newvalue>Paused</newvalue>
+                </mapping>
+                <mapping>
+                    <value>10</value>
+                    <newvalue>Starting</newvalue>
+                </mapping>
+                <mapping>
+                    <value>11</value>
+                    <newvalue>Reset</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32773</value>
+                    <newvalue>Saving</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32776</value>
+                    <newvalue>Pausing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32777</value>
+                    <newvalue>Resuming</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32779</value>
+                    <newvalue>FastSaved</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32780</value>
+                    <newvalue>FastSaving</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32781</value>
+                    <newvalue>RunningCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32782</value>
+                    <newvalue>OffCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32783</value>
+                    <newvalue>StoppingCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32784</value>
+                    <newvalue>SavedCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32785</value>
+                    <newvalue>PausedCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32786</value>
+                    <newvalue>StartingCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32787</value>
+                    <newvalue>ResetCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32788</value>
+                    <newvalue>SavingCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32789</value>
+                    <newvalue>PausingCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32790</value>
+                    <newvalue>ResumingCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32791</value>
+                    <newvalue>FastSavedCritical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>32792</value>
+                    <newvalue>FastSavingCritical</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

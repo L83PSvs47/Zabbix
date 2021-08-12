@@ -1,0 +1,802 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:21:32Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template SNMP Printer</template>
+            <name>Additional Template SNMP Printer</name>
+            <templates>
+                <template>
+                    <name>Template Module Generic SNMP</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Printer cover</name>
+                </application>
+                <application>
+                    <name>Printer information</name>
+                </application>
+                <application>
+                    <name>Printer input</name>
+                </application>
+                <application>
+                    <name>Printer media path</name>
+                </application>
+                <application>
+                    <name>Printer output</name>
+                </application>
+                <application>
+                    <name>Printer supplies</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Device Type</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.25.3.2.1.3.1</snmp_oid>
+                    <key>hrDeviceDescr</key>
+                    <delay>1d</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <inventory_link>TYPE</inventory_link>
+                    <applications>
+                        <application>
+                            <name>General</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Printer error state</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.25.3.5.1.2.1</snmp_oid>
+                    <key>hrPrinterDetectedErrorState</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <applications>
+                        <application>
+                            <name>Printer information</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Printer error state</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{last(,600)}&lt;&gt;0</expression>
+                            <name>Error on Printer {HOST.NAME}</name>
+                            <url>http://{HOST.IP}</url>
+                            <priority>WARNING</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <name>Printer Error</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Printer status</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.25.3.5.1.1.1</snmp_oid>
+                    <key>hrPrinterStatus</key>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Printer information</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Printer status</name>
+                    </valuemap>
+                </item>
+                <item>
+                    <name>Device MAC address</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.2.2.1.6.1</snmp_oid>
+                    <key>ifPhysAddress</key>
+                    <delay>1h</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <inventory_link>MACADDRESS_A</inventory_link>
+                    <applications>
+                        <application>
+                            <name>General</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Device console display</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.43.16.5.1.2.1.1</snmp_oid>
+                    <key>prtConsoleDisplayBufferText</key>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <applications>
+                        <application>
+                            <name>Printer information</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Device serial number</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.43.5.1.1.17.1</snmp_oid>
+                    <key>prtGeneralSerialNumber</key>
+                    <delay>1d</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <inventory_link>SERIALNO_A</inventory_link>
+                    <applications>
+                        <application>
+                            <name>General</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Printer lifetime counter</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.43.10.2.1.4.1.1</snmp_oid>
+                    <key>prtMarkerLifeCount</key>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Printer information</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Printer status</name>
+                    </valuemap>
+                </item>
+                <item>
+                    <name>Printer power on counter</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.2.1.43.10.2.1.5.1.1</snmp_oid>
+                    <key>prtMarkerPowerOnCount</key>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Printer information</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>Printer status</name>
+                    </valuemap>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Cover</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.6.1.1.2]</snmp_oid>
+                    <key>prtCoverDescription</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Cover $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.6.1.1.2.{#SNMPINDEX}</snmp_oid>
+                            <key>prtCoverDescription[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer cover</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Cover status of $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.6.1.1.3.{#SNMPINDEX}</snmp_oid>
+                            <key>prtCoverStatus[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Printer cover</name>
+                                </application>
+                            </applications>
+                            <valuemap>
+                                <name>Printer cover state</name>
+                            </valuemap>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last(,600)}&lt;&gt;4 and {last(,600)}&lt;&gt;6</expression>
+                                    <name>Cover {#SNMPVALUE} on printer {HOST.NAME} is not closed</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Input</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.8.2.1.18]</snmp_oid>
+                    <key>prtInputDescription</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Input capacity $1</name>
+                            <type>CALCULATED</type>
+                            <key>prtInputCapacity[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>%</units>
+                            <params>100*last(&quot;prtInputCurrentLevel[{#SNMPVALUE}]&quot;)/last(&quot;prtInputMaxCapacity[{#SNMPVALUE}]&quot;)</params>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input current level $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.10.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputCurrentLevel[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.18.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputDescription[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input max capacity $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.9.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputMaxCapacity[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input media name $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.12.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputMediaName[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input model $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.15.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputModel[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input serial number $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.17.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputSerialNumber[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input status $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.11.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputStatus[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last(,600)}&lt;&gt;0</expression>
+                                    <name>Input {#SNMPVALUE} on printer {HOST.NAME} has changed</name>
+                                    <status>DISABLED</status>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Input type $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.8.2.1.2.{#SNMPINDEX}</snmp_oid>
+                            <key>prtInputType[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer input</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Supplies</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.11.1.1.6]</snmp_oid>
+                    <key>prtMarkerSuppliesDescription</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Color value of supplies $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.12.1.1.4.{#SNMPINDEX}</snmp_oid>
+                            <key>prtMarkerColorantValue[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer supplies</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Capacity of supplies $1</name>
+                            <type>CALCULATED</type>
+                            <key>prtMarkerSuppliesCapacity[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <units>%</units>
+                            <params>100*last(&quot;prtMarkerSuppliesLevel[{#SNMPVALUE}]&quot;)/last(&quot;prtMarkerSuppliesMaxCapacity[{#SNMPVALUE}]&quot;)</params>
+                            <applications>
+                                <application>
+                                    <name>Printer supplies</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;10</expression>
+                                    <name>{#SNMPVALUE} is low on printer {HOST.NAME}</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Description of supplies $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.11.1.1.6.{#SNMPINDEX}</snmp_oid>
+                            <key>prtMarkerSuppliesDescription[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer supplies</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Level of supplies $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.11.1.1.9.{#SNMPINDEX}</snmp_oid>
+                            <key>prtMarkerSuppliesLevel[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer supplies</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Max capacity of supplies $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.11.1.1.8.{#SNMPINDEX}</snmp_oid>
+                            <key>prtMarkerSuppliesMaxCapacity[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer supplies</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>Level of supplies {#SNMPVALUE} line</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Additional Template SNMP Printer</host>
+                                        <key>prtMarkerSuppliesLevel[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Level of supplies {#SNMPVALUE} pie</name>
+                            <width>400</width>
+                            <yaxismax>0</yaxismax>
+                            <show_work_period>NO</show_work_period>
+                            <show_triggers>NO</show_triggers>
+                            <type>PIE</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Additional Template SNMP Printer</host>
+                                        <key>prtMarkerSuppliesLevel[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>F63100</color>
+                                    <type>GRAPH_SUM</type>
+                                    <item>
+                                        <host>Additional Template SNMP Printer</host>
+                                        <key>prtMarkerSuppliesMaxCapacity[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Media path</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.13.4.1.10]</snmp_oid>
+                    <key>prtMediaPathDescription</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Media path description of supplies $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.13.4.1.10.{#SNMPINDEX}</snmp_oid>
+                            <key>prtMediaPathDescription[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer media path</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Media path status of supplies $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.13.4.1.11.{#SNMPINDEX}</snmp_oid>
+                            <key>prtMediaPathStatus[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Printer media path</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Media path type of supplies $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.13.4.1.9.{#SNMPINDEX}</snmp_oid>
+                            <key>prtMediaPathType[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer media path</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Output</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.9.2.1.12]</snmp_oid>
+                    <key>prtOutputDescription</key>
+                    <delay>1h</delay>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Output $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.9.2.1.12.{#SNMPINDEX}</snmp_oid>
+                            <key>prtOutputDescription[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer output</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Output max capacity $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.9.2.1.4.{#SNMPINDEX}</snmp_oid>
+                            <key>prtOutputMaxCapacity[{#SNMPVALUE}]</key>
+                            <delay>1h</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer output</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Output remaining capacity $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.9.2.1.5.{#SNMPINDEX}</snmp_oid>
+                            <key>prtOutputRemainingCapacity[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <applications>
+                                <application>
+                                    <name>Printer output</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Output status $1</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.43.9.2.1.6.{#SNMPINDEX}</snmp_oid>
+                            <key>prtOutputStatus[{#SNMPVALUE}]</key>
+                            <delay>10m</delay>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Printer output</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last(,600)}&lt;&gt;0</expression>
+                                    <name>Output {#SNMPVALUE} on printer {HOST.NAME} has changed</name>
+                                    <status>DISABLED</status>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <screens>
+                <screen>
+                    <name>Printer</name>
+                    <hsize>1</hsize>
+                    <vsize>1</vsize>
+                    <screen_items>
+                        <screen_item>
+                            <resourcetype>20</resourcetype>
+                            <style>0</style>
+                            <resource>
+                                <name>Level of supplies {#SNMPVALUE} pie</name>
+                                <host>Additional Template SNMP Printer</host>
+                            </resource>
+                            <width>500</width>
+                            <height>100</height>
+                            <x>0</x>
+                            <y>0</y>
+                            <colspan>1</colspan>
+                            <rowspan>1</rowspan>
+                            <elements>0</elements>
+                            <valign>0</valign>
+                            <halign>0</halign>
+                            <dynamic>0</dynamic>
+                            <sort_triggers>0</sort_triggers>
+                            <url/>
+                            <application/>
+                            <max_columns>2</max_columns>
+                        </screen_item>
+                    </screen_items>
+                </screen>
+            </screens>
+        </template>
+    </templates>
+    <graphs>
+        <graph>
+            <name>Print Counter</name>
+            <show_work_period>NO</show_work_period>
+            <show_triggers>NO</show_triggers>
+            <show_legend>NO</show_legend>
+            <graph_items>
+                <graph_item>
+                    <drawtype>FILLED_REGION</drawtype>
+                    <color>1A7C11</color>
+                    <calc_fnc>ALL</calc_fnc>
+                    <item>
+                        <host>Additional Template SNMP Printer</host>
+                        <key>prtMarkerLifeCount</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+    <value_maps>
+        <value_map>
+            <name>Printer cover state</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>other</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>doorOpen</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>doorClosed</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>interlockOpen</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>interlockClosed</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Printer error state</name>
+            <mappings>
+                <mapping>
+                    <value>0</value>
+                    <newvalue>lowPaper</newvalue>
+                </mapping>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>noPaper</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>lowToner</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>noToner</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>doorOpen</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>jammed</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>offline</newvalue>
+                </mapping>
+                <mapping>
+                    <value>7</value>
+                    <newvalue>serviceRequested</newvalue>
+                </mapping>
+                <mapping>
+                    <value>8</value>
+                    <newvalue>inputTrayMissing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>9</value>
+                    <newvalue>outputTrayMissing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>10</value>
+                    <newvalue>markerSupplyMissing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>11</value>
+                    <newvalue>outputNearFull</newvalue>
+                </mapping>
+                <mapping>
+                    <value>12</value>
+                    <newvalue>outputFull</newvalue>
+                </mapping>
+                <mapping>
+                    <value>13</value>
+                    <newvalue>inputTrayEmpty</newvalue>
+                </mapping>
+                <mapping>
+                    <value>14</value>
+                    <newvalue>overduePreventMaint</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+        <value_map>
+            <name>Printer status</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>other</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>unknown</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>idle</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>printing</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>warmup</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

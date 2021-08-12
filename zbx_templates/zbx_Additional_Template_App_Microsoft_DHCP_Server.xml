@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:10:33Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+        <group>
+            <name>Templates/Applications</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template App Microsoft DHCP Server</template>
+            <name>Additional Template App Microsoft DHCP Server</name>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+                <group>
+                    <name>Templates/Applications</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>PowerShell raw items</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>DHCP scope discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell.get[Request-DHCPScope]</key>
+                    <delay>1d</delay>
+                    <lifetime>1w</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Free</name>
+                            <type>DEPENDENT</type>
+                            <key>dhcp.scope.free[{#DHCP.SCOPEID}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>DHCP scope {#DHCP.SCOPEID}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.Free</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;10</expression>
+                                    <name>Only 10 IP addresses are available in the range  {#DHCP.SCOPEID}</name>
+                                    <priority>WARNING</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>In use</name>
+                            <type>DEPENDENT</type>
+                            <key>dhcp.scope.inuse[{#DHCP.SCOPEID}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>DHCP scope {#DHCP.SCOPEID}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.InUse</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Pending</name>
+                            <type>DEPENDENT</type>
+                            <key>dhcp.scope.pending[{#DHCP.SCOPEID}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>DHCP scope {#DHCP.SCOPEID}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.Pending</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Percentage in use</name>
+                            <type>DEPENDENT</type>
+                            <key>dhcp.scope.percentageinuse[{#DHCP.SCOPEID}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <units>%</units>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>DHCP scope {#DHCP.SCOPEID}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.PercentageInUse</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&gt;90</expression>
+                                    <name>IP addresses are available in the range  {#DHCP.SCOPEID} &gt; 90%</name>
+                                    <priority>WARNING</priority>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Reserved</name>
+                            <type>DEPENDENT</type>
+                            <key>dhcp.scope.reserved[{#DHCP.SCOPEID}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <application_prototypes>
+                                <application_prototype>
+                                    <name>DHCP scope {#DHCP.SCOPEID}</name>
+                                </application_prototype>
+                            </application_prototypes>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.Reserved</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>PowerShell get DHCP scope {#DHCP.SCOPEID} statistics</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]</key>
+                            <delay>1h</delay>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>PowerShell raw items</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                                    <params>1d</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+</zabbix_export>

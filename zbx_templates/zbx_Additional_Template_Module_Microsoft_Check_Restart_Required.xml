@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:15:39Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+        <group>
+            <name>Templates/Modules</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template Module Microsoft Check Restart Required</template>
+            <name>Additional Template Module Microsoft Check Restart Required</name>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+                <group>
+                    <name>Templates/Modules</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>PowerShell raw items</name>
+                </application>
+                <application>
+                    <name>Restart required</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>PowerShell get pending reboot</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Get-PendingReboot]</key>
+                    <delay>10m</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>PowerShell raw items</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>DISCARD_UNCHANGED_HEARTBEAT</type>
+                            <params>1d</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Pending rename unimportant files</name>
+                    <type>DEPENDENT</type>
+                    <key>reboot.rename.unimportant.files</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Restart required</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.FileRenameUnimportant</params>
+                        </step>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-PendingReboot]</key>
+                    </master_item>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=1</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}=0</recovery_expression>
+                            <name>Pending rename unimportant files</name>
+                            <priority>INFO</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Restart required</name>
+                    <type>DEPENDENT</type>
+                    <key>reboot.restart.required</key>
+                    <delay>0</delay>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>Restart required</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.RestartRequired</params>
+                        </step>
+                        <step>
+                            <type>BOOL_TO_DECIMAL</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>powershell[Get-PendingReboot]</key>
+                    </master_item>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=1</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}=0</recovery_expression>
+                            <name>Host restart required</name>
+                            <priority>WARNING</priority>
+                            <manual_close>YES</manual_close>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+        </template>
+    </templates>
+</zabbix_export>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:18:37Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template SNMP HP MSL G3 Series</template>
+            <name>Additional Template SNMP HP MSL G3 Series</name>
+            <description>Tape Libraries</description>
+            <templates>
+                <template>
+                    <name>Template Module Generic SNMP</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>System</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Device global unique ID</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.11.2.36.1.1.5.1.1.2.1</snmp_oid>
+                    <key>hpHttpMgDeviceGlobalUniqueID.1</key>
+                    <delay>1h</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>This represents a globally unique ID for the device.&#13;
+This MUST be the ordered combination of the Manufacturer,&#13;
+product name, AND any other text that is necessary to guarantee&#13;
+global uniqueness. This value may not be null.&#13;
+e.g. HPD1234A9482882</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Device product caption</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.11.2.36.1.1.5.1.1.9.1</snmp_oid>
+                    <key>hpHttpMgDeviceProductCaption.1</key>
+                    <delay>1h</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>The device's product caption name. (i.e. HP Multi-stack Disk Array)</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Device health status</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.11.2.36.1.1.5.1.1.3.1</snmp_oid>
+                    <key>msl.health</key>
+                    <history>1w</history>
+                    <description>Overall health of the device. The goal of this object&#13;
+is to be the single poll point to check the status of the&#13;
+device.</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                    <valuemap>
+                        <name>HP MSL Health Status</name>
+                    </valuemap>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&lt;&gt;3</expression>
+                            <name>{HOST.NAME}: Device Health Status not OK (HW)</name>
+                            <priority>AVERAGE</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Device serial number</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.11.2.36.1.1.5.1.1.10.1</snmp_oid>
+                    <key>msl.serial</key>
+                    <delay>1h</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <description>The serial number for the device. This can return a NULL string.</description>
+                    <applications>
+                        <application>
+                            <name>System</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+        </template>
+    </templates>
+    <value_maps>
+        <value_map>
+            <name>HP MSL Health Status</name>
+            <mappings>
+                <mapping>
+                    <value>1</value>
+                    <newvalue>unknown</newvalue>
+                </mapping>
+                <mapping>
+                    <value>2</value>
+                    <newvalue>unused</newvalue>
+                </mapping>
+                <mapping>
+                    <value>3</value>
+                    <newvalue>ok</newvalue>
+                </mapping>
+                <mapping>
+                    <value>4</value>
+                    <newvalue>warning</newvalue>
+                </mapping>
+                <mapping>
+                    <value>5</value>
+                    <newvalue>critical</newvalue>
+                </mapping>
+                <mapping>
+                    <value>6</value>
+                    <newvalue>nonrecoverable</newvalue>
+                </mapping>
+            </mappings>
+        </value_map>
+    </value_maps>
+</zabbix_export>

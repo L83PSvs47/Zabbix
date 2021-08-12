@@ -1,0 +1,1678 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:20:57Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template SNMP KEMP LoadMaster</template>
+            <name>Additional Template SNMP KEMP LoadMaster</name>
+            <templates>
+                <template>
+                    <name>Template Module Generic SNMP</name>
+                </template>
+            </templates>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>CPU utilization</name>
+                </application>
+                <application>
+                    <name>Load average</name>
+                </application>
+                <application>
+                    <name>Memory</name>
+                </application>
+                <application>
+                    <name>Real server</name>
+                </application>
+                <application>
+                    <name>System network interface stats</name>
+                </application>
+                <application>
+                    <name>System network traffic</name>
+                </application>
+                <application>
+                    <name>TPS</name>
+                </application>
+                <application>
+                    <name>Virtual service</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Connections</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.12.3.0</snmp_oid>
+                    <key>conns</key>
+                    <history>1w</history>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Daemon state</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.13.0.7.0</snmp_oid>
+                    <key>daemonState</key>
+                    <history>1w</history>
+                    <description>0:none&#13;
+1:master&#13;
+2:backup</description>
+                </item>
+                <item>
+                    <name>HA state</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.13.0.9.0</snmp_oid>
+                    <key>hAstate</key>
+                    <history>1w</history>
+                    <description>0:none&#13;
+1:Master&#13;
+2:Standby&#13;
+3:Passive</description>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}&lt;&gt;1</expression>
+                            <name>HA Status Change</name>
+                            <priority>WARNING</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Network traffic incoming bit</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.12.6.0</snmp_oid>
+                    <key>inBit</key>
+                    <history>1w</history>
+                    <units>bps</units>
+                    <applications>
+                        <application>
+                            <name>System network traffic</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>8</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Network traffic incoming bytes</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.12.6.0</snmp_oid>
+                    <key>inBytes</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>System network traffic</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Network traffic incoming packets</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.12.4.0</snmp_oid>
+                    <key>inPkts</key>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>System network traffic</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Load average 1 min</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.10.1.5.1</snmp_oid>
+                    <key>laLoadInt.1</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>UCD-SNMP-MIB::laLoadInt.1</description>
+                    <applications>
+                        <application>
+                            <name>Load average</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>0.01</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Load average 5 min</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.10.1.5.2</snmp_oid>
+                    <key>laLoadInt.2</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>UCD-SNMP-MIB::laLoadInt.2</description>
+                    <applications>
+                        <application>
+                            <name>Load average</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>0.01</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Load average 15 min</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.10.1.5.3</snmp_oid>
+                    <key>laLoadInt.3</key>
+                    <history>1w</history>
+                    <value_type>FLOAT</value_type>
+                    <description>UCD-SNMP-MIB::laLoadInt.3</description>
+                    <applications>
+                        <application>
+                            <name>Load average</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>0.01</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Memory free</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.4.6.0</snmp_oid>
+                    <key>memAvailReal.0</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>UCD-SNMP-MIB::memAvailReal.0</description>
+                    <applications>
+                        <application>
+                            <name>Memory</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1000</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Memory buffer</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.4.14.0</snmp_oid>
+                    <key>memBuffer.0</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>UCD-SNMP-MIB::memBuffer.0</description>
+                    <applications>
+                        <application>
+                            <name>Memory</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1000</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Memory cached</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.4.15.0</snmp_oid>
+                    <key>memCached.0</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>UCD-SNMP-MIB::memCached.0</description>
+                    <applications>
+                        <application>
+                            <name>Memory</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1000</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Memory shared</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.4.13.0</snmp_oid>
+                    <key>memShared.0</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>UCD-SNMP-MIB::memShared.0</description>
+                    <applications>
+                        <application>
+                            <name>Memory</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1000</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Memory total</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.4.5.0</snmp_oid>
+                    <key>memTotalReal.0</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <description>UCD-SNMP-MIB::memTotalReal.0</description>
+                    <applications>
+                        <application>
+                            <name>Memory</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>1000</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Memory used</name>
+                    <type>CALCULATED</type>
+                    <key>memUsed</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <params>last(&quot;memTotalReal.0&quot;)-(last(&quot;memAvailReal.0&quot;)+last(&quot;memShared.0&quot;)+last(&quot;memCached.0&quot;)+last(&quot;memBuffer.0&quot;))</params>
+                    <applications>
+                        <application>
+                            <name>Memory</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>Total virtual services</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.13.0.2.0</snmp_oid>
+                    <key>numServices</key>
+                    <history>1w</history>
+                    <description>LoadMasterに登録されている全体のVS数</description>
+                </item>
+                <item>
+                    <name>Network traffic outgoing bit</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.12.7.0</snmp_oid>
+                    <key>outBit</key>
+                    <history>1w</history>
+                    <units>bps</units>
+                    <applications>
+                        <application>
+                            <name>System network traffic</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                        <step>
+                            <type>MULTIPLIER</type>
+                            <params>8</params>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Network traffic outgoing bytes</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.12.7.0</snmp_oid>
+                    <key>outBytes</key>
+                    <history>1w</history>
+                    <units>B</units>
+                    <applications>
+                        <application>
+                            <name>System network traffic</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>Network traffic outgoing packets</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.12.5.0</snmp_oid>
+                    <key>outPkts</key>
+                    <history>1w</history>
+                    <applications>
+                        <application>
+                            <name>System network traffic</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>LoadMaster version</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.13.0.10.0</snmp_oid>
+                    <key>patchVersion</key>
+                    <delay>1h</delay>
+                    <history>1w</history>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <inventory_link>OS</inventory_link>
+                </item>
+                <item>
+                    <name>SSL TPS</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.13.0.12.0</snmp_oid>
+                    <key>sslTps</key>
+                    <history>1w</history>
+                    <units>TPS</units>
+                    <applications>
+                        <application>
+                            <name>TPS</name>
+                        </application>
+                    </applications>
+                </item>
+                <item>
+                    <name>CPU idle time</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.11.53.0</snmp_oid>
+                    <key>system.cpu.time.idle</key>
+                    <history>1w</history>
+                    <description>UCD-SNMP-MIB::ssCpuRawIdle.0</description>
+                    <applications>
+                        <application>
+                            <name>CPU utilization</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>CPU interrupt time</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.11.56.0</snmp_oid>
+                    <key>system.cpu.time.interrupt</key>
+                    <history>1w</history>
+                    <description>UCD-SNMP-MIB::ssCpuRawInterrupt.0</description>
+                    <applications>
+                        <application>
+                            <name>CPU utilization</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>CPU nice time</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.11.51.0</snmp_oid>
+                    <key>system.cpu.time.nice</key>
+                    <history>1w</history>
+                    <description>UCD-SNMP-MIB::ssCpuRawNice.0</description>
+                    <applications>
+                        <application>
+                            <name>CPU utilization</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>CPU soft IRQ time</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.11.61.0</snmp_oid>
+                    <key>system.cpu.time.softirq</key>
+                    <history>1w</history>
+                    <description>UCD-SNMP-MIB::ssCpuRawSoftIRQ.0</description>
+                    <applications>
+                        <application>
+                            <name>CPU utilization</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>CPU system time</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.11.52.0</snmp_oid>
+                    <key>system.cpu.time.system</key>
+                    <history>1w</history>
+                    <description>UCD-SNMP-MIB::ssCpuRawSystem.0</description>
+                    <applications>
+                        <application>
+                            <name>CPU utilization</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>CPU user time</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.2021.11.50.0</snmp_oid>
+                    <key>system.cpu.time.user</key>
+                    <history>1w</history>
+                    <description>UCD-SNMP-MIB::ssCpuRawUser.0</description>
+                    <applications>
+                        <application>
+                            <name>CPU utilization</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>CHANGE_PER_SECOND</type>
+                            <params/>
+                        </step>
+                    </preprocessing>
+                </item>
+                <item>
+                    <name>TPS</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>.1.3.6.1.4.1.12196.13.0.11.0</snmp_oid>
+                    <key>totalTps</key>
+                    <history>1w</history>
+                    <units>TPS</units>
+                    <applications>
+                        <application>
+                            <name>TPS</name>
+                        </application>
+                    </applications>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Network interface</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.2.1.31.1.1.1.1]</snmp_oid>
+                    <key>.1.3.6.1.2.1.31.1.1.1.1.[{#SNMPINDEX}]</key>
+                    <delay>1h</delay>
+                    <description>IF-MIB::ifName</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Network interface inbound broadcast packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.9.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCInBroadcastPkts[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <description>IF-MIB::ifHCInBroadcastPkts</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface inbound multicast packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.8.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCInMulticastPkts[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <description>IF-MIB::ifHCInMulticastPkts</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface inbound traffic (bit) on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCInOctets.bit[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <units>bps</units>
+                            <description>IF-MIB::ifHCInOctets × 8bit (bps)</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>8</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface inbound traffic (byte) on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCInOctets[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <units>B</units>
+                            <description>IF-MIB::ifHCInOctets</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface inbound unicast packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.7.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCInUcastPkts[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <description>IF-MIB::ifHCInUcastPkts</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface outbound broadcast packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.13.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCOutBroadcastPkts[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <description>IF-MIB::ifHCOutBroadcastPkts</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface outbound multicast packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.12.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCOutMulticastPkts[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <description>IF-MIB::ifHCOutMulticastPkts</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface outbound traffic (bit) on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCOutOctets.bit[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <units>bps</units>
+                            <description>IF-MIB::ifHCOutOctets × 8bit (bps)</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                                <step>
+                                    <type>MULTIPLIER</type>
+                                    <params>8</params>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface outbound traffic (byte) on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCOutOctets[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <units>B</units>
+                            <description>ifHCOutOctets</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface outbound unicast packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.11.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHCOutUcastPkts[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <description>IF-MIB::ifHCOutUcastPkts</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Network interface speed on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}</snmp_oid>
+                            <key>ifHighSpeed[{#SNMPVALUE}]</key>
+                            <history>1w</history>
+                            <description>IF-MIB::ifHighSpeed</description>
+                            <applications>
+                                <application>
+                                    <name>System network interface stats</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>Network Interface Packets on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>00CCFF</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCOutBroadcastPkts[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>0066FF</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCOutMulticastPkts[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>2</sortorder>
+                                    <color>0000FF</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCOutUcastPkts[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>3</sortorder>
+                                    <color>00FF00</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCInBroadcastPkts[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>4</sortorder>
+                                    <color>00CC00</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCInMulticastPkts[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>5</sortorder>
+                                    <color>009900</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCInUcastPkts[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Network Interface Speed on {#SNMPVALUE}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHighSpeed[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Network Interface Traffic (Bit) on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>0000DD</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCInOctets.bit[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCOutOctets.bit[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Network Interface Traffic (Byte) on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>0000DD</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCInOctets[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>00DD00</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>ifHCOutOctets[{#SNMPVALUE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Real server</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.4.1.12196.12.2.1.11]</snmp_oid>
+                    <key>.1.3.6.1.4.1.12196.12.2.1.11.[{#SNMPINDEX}]</key>
+                    <delay>1h</delay>
+                    <description>IPVS-MIB::rSDesc&#13;
+※VSのNickNameを取得</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Real server active connections on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.2.1.17.{#SNMPINDEX}</snmp_oid>
+                            <key>rSActiveConns[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server connections on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.2.1.12.{#SNMPINDEX}</snmp_oid>
+                            <key>rSConns[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server inactive connection on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.2.1.18.{#SNMPINDEX}</snmp_oid>
+                            <key>rSInactiveConns[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server incoming bytes on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.2.1.15.{#SNMPINDEX}</snmp_oid>
+                            <key>rSInBytes[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>B</units>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server incoming packets on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.2.1.13.{#SNMPINDEX}</snmp_oid>
+                            <key>rSInPkts[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server outgoing bytes on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.2.1.16.{#SNMPINDEX}</snmp_oid>
+                            <key>rSOutBytes[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>B</units>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server outgoing packets on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.2.1.14.{#SNMPINDEX}</snmp_oid>
+                            <key>rSOutPkts[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server state on {#SNMPVALUE} index.{#SNMPINDEX}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.13.2.1.8.{#SNMPINDEX}</snmp_oid>
+                            <key>rSstate[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <description>1:inService&#13;
+2:outOfService</description>
+                            <applications>
+                                <application>
+                                    <name>Real server</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>Real Server Active Connections on {#SNMPVALUE}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSActiveConns[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Real Server Connections on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>0000EE</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSConns[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSInactiveConns[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Real Server Inactive Connection on {#SNMPVALUE}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSInactiveConns[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Real Server Network Traffic (Bytes) on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>0000DD</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSInBytes[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSOutBytes[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Real Server Network Traffic (Packets) on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>0000CC</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSInPkts[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSOutPkts[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Real Server State on {#SNMPVALUE}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>rSstate[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+                <discovery_rule>
+                    <name>Virtual service</name>
+                    <type>SNMP_AGENT</type>
+                    <snmp_oid>discovery[{#SNMPVALUE},.1.3.6.1.4.1.12196.13.1.1.13]</snmp_oid>
+                    <key>.1.3.6.1.4.1.12196.13.1.1.13.[{#SNMPINDEX}]</key>
+                    <delay>1h</delay>
+                    <description>B100-MIB::vSname&#13;
+※VSのNickNameを取得</description>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Virtual service active connections on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.1.1.17.{#SNMPINDEX}</snmp_oid>
+                            <key>vSActivConns[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Virtual service connections on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.1.1.12.{#SNMPINDEX}</snmp_oid>
+                            <key>vSConns[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Virtual service incoming bytes on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.1.1.15.{#SNMPINDEX}</snmp_oid>
+                            <key>vSInBytes[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>B</units>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Virtual service incoming packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.1.1.13.{#SNMPINDEX}</snmp_oid>
+                            <key>vSInPkts[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Real server for this virtual service on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.13.1.1.10.{#SNMPINDEX}</snmp_oid>
+                            <key>vSnumDests[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <description>Number of Real Server for this Virtual Service</description>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Virtual service outgoing bytes on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.1.1.16.{#SNMPINDEX}</snmp_oid>
+                            <key>vSOutBytes[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <units>B</units>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Virtual service outgoing packets on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.12.1.1.14.{#SNMPINDEX}</snmp_oid>
+                            <key>vSOutPkts[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>CHANGE_PER_SECOND</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Virtual service state on {#SNMPVALUE}</name>
+                            <type>SNMP_AGENT</type>
+                            <snmp_oid>.1.3.6.1.4.1.12196.13.1.1.14.{#SNMPINDEX}</snmp_oid>
+                            <key>vSstate[{#SNMPINDEX}]</key>
+                            <history>1w</history>
+                            <description>1:inService&#13;
+2:outOfService&#13;
+3:failed&#13;
+4:disabled&#13;
+5:sorry&#13;
+6:redirect&#13;
+7:errormsg</description>
+                            <applications>
+                                <application>
+                                    <name>Virtual service</name>
+                                </application>
+                            </applications>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}=4</expression>
+                                    <name>{#SNMPVALUE} Virtual Service State is Disabled on {HOST.NAME}</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=7</expression>
+                                    <name>{#SNMPVALUE} Virtual Service State is Errormsg on {HOST.NAME}</name>
+                                    <priority>WARNING</priority>
+                                    <description>Virtual Service State is Errormsg</description>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=3</expression>
+                                    <name>{#SNMPVALUE} Virtual Service State is failed on {HOST.NAME}</name>
+                                    <priority>HIGH</priority>
+                                    <description>Virtual Service State is failed</description>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=1</expression>
+                                    <name>{#SNMPVALUE} Virtual Service State is In Service on {HOST.NAME}</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=2</expression>
+                                    <name>{#SNMPVALUE} Virtual Service State is Out Of Service on {HOST.NAME}</name>
+                                    <priority>HIGH</priority>
+                                    <description>Virtual Service State is Out Of Service</description>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=6</expression>
+                                    <name>{#SNMPVALUE} Virtual Service State is Redirect on {HOST.NAME}</name>
+                                    <priority>INFO</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}=5</expression>
+                                    <name>{#SNMPVALUE} Virtual Service State is Sorry on {HOST.NAME}</name>
+                                    <priority>WARNING</priority>
+                                    <description>Virtual Service State is Sorry</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                    </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>Real Server for this Virtual Service on {#SNMPVALUE}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSnumDests[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Virtual Service Active Connections on {#SNMPVALUE}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>C80000</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSActivConns[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Virtual Service Connections on {#SNMPVALUE}</name>
+                            <graph_items>
+                                <graph_item>
+                                    <drawtype>FILLED_REGION</drawtype>
+                                    <color>0000DD</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSConns[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Virtual Service Network Traffic (Bytes) on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>0000DD</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSInBytes[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSOutBytes[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Virtual Service Network Traffic (Packets) on {#SNMPVALUE}</name>
+                            <type>STACKED</type>
+                            <graph_items>
+                                <graph_item>
+                                    <color>0000DD</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSInPkts[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                                <graph_item>
+                                    <sortorder>1</sortorder>
+                                    <color>00C800</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSOutPkts[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                        <graph_prototype>
+                            <name>Virtual Service State on {#SNMPVALUE}</name>
+                            <show_triggers>NO</show_triggers>
+                            <graph_items>
+                                <graph_item>
+                                    <color>CC0000</color>
+                                    <item>
+                                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                                        <key>vSstate[{#SNMPINDEX}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+        </template>
+    </templates>
+    <graphs>
+        <graph>
+            <name>Connections</name>
+            <graph_items>
+                <graph_item>
+                    <drawtype>GRADIENT_LINE</drawtype>
+                    <color>0000EE</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>conns</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>CPU Util</name>
+            <type>STACKED</type>
+            <graph_items>
+                <graph_item>
+                    <color>0000CC</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>system.cpu.time.system</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>0066CC</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>system.cpu.time.softirq</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>0033CC</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>system.cpu.time.user</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>3</sortorder>
+                    <color>0099CC</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>system.cpu.time.nice</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>4</sortorder>
+                    <color>00CCCC</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>system.cpu.time.interrupt</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>5</sortorder>
+                    <color>EEFFFF</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>system.cpu.time.idle</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Daemon State</name>
+            <graph_items>
+                <graph_item>
+                    <color>C80000</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>daemonState</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>HA State</name>
+            <graph_items>
+                <graph_item>
+                    <color>C80000</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>hAstate</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Load Average</name>
+            <graph_items>
+                <graph_item>
+                    <color>FFCC00</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>laLoadInt.1</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>FF6600</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>laLoadInt.2</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>FF0000</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>laLoadInt.3</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Memory</name>
+            <type>STACKED</type>
+            <ymax_type_1>ITEM</ymax_type_1>
+            <ymax_item_1>
+                <host>Additional Template SNMP KEMP LoadMaster</host>
+                <key>memTotalReal.0</key>
+            </ymax_item_1>
+            <graph_items>
+                <graph_item>
+                    <color>510371</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>memUsed</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>9926C6</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>memShared.0</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>2</sortorder>
+                    <color>C45FEC</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>memCached.0</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>3</sortorder>
+                    <color>C483DE</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>memBuffer.0</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>4</sortorder>
+                    <color>BA9EC5</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>memAvailReal.0</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Total Network Packets</name>
+            <type>STACKED</type>
+            <graph_items>
+                <graph_item>
+                    <color>0000CC</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>inPkts</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>00C800</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>outPkts</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Total Network Traffic (Bit)</name>
+            <type>STACKED</type>
+            <graph_items>
+                <graph_item>
+                    <color>0000DD</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>inBit</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>00C800</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>outBit</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Total Network Traffic (Byte)</name>
+            <type>STACKED</type>
+            <graph_items>
+                <graph_item>
+                    <color>0000DD</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>inBytes</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>00C800</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>outBytes</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>Total Virtual Services</name>
+            <graph_items>
+                <graph_item>
+                    <color>C80000</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>numServices</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+        <graph>
+            <name>TPS</name>
+            <graph_items>
+                <graph_item>
+                    <drawtype>FILLED_REGION</drawtype>
+                    <color>00C800</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>totalTps</key>
+                    </item>
+                </graph_item>
+                <graph_item>
+                    <sortorder>1</sortorder>
+                    <color>C80000</color>
+                    <item>
+                        <host>Additional Template SNMP KEMP LoadMaster</host>
+                        <key>sslTps</key>
+                    </item>
+                </graph_item>
+            </graph_items>
+        </graph>
+    </graphs>
+</zabbix_export>

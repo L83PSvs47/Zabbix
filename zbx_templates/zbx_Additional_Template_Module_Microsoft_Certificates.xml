@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-12T11:15:03Z</date>
+    <groups>
+        <group>
+            <name>Additional Template</name>
+        </group>
+        <group>
+            <name>Templates/Modules</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template Module Microsoft Certificates</template>
+            <name>Additional Template Module Microsoft Certificates</name>
+            <groups>
+                <group>
+                    <name>Additional Template</name>
+                </group>
+                <group>
+                    <name>Templates/Modules</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>PowerShell raw items</name>
+                </application>
+                <application>
+                    <name>Windows certificates</name>
+                </application>
+            </applications>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>Windows certificates discovery</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>powershell[Request-Certificate]</key>
+                    <delay>1d</delay>
+                    <lifetime>1w</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>Certificate &quot;{#CERT.NAME}&quot; days to expire</name>
+                            <type>DEPENDENT</type>
+                            <key>certificate.daystoexpire[{#CERT.THUMBPRINT}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <value_type>FLOAT</value_type>
+                            <description>When cert will be expire</description>
+                            <applications>
+                                <application>
+                                    <name>Windows certificates</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.DaysToExpire</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-Certificate,{#CERT.THUMBPRINT}]</key>
+                            </master_item>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;0</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}&gt;0</recovery_expression>
+                                    <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) is expired</name>
+                                    <priority>DISASTER</priority>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;1</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}&gt;0</recovery_expression>
+                                    <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) is expiring today</name>
+                                    <priority>HIGH</priority>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) is expired</name>
+                                            <expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&lt;0</expression>
+                                            <recovery_expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&gt;0</recovery_expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;={$DAYS_TO_EXPIRE_AVERAGE}</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}&gt;{$DAYS_TO_EXPIRE_AVERAGE}</recovery_expression>
+                                    <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days</name>
+                                    <priority>AVERAGE</priority>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) is expiring today</name>
+                                            <expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&lt;1</expression>
+                                            <recovery_expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&gt;0</recovery_expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;={$DAYS_TO_EXPIRE_INFO}</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}&gt;{$DAYS_TO_EXPIRE_INFO}</recovery_expression>
+                                    <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days</name>
+                                    <priority>INFO</priority>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days</name>
+                                            <expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&lt;={$DAYS_TO_EXPIRE_WARN}</expression>
+                                            <recovery_expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&gt;{$DAYS_TO_EXPIRE_WARN}</recovery_expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <expression>{last()}&lt;={$DAYS_TO_EXPIRE_WARN}</expression>
+                                    <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                                    <recovery_expression>{last()}&gt;{$DAYS_TO_EXPIRE_WARN}</recovery_expression>
+                                    <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days</name>
+                                    <priority>WARNING</priority>
+                                    <dependencies>
+                                        <dependency>
+                                            <name>Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days</name>
+                                            <expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&lt;={$DAYS_TO_EXPIRE_AVERAGE}</expression>
+                                            <recovery_expression>{Additional Template Module Microsoft Certificates:certificate.daystoexpire[{#CERT.THUMBPRINT}].last()}&gt;{$DAYS_TO_EXPIRE_AVERAGE}</recovery_expression>
+                                        </dependency>
+                                    </dependencies>
+                                </trigger_prototype>
+                            </trigger_prototypes>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Certificate &quot;{#CERT.NAME}&quot; netsh binding</name>
+                            <type>DEPENDENT</type>
+                            <key>certificate.netshbinding[{#CERT.THUMBPRINT}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <description>netsh http show sslcert</description>
+                            <applications>
+                                <application>
+                                    <name>Windows certificates</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.NetshBinding</params>
+                                    <error_handler>DISCARD_VALUE</error_handler>
+                                </step>
+                                <step>
+                                    <type>TRIM</type>
+                                    <params>[]</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-Certificate,{#CERT.THUMBPRINT}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>Certificate &quot;{#CERT.NAME}&quot; web binding</name>
+                            <type>DEPENDENT</type>
+                            <key>certificate.webbinding[{#CERT.THUMBPRINT}]</key>
+                            <delay>0</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <description>netsh http show sslcert</description>
+                            <applications>
+                                <application>
+                                    <name>Windows certificates</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$.WebBinding</params>
+                                    <error_handler>CUSTOM_VALUE</error_handler>
+                                    <error_handler_params>data unavailable</error_handler_params>
+                                </step>
+                                <step>
+                                    <type>TRIM</type>
+                                    <params>[]</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>powershell[Get-Certificate,{#CERT.THUMBPRINT}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>PowerShell get certificate &quot;{#CERT.NAME}&quot;</name>
+                            <type>ZABBIX_ACTIVE</type>
+                            <key>powershell[Get-Certificate,{#CERT.THUMBPRINT}]</key>
+                            <delay>12h</delay>
+                            <history>1w</history>
+                            <trends>0</trends>
+                            <value_type>TEXT</value_type>
+                            <applications>
+                                <application>
+                                    <name>PowerShell raw items</name>
+                                </application>
+                            </applications>
+                        </item_prototype>
+                    </item_prototypes>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$DAYS_TO_EXPIRE_AVERAGE}</macro>
+                    <value>3</value>
+                </macro>
+                <macro>
+                    <macro>{$DAYS_TO_EXPIRE_INFO}</macro>
+                    <value>30</value>
+                </macro>
+                <macro>
+                    <macro>{$DAYS_TO_EXPIRE_WARN}</macro>
+                    <value>7</value>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+</zabbix_export>
