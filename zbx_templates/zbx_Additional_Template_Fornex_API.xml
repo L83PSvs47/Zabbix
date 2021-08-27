@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>5.0</version>
+    <date>2021-08-27T07:54:48Z</date>
+    <groups>
+        <group>
+            <name>Templates Custom</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Additional Template Fornex API</template>
+            <name>Additional Template Fornex API</name>
+            <description>https://fornex.com/api/</description>
+            <groups>
+                <group>
+                    <name>Templates Custom</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>Fornex</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Fornex order cost_month</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.cost_month</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..cost_month</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order expiration date</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.expiration.date</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..expiration_date</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order expiration date unixtime</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.expiration.date.unixtime</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JAVASCRIPT</type>
+                            <params>var s = value.substring(value.lastIndexOf(&quot;[&quot;) +2, value.lastIndexOf(&quot;+&quot;));
+var d = new Date(s);
+return d / 1000;</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.order.expiration.date</key>
+                    </master_item>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}-{now()}&lt;=0</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}-{now()}&gt;0</recovery_expression>
+                            <name>Fornex order expired</name>
+                            <priority>DISASTER</priority>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}-{now()}&lt;=604800</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}-{now()}&gt;604800</recovery_expression>
+                            <name>Fornex order expires in less than 7 days</name>
+                            <priority>HIGH</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>Fornex order expired</name>
+                                    <expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&lt;=0</expression>
+                                    <recovery_expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&gt;0</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}-{now()}&lt;=1209600</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}-{now()}&gt;1209600</recovery_expression>
+                            <name>Fornex order expires in less than 14 days</name>
+                            <priority>AVERAGE</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>Fornex order expires in less than 7 days</name>
+                                    <expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&lt;=604800</expression>
+                                    <recovery_expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&gt;604800</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}-{now()}&lt;=2592000</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}-{now()}&gt;2592000</recovery_expression>
+                            <name>Fornex order expires in less than 30 days</name>
+                            <priority>WARNING</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>Fornex order expires in less than 14 days</name>
+                                    <expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&lt;=1209600</expression>
+                                    <recovery_expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&gt;1209600</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                        <trigger>
+                            <expression>{last()}-{now()}&lt;=3456000</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}-{now()}&gt;3456000</recovery_expression>
+                            <name>Fornex order expires in less than 40 days</name>
+                            <priority>INFO</priority>
+                            <dependencies>
+                                <dependency>
+                                    <name>Fornex order expires in less than 30 days</name>
+                                    <expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&lt;=2592000</expression>
+                                    <recovery_expression>{Additional Template Fornex API:fornex.order.expiration.date.unixtime.last()}-{Additional Template Fornex API:fornex.order.expiration.date.unixtime.now()}&gt;2592000</recovery_expression>
+                                </dependency>
+                            </dependencies>
+                        </trigger>
+                    </triggers>
+                </item>
+                <item>
+                    <name>Fornex order hostname</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.hostname</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..hostname</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order id</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.id</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..id</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order ipaddress set</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.ipaddress_set</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..ipaddress_set</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order name</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.name</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..name</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order status</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.status</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..status</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order tariff</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.tariff</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..tariff</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order tariff id</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.tariff.id</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..tariff_id</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order tariff price</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.tariff.price</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..tariff_price</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex order type</name>
+                    <type>DEPENDENT</type>
+                    <key>fornex.order.type</key>
+                    <delay>0</delay>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$..type</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>fornex.orders.list</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>Fornex get orders list</name>
+                    <type>HTTP_AGENT</type>
+                    <key>fornex.orders.list</key>
+                    <delay>12h</delay>
+                    <applications>
+                        <application>
+                            <name>Fornex</name>
+                        </application>
+                    </applications>
+                    <url>https://fornex.com/api/orders/list</url>
+                    <query_fields>
+                        <query_field>
+                            <name>apikey</name>
+                            <value>{$FORNEX_APIKEY}</value>
+                        </query_field>
+                    </query_fields>
+                </item>
+            </items>
+            <macros>
+                <macro>
+                    <macro>{$FORNEX_APIKEY}</macro>
+                    <type>SECRET_TEXT</type>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+</zabbix_export>
