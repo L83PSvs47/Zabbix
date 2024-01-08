@@ -1,0 +1,350 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: f0e8a8221cee4d7481292075dc8930b3
+      template: 'Additional Template SNMP Switch'
+      name: 'Additional Template SNMP Switch'
+      templates:
+        - name: 'ICMP Ping'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 2b9191ee967e4e96b04601a27f9d2a8f
+          name: 'CPU usage'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.5.1.9.6.1.0
+          key: cpuUsage
+          delay: '60'
+          history: 7d
+          units: '%'
+          tags:
+            - tag: Application
+              value: 'Usage Resurces'
+          triggers:
+            - uuid: 4b072c908a79481f9145340a6b804e10
+              expression: 'last(/Additional Template SNMP Switch/cpuUsage)>80'
+              name: 'CPU load is too high'
+              priority: AVERAGE
+        - uuid: 15a3a63103a3440e8fb3a3b0cec46ace
+          name: 'Model name'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.47.1.1.1.1.2.1
+          key: ENTITY-MIB-entPhysicalModelName
+          delay: '60'
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+          tags:
+            - tag: Application
+              value: Inventory
+        - uuid: 68e00d95ba524899bff0df507bf40c10
+          name: 'Serial number'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.36.1.1.5.1.1.10.1
+          key: ENTITY-MIB-entPhysicalSerialNum
+          delay: '60'
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+          tags:
+            - tag: Application
+              value: Inventory
+          triggers:
+            - uuid: 19bbbe07c5634d5d9b801837e162cf15
+              expression: 'last(/Additional Template SNMP Switch/ENTITY-MIB-entPhysicalSerialNum)<600'
+              name: 'Host has just been restarted'
+              priority: AVERAGE
+        - uuid: 13d5e51423a5482c90682a572ad30e9a
+          name: 'FW version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.36.1.1.2.6.0
+          key: ENTITY-MIB-entPhysicalSoftwareRev
+          delay: '86400'
+          history: 30d
+          trends: '0'
+          value_type: TEXT
+          description: |
+            The vendor-specific software revision string for the
+            physical entity.
+          tags:
+            - tag: Application
+              value: Inventory
+        - uuid: 97787dbb072c456d998986542a30b0da
+          name: 'Memory usage'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.5.1.1.2.1.1.1.7.1
+          key: memoryUsage
+          delay: '60'
+          history: 7d
+          units: b
+          tags:
+            - tag: Application
+              value: 'Usage Resurces'
+          triggers:
+            - uuid: c556d2d14aec47b797ac8330aa9218ee
+              expression: 'last(/Additional Template SNMP Switch/memoryUsage)>73400320'
+              name: 'Memory usage is too high'
+              priority: AVERAGE
+        - uuid: 9b0289d7d571406398749aa3ced2b489
+          name: 'Тип хоста'
+          type: CALCULATED
+          key: system.type.switch
+          delay: '7200'
+          params: '1'
+          tags:
+            - tag: Application
+              value: General
+      discovery_rules:
+        - uuid: 1e35dc3a1973493ebb5e6986c272b966
+          name: 'Network Interfaces'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE}, IF-MIB::ifDescr]'
+          key: ifDescr
+          delay: '3600'
+          lifetime: 1d
+          item_prototypes:
+            - uuid: 0d9294a692b84004b41143bb5e8c1eb6
+              name: 'if: port $1 - Alias'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifAlias.{#SNMPINDEX}'
+              key: 'ifAlias[{#SNMPVALUE}]'
+              delay: '3600'
+              history: 7d
+              trends: '0'
+              status: DISABLED
+              value_type: CHAR
+              valuemap:
+                name: 'Switches port status'
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: fb11eb10f1ba42eabdb04cc30654f043
+              name: 'if: port $1 - Broadcast packets Rx'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.3.{#SNMPINDEX}'
+              key: 'ifInBroadcastPkts[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              units: pps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: 8cc0b674e0d842e7ae7aaffdedc8ee0e
+              name: 'if: port $1 - Discards Rx'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifInDiscards.{#SNMPINDEX}'
+              key: 'ifInDiscards[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: 5840f5940f0c470caf0c16e13bc44970
+              name: 'if: port $1 - Errors Rx'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.14.{#SNMPINDEX}'
+              key: 'ifInErrors[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: 3f5f2f0f06194659b80751087cac59b7
+              name: 'if: port $1 - Bytes Rx'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.10.{#SNMPINDEX}'
+              key: 'ifInOctets[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: 059776a926c44e38abcb0aefdd6bca2b
+              name: 'if: port $1 - Operational status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.8.{#SNMPINDEX}'
+              key: 'ifOperStatus[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              valuemap:
+                name: 'Switches port status'
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: 9605cd2e0cd74ea38f2951154da3d129
+              name: 'if: port $1 - Broadcast packets Tx'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.31.1.1.1.5.{#SNMPINDEX}'
+              key: 'ifOutBroadcastPkts[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              units: pps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: cce68244e33f48b4bd4131b4590301e9
+              name: 'if: port $1 - Discards Tx'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifOutDiscards.{#SNMPINDEX}'
+              key: 'ifOutDiscards[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: 79fc215472c447febc0c9447d51462a2
+              name: 'if: port $1 - Errors Tx'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.20.{#SNMPINDEX}'
+              key: 'ifOutErrors[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: Interfaces
+            - uuid: 363e3aef8df24ee1845b46be64e631db
+              name: 'if: port $1 - Bytes Tx'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.2.1.2.2.1.16.{#SNMPINDEX}'
+              key: 'ifOutOctets[{#SNMPVALUE}]'
+              delay: '300'
+              history: 7d
+              trends: 30d
+              status: DISABLED
+              units: bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Interfaces
+          graph_prototypes:
+            - uuid: f9d8c426dd8e47e6a5df8f8d1cfc3502
+              name: 'if: port {#SNMPVALUE} - Broadcast Rx/Tx'
+              width: '1200'
+              type: STACKED
+              graph_items:
+                - color: 66FF66
+                  item:
+                    host: 'Additional Template SNMP Switch'
+                    key: 'ifInBroadcastPkts[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  color: FF6666
+                  item:
+                    host: 'Additional Template SNMP Switch'
+                    key: 'ifOutBroadcastPkts[{#SNMPVALUE}]'
+            - uuid: 5b9635bfe9974cd6a32af52d4894189e
+              name: 'if: port {#SNMPVALUE} - Errors Rx/Tx'
+              width: '1200'
+              type: STACKED
+              graph_items:
+                - color: 66FF66
+                  item:
+                    host: 'Additional Template SNMP Switch'
+                    key: 'ifInErrors[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  color: FF6666
+                  item:
+                    host: 'Additional Template SNMP Switch'
+                    key: 'ifOutErrors[{#SNMPVALUE}]'
+            - uuid: 9a7da98b46444cfa8cda62d1c268beba
+              name: 'if: port {#SNMPVALUE} - Total Rx/Tx'
+              width: '1200'
+              type: STACKED
+              graph_items:
+                - color: 66FF66
+                  item:
+                    host: 'Additional Template SNMP Switch'
+                    key: 'ifInOctets[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  color: FF6666
+                  item:
+                    host: 'Additional Template SNMP Switch'
+                    key: 'ifOutOctets[{#SNMPVALUE}]'
+      valuemaps:
+        - uuid: 62c79856905940d6a02723ac9d79f1a4
+          name: 'Switches port status'
+          mappings:
+            - value: '1'
+              newvalue: up
+            - value: '2'
+              newvalue: down
+            - value: '3'
+              newvalue: testing
+            - value: '4'
+              newvalue: unknown
+            - value: '5'
+              newvalue: dormant
+            - value: '6'
+              newvalue: notPresent
+            - value: '7'
+              newvalue: lowerLayerDown
+  graphs:
+    - uuid: accfc4d64e6a4309af3bf8e149b32fa8
+      name: Load
+      show_work_period: 'NO'
+      graph_items:
+        - color: C80000
+          item:
+            host: 'Additional Template SNMP Switch'
+            key: cpuUsage
+        - sortorder: '1'
+          color: 00C800
+          item:
+            host: 'Additional Template SNMP Switch'
+            key: memoryUsage

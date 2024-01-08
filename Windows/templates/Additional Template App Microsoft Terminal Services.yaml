@@ -1,0 +1,81 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 96360e6eb3b8424d9cd1dbe25c92752f
+      template: 'Additional Template App Microsoft Terminal Services'
+      name: 'Additional Template App Microsoft Terminal Services'
+      description: |
+        Мониторинг сессий Terminal Services.
+        (Terminal Services были переименованы Remote Desktop Services)
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: e237f292b51c488cb657fa50148a3483
+          name: 'Active sessions'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Terminal Services\Active Sessions"]'
+          delay: '{$TS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            Количество активных сессий
+            perf_counter_en["\Terminal Services\Active Sessions"]
+            perf_counter["\Службы терминалов\Активных сеансов"]
+            perf_counter["\5700\5702"]
+          tags:
+            - tag: Application
+              value: 'Terminal Services'
+        - uuid: 3e3a1c65bc1c4fabb55f01f5627b61ab
+          name: 'Inactives sessions'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Terminal Services\Inactive Sessions"]'
+          delay: '{$TS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            Количество неактивных сессий
+            perf_counter_en["\Terminal Services\Inactive Sessions"]
+            perf_counter["\Службы терминалов\Неактивных сеансов"]
+            perf_counter["\5700\5704"]
+          tags:
+            - tag: Application
+              value: 'Terminal Services'
+        - uuid: b23778378bb94facacb80155ac14eeab
+          name: 'Total sessions'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Terminal Services\Total Sessions"]'
+          delay: '{$TS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            Общее количество сессий
+            perf_counter_en["\Terminal Services\Total Sessions"]
+            perf_counter["\Службы терминалов\Всего сеансов"]
+            perf_counter["\5700\5706"]
+          tags:
+            - tag: Application
+              value: 'Terminal Services'
+      macros:
+        - macro: '{$TS_PERFORMANCE_INTERVAL}'
+          value: 1m
+  graphs:
+    - uuid: fecfae1b64714886846c3c0a03dd6b71
+      name: 'Terminal Sessions'
+      graph_items:
+        - color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template App Microsoft Terminal Services'
+            key: 'perf_counter_en["\Terminal Services\Active Sessions"]'
+        - sortorder: '1'
+          color: '274482'
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template App Microsoft Terminal Services'
+            key: 'perf_counter_en["\Terminal Services\Inactive Sessions"]'
+        - sortorder: '2'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template App Microsoft Terminal Services'
+            key: 'perf_counter_en["\Terminal Services\Total Sessions"]'

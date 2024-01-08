@@ -1,0 +1,695 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 3c8db255321347f08607b985bcb62cc1
+      template: 'Additional Template SNMP APC SMART VT'
+      name: 'Additional Template SNMP APC SMART VT'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 2f2c95c1ea704a2b88e61f9c08b3d097
+          name: 'Device manufacter'
+          type: EXTERNAL
+          key: 'echo.something["APC"]'
+          delay: 1h
+          history: 1w
+          trends: '0'
+          status: DISABLED
+          value_type: CHAR
+          inventory_link: TAG
+          tags:
+            - tag: Application
+              value: System
+        - uuid: dd404f5ce2e24e2ebaea908bde1d9b83
+          name: 'Device temperature'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.10.2.3.2.1.4.1
+          key: iemStatusProbeCurrentTemp
+          history: 1w
+          value_type: FLOAT
+          units: C
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 511e1309b9a54515963f501bd19b7a01
+              expression: 'avg(/Additional Template SNMP APC SMART VT/iemStatusProbeCurrentTemp,2m)>24'
+              name: 'High ambient temperature'
+              priority: WARNING
+              description: 'UPS ambient temperature is above normal'
+        - uuid: 599b0098dc144385a5a2f22c8f723c34
+          name: 'Battery count (bad)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.2.6.0
+          key: upsAdvBatteryNumOfBadBattPacks
+          history: 1w
+          description: 'Number of external battery packs connected to the UPS that are defective'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 7106d5aebff9412a842858683db134e3
+          name: 'Battery count'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.2.5.0
+          key: upsAdvBatteryNumOfBattPacks
+          history: 1w
+          description: 'Number of external batteries connected to the UPS'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: e413bfb0068c4454a4329005a3ee2e66
+          name: 'Device manufactured'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.1.2.2.0
+          key: upsAdvIdentDateOfManufacture
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          description: 'The date when the UPS was manufactured in mm/dd/yy (or yyyy) format'
+          tags:
+            - tag: Application
+              value: System
+        - uuid: d35e6ef72fce441b90a2c6723a962379
+          name: 'Device firmware'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.1.2.1.0
+          key: upsAdvIdentFirmwareRevision
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: OS
+          tags:
+            - tag: Application
+              value: System
+        - uuid: efa7f1281ffc414b86c90e6196f635b1
+          name: 'Device serial number'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.1.2.3.0
+          key: upsAdvIdentSerialNumber
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SERIALNO_A
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 6337f3bbb83d4cc98e385b5e331478ff
+          name: 'Battery replacement status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.2.4.0
+          key: upsAdvReplaceBatteryIndicator
+          history: 1w
+          description: 'INTEGER  { noBatteryNeedsReplacing ( 1 ) , batteryNeedsReplacing ( 2 ) }'
+          valuemap:
+            name: 'APC Battery Replacement Status'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 8cd5171e0ca44df8bd7213df58b7abd1
+              expression: 'last(/Additional Template SNMP APC SMART VT/upsAdvReplaceBatteryIndicator)<>1'
+              name: 'Replace battery'
+              priority: DISASTER
+        - uuid: 6d5e8199881e48209e60121a7fc0a08e
+          name: 'Battery time remaining'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.2.3.0
+          key: upsAdvRunTimeRemaining
+          history: 1w
+          units: s
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 9b6053b214db4e38ae1f8810bf49d95a
+              expression: 'last(/Additional Template SNMP APC SMART VT/upsAdvRunTimeRemaining)<5'
+              name: 'Run time remaining Critical'
+              priority: DISASTER
+            - uuid: 2824c808ec0d4523a2ac4bff85151f73
+              expression: 'last(/Additional Template SNMP APC SMART VT/upsAdvRunTimeRemaining)<10'
+              name: 'Run time remaining Low'
+              priority: HIGH
+        - uuid: 0cd9f9c342fa4730af3b992f0516fb94
+          name: 'Battery status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.1.1.0
+          key: upsBasicBatteryStatus
+          history: 1w
+          valuemap:
+            name: 'APC Battery Status'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 2584a48c3f11465c98e9c886ffb5f407
+          name: 'Battery time running'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.1.2.0
+          key: upsBasicBatteryTimeOnBattery
+          history: 1w
+          units: s
+          description: 'The elapsed time since the UPS has switched to battery  power'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: b4c4cd256fd1484f9cafb28b340d64ad
+          name: 'Device model'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.1.1.1.0
+          key: upsBasicIdentModel
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: TYPE
+          tags:
+            - tag: Application
+              value: System
+        - uuid: b478d2380c3d4eac92a8845e1abc9fbf
+          name: 'Device status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.4.1.1.0
+          key: upsBasicOutputStatus
+          history: 1w
+          valuemap:
+            name: 'APC Status'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 8c3837d3b290410e97d0a3f78179a46c
+              expression: 'last(/Additional Template SNMP APC SMART VT/upsBasicOutputStatus,#1)<>2 and last(/Additional Template SNMP APC SMART VT/upsBasicOutputStatus,#2)<>2'
+              name: 'Loss of input power'
+              priority: DISASTER
+        - uuid: 66324464fb3a48aab3fd8a8b34977e1c
+          name: 'Battery voltage'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.3.4.0
+          key: upsHighPrecBatteryActualVoltage
+          history: 1w
+          value_type: FLOAT
+          units: V
+          description: 'The actual battery bus voltage in tenths of Volts'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: f120ebed135d4c349d6475014137e34d
+          name: 'Battery charge %'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.3.1.0
+          key: upsHighPrecBatteryCapacity
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: 'The remaining battery capacity expressed in tenths of percent of full capacity'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 6e8d6aee6e534c5594844e08ce07a577
+          name: 'Battery temperature'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.3.2.0
+          key: upsHighPrecBatteryTemperature
+          history: 1w
+          value_type: FLOAT
+          units: C
+          description: 'The current internal UPS temperature expressed in tenths of degrees Celsius'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 5a990dc1b62944568b8d14e4932ff000
+              expression: 'avg(/Additional Template SNMP APC SMART VT/upsHighPrecBatteryTemperature,2m)>40'
+              name: 'High battery temperature'
+              priority: DISASTER
+        - uuid: feff24ceeeb44f9ba7030ce5b4db2c7b
+          name: 'Input frequency'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.3.2.4.0
+          key: upsHighPrecInputFrequency
+          history: 1w
+          value_type: FLOAT
+          units: Hz
+          description: 'The current input frequency to the UPS system in tenths of Hz'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: df21ab290ddb401bb103c73f0d4ba3e8
+          name: 'Output frequency'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.4.3.2.0
+          key: upsHighPrecOutputFrequency
+          history: 1w
+          value_type: FLOAT
+          units: Hz
+          description: 'The current output frequency of the UPS system in tenths of Hz'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: cad97dc33dea4581aca1176eda3ae14d
+          name: 'Output load %'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.4.3.3.0
+          key: upsHighPrecOutputLoad
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: 'The current UPS load expressed in tenths of percent of rated capacity'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 58439b90f80f4893aac557e9360d0b52
+              expression: 'last(/Additional Template SNMP APC SMART VT/upsHighPrecOutputLoad)>95'
+              name: 'Output load Critical'
+              priority: DISASTER
+            - uuid: 176a3390b9834fc1a555d2a771563997
+              expression: 'last(/Additional Template SNMP APC SMART VT/upsHighPrecOutputLoad)>90'
+              name: 'Output load High'
+              priority: WARNING
+        - uuid: 8957250e5d3942fdb4e0808edb3e1c3e
+          name: 'Output voltage'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.4.3.1.0
+          key: upsHighPrecOutputVoltage
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 3cc63b35fc76409c8c03b2de96abfd36
+          name: 'Input current (Phase-1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.2.3.1.6.1.1.1
+          key: upsPhaseInputCurrent.1.1.1
+          history: 1w
+          value_type: FLOAT
+          units: A
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: eeee4007e70b49a9b66630c98af83e29
+          name: 'Input current (Phase-2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.2.3.1.6.1.1.2
+          key: upsPhaseInputCurrent.1.1.2
+          history: 1w
+          value_type: FLOAT
+          units: A
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 5f77941b0eaa4a26832b51125fab0cb8
+          name: 'Input current (Phase-3)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.2.3.1.6.1.1.3
+          key: upsPhaseInputCurrent.1.1.3
+          history: 1w
+          value_type: FLOAT
+          units: A
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 8d08f3f0118142a2960580577f8e2408
+          name: 'Input voltage (Phase-1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.2.3.1.3.1.1.1
+          key: upsPhaseInputVoltage.1.1.1
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: c6c01fff64dc4650a1054e471e9ea610
+          name: 'Input voltage (Phase-2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.2.3.1.3.1.1.2
+          key: upsPhaseInputVoltage.1.1.2
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 71d58eb2ba6744f18f7fa5fd40467ec3
+          name: 'Input voltage (Phase-3)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.2.3.1.3.1.1.3
+          key: upsPhaseInputVoltage.1.1.3
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 13d7bbfb5a9140239d703e8ebf4cb7ff
+          name: 'Output current (Phase-1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.4.1.1.1
+          key: upsPhaseOutputCurrent.1.1.1
+          history: 1w
+          value_type: FLOAT
+          units: A
+          description: 'The output current in 0.1 amperes drawn by the load on the UPS, or -1 if it''s unsupported by this UPS.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 05c575e8373a4f2e8502a56f2be56f60
+          name: 'Output current (Phase-2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.4.1.1.2
+          key: upsPhaseOutputCurrent.1.1.2
+          history: 1w
+          value_type: FLOAT
+          units: A
+          description: 'The output current in 0.1 amperes drawn by the load on the UPS, or -1 if it''s unsupported by this UPS.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 3bcadf7f35684e2fa53297b165bb5b11
+          name: 'Output current (Phase-3)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.4.1.1.3
+          key: upsPhaseOutputCurrent.1.1.3
+          history: 1w
+          value_type: FLOAT
+          units: A
+          description: 'The output current in 0.1 amperes drawn by the load on the UPS, or -1 if it''s unsupported by this UPS.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.1'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 0df85e8becd44366a25265d5d1676921
+          name: 'Output load (Phase-1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.7.1.1.1
+          key: upsPhaseOutputLoad.1.1.1
+          history: 1w
+          value_type: FLOAT
+          units: kVA
+          description: 'The output load in VA, or -1 if it''s unsupported by this UPS'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 871d5557783a4ec5ac984ea2c454fe14
+          name: 'Output load (Phase-2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.7.1.1.2
+          key: upsPhaseOutputLoad.1.1.2
+          history: 1w
+          value_type: FLOAT
+          units: kVA
+          description: 'The output load in VA, or -1 if it''s unsupported by this UPS'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 08a13fe0246d4e849e8139321b85136a
+          name: 'Output load (Phase-3)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.7.1.1.3
+          key: upsPhaseOutputLoad.1.1.3
+          history: 1w
+          value_type: FLOAT
+          units: kVA
+          description: 'The output load in VA, or -1 if it''s unsupported by this UPS'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.001'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 39eb70a1c86a4be49d52ac134f0a8c5d
+          name: 'Output load % (Phase-1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.10.1.1.1
+          key: upsPhaseOutputPercentLoad.1.1.1
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: bd9a0fa34fae41a980884af08a2cda0e
+          name: 'Output load % (Phase-2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.10.1.1.2
+          key: upsPhaseOutputPercentLoad.1.1.2
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 7e71987ed3bd4f808a8000ea6d90a7f1
+          name: 'Output load % (Phase-3)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.10.1.1.3
+          key: upsPhaseOutputPercentLoad.1.1.3
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 801d12da3bb149ddab95d85585285ca5
+          name: 'Output power (Phase-1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.16.1.1.1
+          key: upsPhaseOutputPercentPower.1.1.1
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 04c1e66f5c3246b5ad77234e4a9405a3
+          name: 'Output power (Phase-2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.16.1.1.2
+          key: upsPhaseOutputPercentPower.1.1.2
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 4e324bcca35c458aa9fbed926512313b
+          name: 'Output power (Phase-3)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.16.1.1.3
+          key: upsPhaseOutputPercentPower.1.1.3
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 99f60770d34247df935097ab371bdee3
+          name: 'Output voltage (Phase-1)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.3.1.1.1
+          key: upsPhaseOutputVoltage.1.1.1
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 5a3c9709b53c4bf38df8826ed22595f1
+          name: 'Output voltage (Phase-2)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.3.1.1.2
+          key: upsPhaseOutputVoltage.1.1.2
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 6789f14a06704014ac3436e1b32f61a1
+          name: 'Output voltage (Phase-3)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.9.3.3.1.3.1.1.3
+          key: upsPhaseOutputVoltage.1.1.3
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+      macros:
+        - macro: '{$SNMP_COMMUNITY}'
+          value: public
+      valuemaps:
+        - uuid: a6f67b6e0ff14f46ad5c020a77da3950
+          name: 'APC Battery Replacement Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: notInstalled
+            - value: '3'
+              newvalue: ok
+            - value: '4'
+              newvalue: failed
+            - value: '5'
+              newvalue: highTemperature
+            - value: '6'
+              newvalue: replaceImmediately
+            - value: '7'
+              newvalue: lowCapacity
+        - uuid: b29d21ce676d4833bd675e8f965a03bf
+          name: 'APC Battery Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: batteryNormal
+            - value: '3'
+              newvalue: batteryLow
+        - uuid: d79837d54c264dc6b1d17bf517d7f785
+          name: 'APC Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: onLine
+            - value: '3'
+              newvalue: onBattery
+            - value: '4'
+              newvalue: onSmartBoost
+            - value: '5'
+              newvalue: timedSleeping
+            - value: '6'
+              newvalue: softwareBypass
+            - value: '7'
+              newvalue: 'off'
+            - value: '8'
+              newvalue: rebooting
+            - value: '9'
+              newvalue: switchedBypass
+            - value: '10'
+              newvalue: harwareFailureBypass
+            - value: '11'
+              newvalue: sleepingUnitPowerReturn
+            - value: '12'
+              newvalue: onSmartTrim
+            - value: '13'
+              newvalue: ecoMode
+            - value: '14'
+              newvalue: hotStandby
+            - value: '15'
+              newvalue: onBatteryTest
+  graphs:
+    - uuid: 4689e4fe645645c78873b3a038ac5ab1
+      name: 'Battery status'
+      ymin_type_1: FIXED
+      graph_items:
+        - drawtype: BOLD_LINE
+          color: C80000
+          item:
+            host: 'Additional Template SNMP APC SMART VT'
+            key: upsBasicBatteryStatus
+        - sortorder: '1'
+          drawtype: BOLD_LINE
+          color: 00C800
+          item:
+            host: 'Additional Template SNMP APC SMART VT'
+            key: upsAdvReplaceBatteryIndicator
+    - uuid: ddf26626e3ca46169a93635390fb28da
+      name: 'UPS load'
+      graph_items:
+        - sortorder: '1'
+          color: 0000CC
+          item:
+            host: 'Additional Template SNMP APC SMART VT'
+            key: upsHighPrecOutputLoad
+    - uuid: 274298b5acdc46d6a286084a2b7d6409
+      name: 'UPS temperature'
+      ymin_type_1: FIXED
+      graph_items:
+        - drawtype: GRADIENT_LINE
+          color: '660000'
+          item:
+            host: 'Additional Template SNMP APC SMART VT'
+            key: upsHighPrecBatteryTemperature
+    - uuid: 19a58a1a88db4c8da34dd7529b01b7e8
+      name: 'UPS voltage'
+      graph_items:
+        - color: 0000CC
+          item:
+            host: 'Additional Template SNMP APC SMART VT'
+            key: upsHighPrecOutputVoltage

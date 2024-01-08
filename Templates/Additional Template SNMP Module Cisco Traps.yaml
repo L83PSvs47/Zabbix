@@ -1,0 +1,221 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: c8a076efd8704fb08209b260723a815a
+      template: 'Additional Template SNMP Module Cisco Traps'
+      name: 'Additional Template SNMP Module Cisco Traps'
+      groups:
+        - name: 'Additional Templates/Modules'
+      items:
+        - uuid: 9a06f3474b8d4f6e84e4a18a86563c90
+          name: 'BGP Peer State'
+          type: SNMP_TRAP
+          key: 'snmptrap["bgpPeerState|cbgpPeer2State"]'
+          delay: '0'
+          trends: '0'
+          status: DISABLED
+          value_type: LOG
+          description: |
+            BGP4-MIB::bgpPeerState
+            CISCO-BGP4-MIB::cbgpPeer2State
+            
+            The BGP peer connection state.
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+          triggers:
+            - uuid: ad4f2147d05f4d2396273b53558aff42
+              expression: 'count(/Additional Template SNMP Module Cisco Traps/snmptrap["bgpPeerState|cbgpPeer2State"],10m,"like","idle")>0 and nodata(/Additional Template SNMP Module Cisco Traps/snmptrap["bgpPeerState|cbgpPeer2State"],10m)=0'
+              name: 'BGP Peer State is idle'
+              priority: WARNING
+        - uuid: 36dae3b28a26497cba03b42413a56d8f
+          name: 'Source of Command'
+          type: SNMP_TRAP
+          key: 'snmptrap["ccmHistoryEventCommandSource"]'
+          delay: '0'
+          history: '0'
+          trends: '0'
+          value_type: LOG
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: 727e514ddf2b457bbe85d922629d805f
+          name: 'BFD Sessions'
+          type: SNMP_TRAP
+          key: 'snmptrap["ciscoBfdSess(Up|Down)"]'
+          delay: '0'
+          history: 5d
+          trends: '0'
+          value_type: LOG
+          description: 'CISCO-IETF-BFD-MIB::ciscoBfdSessDown and ciscoBfdSessUp'
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: 0748431bfab5483aa2f76e7adba5da11
+          name: 'Attack Filter changes'
+          type: SNMP_TRAP
+          key: 'snmptrap["cscaFilterChange"]'
+          delay: '0'
+          history: '0'
+          trends: '0'
+          value_type: LOG
+          description: 'The system generates this notification to indicate that the cscaFilterStatus of the attack filter for cscaType has changed due to the reason determined by cscaDescription. The system limits the generation of this notifications for the same cscaType to a five-second interval.'
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: 4799ea7a51bf467b946d08d0dfbd20a4
+          name: 'Status of Attack Filter'
+          type: SNMP_TRAP
+          key: 'snmptrap["cscaFilterStatus"]'
+          delay: '0'
+          history: '0'
+          trends: '0'
+          value_type: LOG
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: 3aaa748a254a46e1b98a6411675ad784
+          name: 'SSH Sessions'
+          type: SNMP_TRAP
+          key: 'snmptrap["cssSessionHostAddr"]'
+          delay: '0'
+          history: 5d
+          trends: '0'
+          value_type: LOG
+          description: 'CISCO-SECURE-SHELL-MIB::cssSessionHostAddr'
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: 26d14d78c9994c7eab1101a410f3dcec
+          name: 'MPLS L3 State'
+          type: SNMP_TRAP
+          key: 'snmptrap["mplsL3VpnVrf[Up|Down]"]'
+          delay: '0'
+          trends: '0'
+          value_type: LOG
+          description: |
+            MPLS-L3VPN-STD-MIB::mplsL3VpnVrfUp
+            MPLS-L3VPN-STD-MIB::mplsL3VpnVrfDown
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+          triggers:
+            - uuid: d272a7dd7fc94744ac188f00b0247980
+              expression: 'find(/Additional Template SNMP Module Cisco Traps/snmptrap["mplsL3VpnVrf[Up|Down]"],,"like","Down")=1'
+              name: 'MPLS L3 is down'
+              priority: AVERAGE
+        - uuid: bd1cc9042b864ab1bb59b3cc3092e3a1
+          name: 'OSPF Interface State'
+          type: SNMP_TRAP
+          key: 'snmptrap["ospfIfState"]'
+          delay: '0'
+          trends: '0'
+          status: DISABLED
+          value_type: LOG
+          description: |
+            OSPF-MIB::ospfIfState
+            
+            The OSPF Interface State.
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+          triggers:
+            - uuid: 04c51014d65c4376950504bbbfb57733
+              expression: 'count(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfIfState"],10m,"like","down")>0 and nodata(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfIfState"],10m)=0'
+              name: 'OSPF Interface State is down'
+              priority: WARNING
+            - uuid: 7d4c396d908241d38cf6463bda2c1961
+              expression: 'count(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfIfState"],10m,"like","loopback")>0 and nodata(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfIfState"],10m)=0'
+              name: 'OSPF Interface State is loopback'
+              priority: WARNING
+            - uuid: d19b5f5cd3c946f2ac3c94dd0a0234e3
+              expression: 'count(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfIfState"],10m,"like","waiting")>0 and nodata(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfIfState"],10m)=0'
+              name: 'OSPF Interface State is waiting'
+              priority: WARNING
+        - uuid: e3b7631715f241cb92d120916eb487aa
+          name: 'LSA aged to MaxAge'
+          type: SNMP_TRAP
+          key: 'snmptrap["ospfMaxAgeLsa"]'
+          delay: '0'
+          history: '0'
+          trends: '0'
+          value_type: LOG
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: 30b40030d93b4f9780ea5de6c0cf8c06
+          name: 'OSPF neighbour state'
+          type: SNMP_TRAP
+          key: 'snmptrap["ospfNbrStateChange.*ospfNbrState[[:space:]]"]'
+          delay: '0'
+          history: '0'
+          trends: '0'
+          status: DISABLED
+          value_type: LOG
+          description: |
+            1 : down
+            2 : attempt
+            3 : init
+            4 : twoWay
+            5 : exchangeStart
+            6 : exchange
+            7 : loading
+            8 : full
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: fd1e6c8201b14231b250413541927260
+          name: 'LSA has been originated'
+          type: SNMP_TRAP
+          key: 'snmptrap["ospfOriginateLsa"]'
+          delay: '0'
+          history: 5d
+          trends: '0'
+          value_type: LOG
+          description: 'OSPF-TRAP-MIB::ospfOriginateLsa'
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+        - uuid: 1f20791fdc3143f69ad60cf86d12034a
+          name: 'OSP TX Retransmits'
+          type: SNMP_TRAP
+          key: 'snmptrap["ospfTxRetransmit"]'
+          delay: '0'
+          history: 1d
+          trends: '0'
+          value_type: LOG
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'
+          triggers:
+            - uuid: ff1ceb1dbb594bbe8d9f33318ad5c656
+              expression: 'count(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfTxRetransmit"],1h,"like","ospfTxRetransmit")>30 and nodata(/Additional Template SNMP Module Cisco Traps/snmptrap["ospfTxRetransmit"],1h)=0'
+              name: 'Many OSPF TX Retransmits'
+              priority: WARNING
+        - uuid: 876a5022458c46d9b73b7563b62fd685
+          name: 'Type of remote session'
+          type: SNMP_TRAP
+          key: 'snmptrap["tslineSesType"]'
+          delay: '0'
+          history: '0'
+          trends: '0'
+          value_type: LOG
+          logtimefmt: yyyyMMdd.hhmmss
+          tags:
+            - tag: Application
+              value: 'SNMP Traps'

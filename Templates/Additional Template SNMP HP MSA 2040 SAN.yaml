@@ -1,0 +1,288 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: f1deef4564bb41139578436a03c517a2
+      template: 'Additional Template SNMP HP MSA 2040 SAN'
+      name: 'Additional Template SNMP HP MSA 2040 SAN'
+      groups:
+        - name: 'Additional Templates'
+      discovery_rules:
+        - uuid: 8eed5aecf7914630986333d15eeed96d
+          name: Info
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#CONNUNITNAME}, 1.3.6.1.3.94.1.6.1.20]'
+          key: connUnitName
+          delay: 1h
+          description: 'A display string containing a name for this connectivity unit.  This object value should be persistent between boots.'
+          item_prototypes:
+            - uuid: 8bb4196a4fd74f90a0412e4d76e747c4
+              name: '{#CONNUNITNAME} global ID'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.6.1.2.{#SNMPINDEX}'
+              key: 'GlobalID[{#SNMPINDEX}]'
+              delay: 1d
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              description: 'An optional global-scope identifier for this connectivity unit. It MUST be a WWN for this connectivity unit or 16 octets of value zero. WWN formats requiring fewer than 16 octets MUST be extended to 16 octets with trailing zero octets, Left justified, zero filled, If a WWN is used for connUnitId, the same WWN MUST be used for connUnitGlobalId. When a non-zero value is provided, it SHOULD be persistent across agent and unit resets. It SHOULD be globally unique. It SHOULD be one of these FC-PH/PH3 formats: IEEE (NAA=1) IEEE Extended (NAA=2) IEEE Registered (NAA=5). IEEE Registered extended (NAA=6).  Use of the IEEE formats allows any IEEE-registered vendor to assure global uniqueness independently. The following are some references on IEEE WWN formats: http://standards.ieee.org/regauth/oui/tutorials/fibreformat.html http://standards.ieee.org/regauth/oui/tutorials/fibrecomp_id.html  If one or more WWNs are associated with the connUnit via other management methods, one of them SHOULD be used for connUnitGlobalId. If there is not a WWN assigned specifically to the connUnit, there is some merit, though not a requirement, to using a WWN assigned to (one of) its permanently attached FC/LAN interface(s). This can not risk uniqueness, though. As a counterexample, if your agent runs in a host and the host has an HBA, it is quite possible that agent, host, and HBA will all be distinct connUnits, so the host and agent can not use the WWN of the HBA. Another example: If your hub has a built-in Ethernet port, it might be reasonable for the hub to use its MAC address (prefixed with the appropriate NAA) as its connUnitId. But if the Ethernet were a replaceable PCCard, the hub should have an independent ID.'
+              tags:
+                - tag: Application
+                  value: Information
+            - uuid: 60809285df604c858901cd6c22cff1e4
+              name: '{#CONNUNITNAME} ID'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.6.1.1.{#SNMPINDEX}'
+              key: 'ID[{#SNMPINDEX}]'
+              delay: 1d
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              description: 'The unique identification for this connectivity unit among those within this proxy domain. The value MUST be unique within the proxy domain because it is the index variable for connUnitTable. The value assigned to a given conectivity unit SHOULD be persistent across agent and unit resets. It SHOULD be the same as connUnitGlobalId if connUnitGlobalId is known and stable.'
+              tags:
+                - tag: Application
+                  value: Information
+            - uuid: e96c070f2a23442f9e9fcd2e1af1ddee
+              name: '{#CONNUNITNAME} state'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.6.1.5.{#SNMPINDEX}'
+              key: 'State[{#SNMPINDEX}]'
+              history: 1w
+              description: 'This object reports the overall state of the connectivity unit.  The meaning of all values is essentially self-explanatory.  Any of these values may occur with any of the ConnUnitStatus values.'
+              valuemap:
+                name: 'HP MSA Storage State'
+              tags:
+                - tag: Application
+                  value: Information
+              trigger_prototypes:
+                - uuid: f9765be97bcd43d6a7e0e6d96d312d1e
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/State[{#SNMPINDEX}])=3'
+                  name: '{#CONNUNITNAME} have unknown state'
+                  priority: HIGH
+            - uuid: 93859b79560c45468e31dbec13defe6d
+              name: '{#CONNUNITNAME} status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.6.1.6.{#SNMPINDEX}'
+              key: 'Status[{#SNMPINDEX}]'
+              history: 1w
+              description: 'Overall status of the connectivity unit. The goal of this object is to be the single poll point to check the status of the connunit. If there is any other component that has warning, then this should be set to warning, etc. Any of these values may occur with any of the ConnUnitState values.'
+              valuemap:
+                name: 'HP MSA Storage Status'
+              tags:
+                - tag: Application
+                  value: Information
+              trigger_prototypes:
+                - uuid: ec959aa4f7284fc2b9edc96f784e821b
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/Status[{#SNMPINDEX}])=5'
+                  name: '{#CONNUNITNAME} have failed status'
+                  priority: HIGH
+                - uuid: fac4e4a8886a4b06b2028ee96eb33f45
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/Status[{#SNMPINDEX}])=1'
+                  name: '{#CONNUNITNAME} have unknown status'
+                  priority: HIGH
+                - uuid: a2362b3e1abd4981a3d616048911bb13
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/Status[{#SNMPINDEX}])=2'
+                  name: '{#CONNUNITNAME} have unused status'
+                  priority: HIGH
+                - uuid: 7f5b166615874ddb8cf8f946af8a3f2b
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/Status[{#SNMPINDEX}])=4'
+                  name: '{#CONNUNITNAME} have warning status'
+                  priority: HIGH
+            - uuid: 48f6358e090441dcb8cbec5e2cf72653
+              name: '{#CONNUNITNAME} type'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.6.1.3.{#SNMPINDEX}'
+              key: 'Type[{#SNMPINDEX}]'
+              delay: 1d
+              history: 1w
+              description: 'The type of this connectivity unit.'
+              valuemap:
+                name: 'HP MSA Type'
+              tags:
+                - tag: Application
+                  value: Information
+        - uuid: 34aa52fbe3664c1fb05c97e126c364de
+          name: 'Port info'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#CONNUNITPORTNAME}, 1.3.6.1.3.94.1.10.1.17]'
+          key: connUnitPortName
+          delay: 1h
+          description: 'A user-defined name for this port. This means that up to DisplayString characters may be supported. If less than, then the name will be truncated in the connunit.'
+          item_prototypes:
+            - uuid: 25f8c46c858b4ce6993a9fdb40528aa8
+              name: 'Port {#CONNUNITPORTNAME} state'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.10.1.6.{#SNMPINDEX}'
+              key: 'PortState[{#SNMPINDEX}]'
+              history: 1w
+              description: 'The user selected state of the port hardware.'
+              valuemap:
+                name: 'HP MSA Port State'
+              tags:
+                - tag: Application
+                  value: 'Port information'
+              trigger_prototypes:
+                - uuid: feee3b687766442280bc83c8c4f9098d
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/PortState[{#SNMPINDEX}])<>2'
+                  name: 'Port {#CONNUNITPORTNAME} not in online state'
+                  priority: HIGH
+            - uuid: b06880548a8b4bee93fef8505cafcaff
+              name: 'Port {#CONNUNITPORTNAME} status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.10.1.7.{#SNMPINDEX}'
+              key: 'PortStatus[{#SNMPINDEX}]'
+              history: 1w
+              description: 'An overall protocol status for the port. This value of connUnitPortState is not online, then this is reported Unknown.'
+              valuemap:
+                name: 'HP MSA Port Status'
+              tags:
+                - tag: Application
+                  value: 'Port information'
+              trigger_prototypes:
+                - uuid: 2d216e3c343b459693d60a28e02b9b54
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/PortStatus[{#SNMPINDEX}])=5'
+                  name: 'Port {#CONNUNITPORTNAME} have failure status'
+                  priority: HIGH
+                - uuid: ae38179f82f448519a6f7e01bed54187
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/PortStatus[{#SNMPINDEX}])=1'
+                  name: 'Port {#CONNUNITPORTNAME} have unknown status'
+                  priority: HIGH
+                - uuid: 141a26927cc54f18801070d1dd85c7f7
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/PortStatus[{#SNMPINDEX}])=4'
+                  name: 'Port {#CONNUNITPORTNAME} have warning status'
+                  priority: HIGH
+        - uuid: e5b3e333faf342da912e93265a20c0d7
+          name: 'Sensor info'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#CONNUNITSENSORNAME}, 1.3.6.1.3.94.1.8.1.3]'
+          key: connUnitSensorName
+          delay: 1h
+          description: 'A textual identification of the sensor intended primarily for operator use.'
+          item_prototypes:
+            - uuid: 5ae07f9f0613413cb4451b1f34e03522
+              name: 'Sensor {#CONNUNITSENSORNAME} status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.3.94.1.8.1.4.{#SNMPINDEX}'
+              key: 'SensorStatus[{#SNMPINDEX}]'
+              history: 1w
+              description: 'The status indicated by the sensor.'
+              valuemap:
+                name: 'HP MSA Storage Status'
+              tags:
+                - tag: Application
+                  value: 'Sensor information'
+              trigger_prototypes:
+                - uuid: 31425c1d3b924ed785098cdfd9ee88e4
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/SensorStatus[{#SNMPINDEX}])=5'
+                  name: 'Sensor {#CONNUNITSENSORNAME} have failed status'
+                  priority: HIGH
+                - uuid: aa57898ceb9f4147ab9ad5bd7e34cfd9
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/SensorStatus[{#SNMPINDEX}])=2'
+                  name: 'Sensor {#CONNUNITSENSORNAME} have other status'
+                  priority: HIGH
+                - uuid: 8d6fa6ebee3a403283bcced274f6f92a
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/SensorStatus[{#SNMPINDEX}])=1'
+                  name: 'Sensor {#CONNUNITSENSORNAME} have unknown status'
+                  priority: HIGH
+                - uuid: c1a8b98307c248edafa9a2d6fdcef33d
+                  expression: 'last(/Additional Template SNMP HP MSA 2040 SAN/SensorStatus[{#SNMPINDEX}])=4'
+                  name: 'Sensor {#CONNUNITSENSORNAME} have warning status'
+                  priority: HIGH
+      valuemaps:
+        - uuid: d0670e05c3a4483fa89eb3b1c36c5c6b
+          name: 'HP MSA Port State'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: online
+            - value: '3'
+              newvalue: offline
+            - value: '4'
+              newvalue: bypassed
+            - value: '5'
+              newvalue: diagnostics
+        - uuid: 4692a0b38ef14a2081c5c3a622fec26a
+          name: 'HP MSA Port Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: unused
+            - value: '3'
+              newvalue: ready
+            - value: '4'
+              newvalue: warning
+            - value: '5'
+              newvalue: failure
+            - value: '6'
+              newvalue: notparticipating
+            - value: '7'
+              newvalue: initializing
+            - value: '8'
+              newvalue: bypass
+            - value: '9'
+              newvalue: ols
+            - value: '10'
+              newvalue: other
+        - uuid: 40fda9dc3a2440fda724c9f6378f4e94
+          name: 'HP MSA Storage State'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: online
+            - value: '3'
+              newvalue: offline
+        - uuid: 7d8ba4c2ebff4b09bbb69af738f1cf1a
+          name: 'HP MSA Storage Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: unused
+            - value: '3'
+              newvalue: ok
+            - value: '4'
+              newvalue: warning
+            - value: '5'
+              newvalue: failed
+        - uuid: 9d879bf4a4584351b5b83e95565559d4
+          name: 'HP MSA Type'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: other
+            - value: '3'
+              newvalue: hub
+            - value: '4'
+              newvalue: switch
+            - value: '5'
+              newvalue: gateway
+            - value: '6'
+              newvalue: converter
+            - value: '7'
+              newvalue: hba
+            - value: '8'
+              newvalue: proxy-agent
+            - value: '9'
+              newvalue: storage-device
+            - value: '10'
+              newvalue: host
+            - value: '11'
+              newvalue: storage-subsystem
+            - value: '12'
+              newvalue: module
+            - value: '13'
+              newvalue: swdriver
+            - value: '14'
+              newvalue: storage-access-device
+            - value: '15'
+              newvalue: wdm
+            - value: '16'
+              newvalue: ups
+            - value: '17'
+              newvalue: nas

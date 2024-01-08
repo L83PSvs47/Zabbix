@@ -1,0 +1,490 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: effc5f96cd9f4c3284d8363b881b85b6
+      template: 'Additional Template SNMP HP Procurve 2920'
+      name: 'Additional Template SNMP HP Procurve 2920'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: acdb12a5977b4181acb7a5b4c75d8c07
+          name: 'Fan status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.1.2.6.1.4.1
+          key: FAN-Status
+          history: 1w
+          triggers:
+            - uuid: 314e6279fbaf4850b1c9905668aed5ef
+              expression: 'last(/Additional Template SNMP HP Procurve 2920/FAN-Status,#2)<4'
+              name: 'FAN status changed on {HOSTNAME}'
+              priority: DISASTER
+        - uuid: 29cf317c729e41158c7be87070128b2a
+          name: 'HP: Base MAC'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.5.1.1.6.0
+          key: hpBaseMac
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: MACADDRESS_A
+        - uuid: ee6306534e1f40a1a3645b539047c443
+          name: 'HP: Serial number'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.36.1.1.2.9.0
+          key: hpHttpMgSerialNumber
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SERIALNO_A
+        - uuid: 5c3574433e8040c1a6dc227d71f6ca1c
+          name: 'HP: Boot image commander'
+          type: SNMP_AGENT
+          snmp_oid: 'HP-STACK-MIB::hpStackMemberBootImage["index", "HP-STACK-MIB::hpStackMemberState", "3"]'
+          key: hpStackMemberBootImageCommander
+          history: 1w
+        - uuid: 17d111931ff24117a12525709c1d67bc
+          name: 'HP: Boot image standby'
+          type: SNMP_AGENT
+          snmp_oid: 'HP-STACK-MIB::hpStackMemberBootImage["index", "HP-STACK-MIB::hpStackMemberState", "4"]'
+          key: hpStackMemberBootImageStandby
+          history: 1w
+        - uuid: 9af25662605d470c93c2d2a7f210bd9c
+          name: 'HP: CPU utilization'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.5.1.9.6.1.0
+          key: hpSwitchCpuStat
+          history: 1w
+          units: '%'
+          triggers:
+            - uuid: 2a82471f912a49a888b741e921e2911e
+              expression: 'last(/Additional Template SNMP HP Procurve 2920/hpSwitchCpuStat,#1:now-60s)>94'
+              name: '95% CPU on {HOSTNAME}'
+              priority: HIGH
+        - uuid: 85cc35b798484ccbaadce8ebd0fd3a03
+          name: 'HP: Switch OS version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.14.11.5.1.1.3.0
+          key: hpSwitchOsVersion
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE
+        - uuid: 1058ec6748e34947a2d601332a6b56c4
+          name: 'HP: Switch type'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.47.1.1.1.1.2.1
+          key: hpSwitchType
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: HARDWARE
+        - uuid: e75c170a7cf34081af621b41267d1c4b
+          name: Int-Example-BCast-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCInBroadcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-BCast-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: cad4630b8c344ace9757a85c90ebe292
+          name: Int-Example-BCast-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCOutBroadcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-BCast-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: ec4afb5fe94a476fab2eadce767515d7
+          name: Int-Example-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCInOctets["index","ifDescr","Example"]'
+          key: Int-Example-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: b7e31aac804a4f70b36ddc58267b99a1
+          name: Int-Example-In-Err
+          type: SNMP_AGENT
+          snmp_oid: 'ifInErrors["index","ifDescr","Intnamehere"]'
+          key: Int-Example-In-Err
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: caacb63925e540029f30f4a74e301679
+          name: Int-Example-NonUCast-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifInNUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-NonUCast-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 3606a07ea7ab42f69f55cb8836cdab80
+          name: Int-Example-NonUCast-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifOutNUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-NonUCast-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 7dab807f41e04a4c8d679c162cbc46ce
+          name: Int-Example-Opperstat
+          type: SNMP_AGENT
+          snmp_oid: 'ifOperStatus["index","ifDescr","A6"]'
+          key: Int-Example-Opperstat
+          history: 1w
+          status: DISABLED
+        - uuid: bdf4cae16c2b41ae8873c9fd67a13f6b
+          name: Int-Example-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCOutOctets["index","ifDescr","A6"]'
+          key: Int-Example-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 93bc11eaa0b049068d15a4fee2108799
+          name: Int-Example-Out-Err
+          type: SNMP_AGENT
+          snmp_oid: 'ifOutErrors["index","ifDescr","A6"]'
+          key: Int-Example-Out-Err
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 5ef11c7620b54201ba6f4836a6547cab
+          name: Int-Example-UCast-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCInUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-UCast-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+        - uuid: 6c7c3ddd629b48749e459898b83c4a55
+          name: Int-Example-UCast-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCOutUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-UCast-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+      discovery_rules:
+        - uuid: 00f92859462d4402bdc320dde54c9b62
+          name: 'HP: StackMemberBootImage'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#BOOTIMAGE}, HP-STACK-MIB::hpStackMemberBootImage]'
+          key: hpStackMemberBootImage
+          delay: 1h
+          item_prototypes:
+            - uuid: edfd456d22ba4ee0a67c457cbc940302
+              name: 'HP: StackMemberBootImage on {#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: 'HP-STACK-MIB::hpStackMemberBootImage.{#SNMPINDEX}'
+              key: 'hpStackMemberBootImage[{#SNMPINDEX}]'
+              history: 1w
+              trends: '0'
+              value_type: CHAR
+              valuemap:
+                name: hpStackMemberBootImage
+              tags:
+                - tag: Application
+                  value: hpStackMemberBootImage
+              trigger_prototypes:
+                - uuid: 362003294bc94364b935ea6259577207
+                  expression: 'last(/Additional Template SNMP HP Procurve 2920/hpStackMemberBootImage[{#SNMPINDEX}])=2'
+                  name: 'Boot Image Status changed on {HOSTNAME} Stack Member {#SNMPINDE}'
+                  priority: HIGH
+        - uuid: 3a832019fcb74a968417bf9adbdb382a
+          name: 'HP: StackMemberState'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#STATE}, HP-STACK-MIB::hpStackMemberState]'
+          key: hpStackMemberState
+          delay: 1h
+          item_prototypes:
+            - uuid: 91e0df486b8e4cdd8fdc8e9a5f4565e0
+              name: 'HP: StackMemberState on {#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: 'HP-STACK-MIB::hpStackMemberState.{#SNMPINDEX}'
+              key: 'hpStackMemberState[{#SNMPINDEX}]'
+              history: 1w
+              trends: '0'
+              value_type: CHAR
+              valuemap:
+                name: hpStackMemberState
+              tags:
+                - tag: Application
+                  value: hpStackMemberState
+              trigger_prototypes:
+                - uuid: 46fa2e3a85d84f8fa724371b11288938
+                  expression: 'last(/Additional Template SNMP HP Procurve 2920/hpStackMemberState[{#SNMPINDEX}])=1'
+                  name: 'Stack Member State changed on {HOSTNAME} Stack Member {#SNMPINDEX}'
+                  priority: HIGH
+        - uuid: acd413fe98b04369bc3ae7a9bc817fdd
+          name: 'Network interfaces'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},IF-MIB::ifName]'
+          key: ifName
+          delay: 1h
+          lifetime: 1d
+          item_prototypes:
+            - uuid: 8722eced209f40478df4799aa7fb6bd1
+              name: 'Incoming broadcast/multicast traffic on interface $1'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifInNUcastPkts.{#SNMPINDEX}'
+              key: 'ifInNUcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'The number of non-unicast (i.e., subnetwork- broadcast or subnetwork-multicast) packets delivered to a higher-layer protocol.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Interface(s)
+            - uuid: 4cc9e6b30a9843019c5d2d7daa156ac5
+              name: 'Incoming traffic on interface $1'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifInOctets.{#SNMPINDEX}'
+              key: 'ifInOctets[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'The number of octets in valid MAC frames received on this interface, including the MAC header and FCS.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Interface(s)
+            - uuid: 67bd9d5737194a3a8bf42b9355ee03e5
+              name: 'Incoming unicast traffic on interface $1'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifInUcastPkts.{#SNMPINDEX}'
+              key: 'ifInUcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'The number of subnetwork-unicast packets delivered to a higher-layer protocol.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Interface(s)
+            - uuid: 59a06ab0144243c9aa0f352a41e8e4d5
+              name: 'Outgoing broadcast/multicast traffic on interface $1'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifOutNUcastPkts.{#SNMPINDEX}'
+              key: 'ifOutNUcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'The total number of packets that higher-level protocols requested be transmitted, and which were addressed to a multicast or broadcast address at this sub-layer, including those that were discarded or not sent.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Interface(s)
+            - uuid: a4823385ecd5457699f8c63c749a4166
+              name: 'Outgoing traffic on interface $1'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifOutOctets.{#SNMPINDEX}'
+              key: 'ifOutOctets[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'The number of octets transmitted in MAC frames on this interface, including the MAC header and FCS.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '9'
+              tags:
+                - tag: Application
+                  value: Interface(s)
+            - uuid: 825f48dce16a4df1942a297f00ad21f7
+              name: 'Outgoing unicast traffic on interface $1'
+              type: SNMP_AGENT
+              snmp_oid: 'IF-MIB::ifOutUcastPkts.{#SNMPINDEX}'
+              key: 'ifOutUcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'The total number of packets that higher-level protocols requested be transmitted, and which were not addressed to a multicast or broadcast address at this sub-layer, including those that were discarded or not sent.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Interface(s)
+          graph_prototypes:
+            - uuid: cab4869a13d048b985afbb12f018e926
+              name: 'Traffic on interface {#SNMPVALUE}'
+              graph_items:
+                - color: 1A7C11
+                  item:
+                    host: 'Additional Template SNMP HP Procurve 2920'
+                    key: 'ifInNUcastPkts[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  color: F63100
+                  item:
+                    host: 'Additional Template SNMP HP Procurve 2920'
+                    key: 'ifInOctets[{#SNMPVALUE}]'
+                - sortorder: '2'
+                  color: 2774A4
+                  item:
+                    host: 'Additional Template SNMP HP Procurve 2920'
+                    key: 'ifInUcastPkts[{#SNMPVALUE}]'
+                - sortorder: '3'
+                  color: A54F10
+                  item:
+                    host: 'Additional Template SNMP HP Procurve 2920'
+                    key: 'ifOutNUcastPkts[{#SNMPVALUE}]'
+                - sortorder: '4'
+                  color: FC6EA3
+                  item:
+                    host: 'Additional Template SNMP HP Procurve 2920'
+                    key: 'ifOutOctets[{#SNMPVALUE}]'
+                - sortorder: '5'
+                  color: 6C59DC
+                  item:
+                    host: 'Additional Template SNMP HP Procurve 2920'
+                    key: 'ifOutUcastPkts[{#SNMPVALUE}]'
+      valuemaps:
+        - uuid: 00f92859462d4402bdc320dde54c9b62
+          name: hpStackMemberBootImage
+          mappings:
+            - value: '1'
+              newvalue: primary
+            - value: '2'
+              newvalue: secondary
+        - uuid: 3a832019fcb74a968417bf9adbdb382a
+          name: hpStackMemberState
+          mappings:
+            - value: '0'
+              newvalue: unusedId
+            - value: '1'
+              newvalue: missing
+            - value: '2'
+              newvalue: provision
+            - value: '3'
+              newvalue: commander
+            - value: '4'
+              newvalue: standby
+            - value: '5'
+              newvalue: member
+            - value: '6'
+              newvalue: shutdown
+            - value: '7'
+              newvalue: booting
+            - value: '8'
+              newvalue: communicationFailure
+            - value: '9'
+              newvalue: incompatibleOs
+            - value: '10'
+              newvalue: unknownState
+            - value: '11'
+              newvalue: standbyBooting
+  graphs:
+    - uuid: a4061bd9c2be4c118fb83f383ed89b47
+      name: CPU
+      graph_items:
+        - color: C80000
+          calc_fnc: MAX
+          item:
+            host: 'Additional Template SNMP HP Procurve 2920'
+            key: hpSwitchCpuStat

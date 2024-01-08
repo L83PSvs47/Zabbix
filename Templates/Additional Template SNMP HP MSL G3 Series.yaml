@@ -1,0 +1,95 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: c18128e514bc49d2b5d36ad5c3c64a17
+      template: 'Additional Template SNMP HP MSL G3 Series'
+      name: 'Additional Template SNMP HP MSL G3 Series'
+      description: 'Tape Libraries'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 0ef35159932547fbaa99fbef7b2443a9
+          name: 'Device global unique ID'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.36.1.1.5.1.1.2.1
+          key: hpHttpMgDeviceGlobalUniqueID.1
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: |
+            This represents a globally unique ID for the device.
+            This MUST be the ordered combination of the Manufacturer,
+            product name, AND any other text that is necessary to guarantee
+            global uniqueness. This value may not be null.
+            e.g. HPD1234A9482882
+          tags:
+            - tag: Application
+              value: System
+        - uuid: d4b332b3bd7f409aae791032401b0f94
+          name: 'Device product caption'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.36.1.1.5.1.1.9.1
+          key: hpHttpMgDeviceProductCaption.1
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'The device''s product caption name. (i.e. HP Multi-stack Disk Array)'
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 095fbc5f3b16498f89ba25420793c650
+          name: 'Device health status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.36.1.1.5.1.1.3.1
+          key: msl.health
+          history: 1w
+          description: |
+            Overall health of the device. The goal of this object
+            is to be the single poll point to check the status of the
+            device.
+          valuemap:
+            name: 'HP MSL Health Status'
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: c5bf2bfa0dd44f818eb3f92114fbbed7
+              expression: 'last(/Additional Template SNMP HP MSL G3 Series/msl.health)<>3'
+              name: '{HOST.NAME}: Device Health Status not OK (HW)'
+              priority: AVERAGE
+        - uuid: 3f06d3afadf44fd1a9efe80d72c29a8c
+          name: 'Device serial number'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.11.2.36.1.1.5.1.1.10.1
+          key: msl.serial
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'The serial number for the device. This can return a NULL string.'
+          tags:
+            - tag: Application
+              value: System
+      valuemaps:
+        - uuid: 3363945078da4f509333f75828f5e988
+          name: 'HP MSL Health Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: unused
+            - value: '3'
+              newvalue: ok
+            - value: '4'
+              newvalue: warning
+            - value: '5'
+              newvalue: critical
+            - value: '6'
+              newvalue: nonrecoverable

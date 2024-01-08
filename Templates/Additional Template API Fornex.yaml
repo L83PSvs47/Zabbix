@@ -1,0 +1,252 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: a7cf8e0b7d034609ad676d4d83337e32
+      template: 'Additional Template API Fornex'
+      name: 'Additional Template API Fornex'
+      description: |
+        Мониторинг срока оплаты хостинга Fornex.
+        https://fornex.com/api/
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: b8dfa667ffbd447caf048e2e5455cb55
+          name: 'Fornex order cost month'
+          type: DEPENDENT
+          key: fornex.order.cost.month
+          delay: '0'
+          value_type: FLOAT
+          units: €
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''cost_month'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: ed238b85cfbc49b2aab59753c199d2fb
+          name: 'Fornex order days to expire'
+          type: DEPENDENT
+          key: fornex.order.days.to.expire
+          delay: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''expiration_date'']'
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var expirationDate = value.substring(value.lastIndexOf("[") + 2, value.lastIndexOf("+"));
+                  var expirationTime = new Date(expirationDate).getTime();
+                  var currentTime = new Date().getTime();
+                  var days = Math.floor((expirationTime - currentTime) / 86400000);
+                  return days;
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+          triggers:
+            - uuid: acf2cfc6c95c4157a6ba970dfad1065b
+              expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)<=0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)>0'
+              name: 'Fornex order expired'
+              priority: DISASTER
+            - uuid: a8912ee2ca1d488aa88c1cde7ed43326
+              expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)<=7'
+              name: 'Fornex order expires in {ITEM.LASTVALUE} days'
+              priority: HIGH
+              dependencies:
+                - name: 'Fornex order expired'
+                  expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)<=0'
+                  recovery_expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)>0'
+            - uuid: 4d871dde6ead46eca3a400f10f117d50
+              expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)<=14'
+              name: 'Fornex order expires in {ITEM.LASTVALUE} days'
+              priority: AVERAGE
+              dependencies:
+                - name: 'Fornex order expires in {ITEM.LASTVALUE} days'
+                  expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)<=7'
+            - uuid: 215b1cfd10384626bbfd13ce2697b46d
+              expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)<=30'
+              name: 'Fornex order expires in {ITEM.LASTVALUE} days'
+              priority: WARNING
+              dependencies:
+                - name: 'Fornex order expires in {ITEM.LASTVALUE} days'
+                  expression: 'last(/Additional Template API Fornex/fornex.order.days.to.expire)<=14'
+        - uuid: 2494cc86ed034f0e94027dc404d68870
+          name: 'Fornex order hostname'
+          type: DEPENDENT
+          key: fornex.order.hostname
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''hostname'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: 653ad74f8474408693ec5d87e26422aa
+          name: 'Fornex order id'
+          type: DEPENDENT
+          key: fornex.order.id
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''id'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: 01ae232fc75c4bd2bf2834812a4c8cbf
+          name: 'Fornex order ipaddress set'
+          type: DEPENDENT
+          key: fornex.order.ipaddress.set
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''ipaddress_set'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: 4bdc521b7a5c48c18d18b6c15ff64e4c
+          name: 'Fornex order name'
+          type: DEPENDENT
+          key: fornex.order.name
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''name'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: 2f28780118344d21909cf673811dc9fa
+          name: 'Fornex order status'
+          type: DEPENDENT
+          key: fornex.order.status
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''status'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: ef34cccab76f43ad925bf647f431d374
+          name: 'Fornex order tariff'
+          type: DEPENDENT
+          key: fornex.order.tariff
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''tariff'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: bff386c3a71b4788ac852298ceacbb77
+          name: 'Fornex order tariff id'
+          type: DEPENDENT
+          key: fornex.order.tariff.id
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''tariff_id'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: 63e92fe32ea34b26be871e0fbdc01c5a
+          name: 'Fornex order tariff price'
+          type: DEPENDENT
+          key: fornex.order.tariff.price
+          delay: '0'
+          value_type: FLOAT
+          units: €
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''tariff_price'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: fb9868ffb85548f0b580f87683bdd2bf
+          name: 'Fornex order type'
+          type: DEPENDENT
+          key: fornex.order.type
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''type'']'
+          master_item:
+            key: fornex.orders.list
+          tags:
+            - tag: Application
+              value: Fornex
+        - uuid: 26991a407e334a158823ef2a4d39bb75
+          name: 'Fornex get orders list'
+          type: HTTP_AGENT
+          key: fornex.orders.list
+          delay: '{$FORNEX_GET_INTERVAL}'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$FORNEX_DISCARD_UNCHANGED}'
+          url: 'https://fornex.com/api/orders/list'
+          query_fields:
+            - name: apikey
+              value: '{$FORNEX_APIKEY}'
+          tags:
+            - tag: Application
+              value: Fornex
+      macros:
+        - macro: '{$FORNEX_APIKEY}'
+          type: SECRET_TEXT
+        - macro: '{$FORNEX_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$FORNEX_GET_INTERVAL}'
+          value: 12h

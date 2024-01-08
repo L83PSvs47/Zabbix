@@ -1,0 +1,86 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 8e719d2972994d6b97fece39fe1b5d7a
+      template: 'Additional Template Module Domain DNSBL'
+      name: 'Additional Template Module Domain DNSBL'
+      description: 'Мониторинг попадания IP в черные списки. Для проверки берутся IP полученные путем разрешения DNS имени хоста с указанием типа записи (A или MX).'
+      groups:
+        - name: 'Additional Templates'
+      discovery_rules:
+        - uuid: 340247d966d444c19ea1de6c1ddd3526
+          name: 'DNSBL List'
+          type: INTERNAL
+          key: 'zabbix[uptime]'
+          delay: '{$DNSBL_REQUEST_INTERVAL}'
+          item_prototypes:
+            - uuid: 2205d32a6d8f4af3b615b9173dce032d
+              name: 'Check IP in DNSBL {#DNSBL}'
+              type: DEPENDENT
+              key: 'check.domain.dnsbl[{#DNSBL}]'
+              delay: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''DNSBL'']'
+              master_item:
+                key: 'get.domain.dnsbl[{HOST.DNS},{#DNSBL},{$DNSBL_GET_TYPE}]'
+              tags:
+                - tag: Application
+                  value: DNSBL
+              trigger_prototypes:
+                - uuid: 51fa4ee8216c42358a188f8b352d74fe
+                  expression: 'last(/Additional Template Module Domain DNSBL/check.domain.dnsbl[{#DNSBL}])>0'
+                  name: '{HOST.DNS} {ITEM.VALUE} IP in {#DNSBL}'
+                  priority: HIGH
+            - uuid: a30df4fa7d1247d9872fc33d06cc6b50
+              name: 'Get domain DNSBL {#DNSBL}'
+              key: 'get.domain.dnsbl[{HOST.DNS},{#DNSBL},{$DNSBL_GET_TYPE}]'
+              delay: '{$DNSBL_GET_INTERVAL}'
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$DNSBL_DISCARD_UNCHANGED}'
+                - type: CHECK_JSON_ERROR
+                  parameters:
+                    - '$[0][''Error'']'
+              tags:
+                - tag: Application
+                  value: 'Bash raw items'
+                - tag: Application
+                  value: DNSBL
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var s = '{$DNSBL_PROVIDER_LIST}';
+                  var w = s.split(',');
+                  var x = '';
+                  var c = '';
+                  
+                  for (var n = 0; n < w.length; n++) {
+                      x += c + '{ "{#DNSBL}" : "' + w[n] + '" }';
+                      c = ', ';
+                  }
+                  
+                  return '[ ' + x + ' ]';
+      macros:
+        - macro: '{$DNSBL_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$DNSBL_GET_INTERVAL}'
+          value: 12h
+          description: 'Период проверки в IP в DNSBL'
+        - macro: '{$DNSBL_GET_TYPE}'
+          value: a
+          description: 'a, mx'
+        - macro: '{$DNSBL_PROVIDER_LIST}'
+          value: 'zen.spamhaus.org,dnsbl.sorbs.net,b.barracudacentral.org'
+          description: 'Список DNSBL провайдеров через запятую'
+        - macro: '{$DNSBL_REQUEST_INTERVAL}'
+          value: 1d
+          description: 'Период создания items и triggers на основании списка DNSBL провайдеров'

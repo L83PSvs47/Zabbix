@@ -1,0 +1,98 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 05014c9afb254b9ea87e47f507d08691
+      template: 'Additional Template App Microsoft Data Protection Manager'
+      name: 'Additional Template App Microsoft Data Protection Manager'
+      description: 'Мониторинг работы сервера Data Protection Manager (DPM).'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: d60b505e8b27431d916f02c566a43691
+          name: 'DPM errors'
+          type: DEPENDENT
+          key: dpm.errors
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Errors'']'
+          master_item:
+            key: 'powershell[Get-DataProtectionManager]'
+          tags:
+            - tag: Application
+              value: DPM
+          triggers:
+            - uuid: d439341d3e5b4bfa8fe4645e2e5f9882
+              expression: 'last(/Additional Template App Microsoft Data Protection Manager/dpm.errors)>0'
+              name: 'DPM error {ITEM.LASTVALUE1}'
+              description: 'One or more error conditions exist and backups need to be checked.'
+        - uuid: 3b76ca52eb104e1c926ab87fbfec94dc
+          name: 'DPM status'
+          type: DEPENDENT
+          key: dpm.status
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Status'']'
+          master_item:
+            key: 'powershell[Get-DataProtectionManager]'
+          tags:
+            - tag: Application
+              value: DPM
+          triggers:
+            - uuid: a57f03c543eb4c35b0e5d75f8c915bba
+              expression: 'last(/Additional Template App Microsoft Data Protection Manager/dpm.status)>0'
+              name: 'DPM status {ITEM.VALUE1}'
+              description: 'One or more warning or error conditions exist. Log onto DPM server to check the status.'
+        - uuid: d37e1c233bd749be90d8daab00735555
+          name: 'DPM warnings'
+          type: DEPENDENT
+          key: dpm.warnings
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Warnings'']'
+          master_item:
+            key: 'powershell[Get-DataProtectionManager]'
+          tags:
+            - tag: Application
+              value: DPM
+          triggers:
+            - uuid: 7ee00e875dc444c989e8fbc57a279a94
+              expression: 'last(/Additional Template App Microsoft Data Protection Manager/dpm.warnings)>0'
+              name: 'DPM warning {ITEM.LASTVALUE1}'
+              description: 'One or more warning conditions exist. Log onto DPM server to check the status.'
+        - uuid: 8c99e4e91324498b866ac76966522d85
+          name: 'PowerShell get DPM'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Get-DataProtectionManager]'
+          delay: '{$DPM_GET_INTERVAL}'
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DPM_DISCARD_UNCHANGED}'
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+          tags:
+            - tag: Application
+              value: DPM
+            - tag: Application
+              value: 'PowerShell raw items'
+      macros:
+        - macro: '{$DPM_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$DPM_GET_INTERVAL}'
+          value: 1h

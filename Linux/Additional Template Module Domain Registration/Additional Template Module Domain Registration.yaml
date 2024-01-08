@@ -1,0 +1,166 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: 862931dc8ac84d5c9b631d064e33b9b3
+      template: 'Additional Template Module Domain Registration'
+      name: 'Additional Template Module Domain Registration'
+      description: 'Мониторинг срока истечения регистрации домена. Используется DNS имя хоста.'
+      groups:
+        - name: 'Additional Templates/Modules'
+      items:
+        - uuid: 1bdb93265dcb4b2cba0571060013de6f
+          name: 'Domain days to expire'
+          type: DEPENDENT
+          key: domain.info.days
+          delay: '0'
+          value_type: FLOAT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''DaysToExpire'']'
+          master_item:
+            key: 'get.domain.info[{HOST.DNS}]'
+          tags:
+            - tag: Application
+              value: Domain
+          triggers:
+            - uuid: a9a46097816645bd87c527fa31e0d350
+              expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<=0'
+              name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+              status: DISABLED
+              priority: DISASTER
+            - uuid: 817e6613e27640acb85c0c33045e1419
+              expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<={$DOMAIN_DAYS_TO_EXPIRE_AVERAGE}'
+              name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: AVERAGE
+              dependencies:
+                - name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<={$DOMAIN_DAYS_TO_EXPIRE_HIGH}'
+            - uuid: f916bb0ec00e4ca5afbeb2169bed092f
+              expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<={$DOMAIN_DAYS_TO_EXPIRE_HIGH}'
+              name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: HIGH
+              dependencies:
+                - name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<=0'
+            - uuid: 9bd9d419fd0948de9926db86791d655c
+              expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<={$DOMAIN_DAYS_TO_EXPIRE_INFO}'
+              name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: INFO
+              dependencies:
+                - name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<={$DOMAIN_DAYS_TO_EXPIRE_WARN}'
+            - uuid: 0fb010b278d14c9eb52ae1c6ba9f1957
+              expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<={$DOMAIN_DAYS_TO_EXPIRE_WARN}'
+              name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: WARNING
+              dependencies:
+                - name: 'Domain {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Registration/domain.info.days)<={$DOMAIN_DAYS_TO_EXPIRE_AVERAGE}'
+        - uuid: e40ef0a2a26c49669062135791ddc379
+          name: 'Domain expiration date'
+          type: DEPENDENT
+          key: domain.info.expiration.date
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Expired'']'
+          master_item:
+            key: 'get.domain.info[{HOST.DNS}]'
+          tags:
+            - tag: Application
+              value: Domain
+          triggers:
+            - uuid: bacdb475d8984d278b168ba0c63cf4d4
+              expression: '(last(/Additional Template Module Domain Registration/domain.info.expiration.date,#1)<>last(/Additional Template Module Domain Registration/domain.info.expiration.date,#2))=1 and length(last(/Additional Template Module Domain Registration/domain.info.expiration.date))>0'
+              name: '{HOST.DNS} expiration date was changed'
+              priority: INFO
+        - uuid: 28609126ef454486b04eb9be38e711b2
+          name: 'Domain NS'
+          type: DEPENDENT
+          key: domain.info.ns
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''NS'']'
+          master_item:
+            key: 'get.domain.info[{HOST.DNS}]'
+          tags:
+            - tag: Application
+              value: Domain
+          triggers:
+            - uuid: 6bf96e30cfc24f41bda6690e0a43f2f2
+              expression: '(last(/Additional Template Module Domain Registration/domain.info.ns,#1)<>last(/Additional Template Module Domain Registration/domain.info.ns,#2))=1 and length(last(/Additional Template Module Domain Registration/domain.info.ns))>0'
+              name: '{HOST.DNS} NS was changed'
+              priority: INFO
+        - uuid: 7b26d117723c480e8de8b6c0767f72ac
+          name: 'Domain registrar'
+          type: DEPENDENT
+          key: domain.info.registrar
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Registrar'']'
+          master_item:
+            key: 'get.domain.info[{HOST.DNS}]'
+          tags:
+            - tag: Application
+              value: Domain
+          triggers:
+            - uuid: e760b8979033434886e8770e14fa0a7c
+              expression: '(last(/Additional Template Module Domain Registration/domain.info.registrar,#1)<>last(/Additional Template Module Domain Registration/domain.info.registrar,#2))=1 and length(last(/Additional Template Module Domain Registration/domain.info.registrar))>0'
+              name: '{HOST.DNS} registrar was changed'
+              priority: INFO
+        - uuid: debdbdb21f2842b5bc7d4f4d79327071
+          name: 'Get domain info'
+          key: 'get.domain.info[{HOST.DNS}]'
+          delay: '{$DOMAIN_GET_INTERVAL}'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$DOMAIN_DISCARD_UNCHANGED}'
+            - type: TRIM
+              parameters:
+                - 'getaddrinfo(www.nic.ru/whois/en/): Name or service not known'
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+          tags:
+            - tag: Application
+              value: 'Bash raw items'
+            - tag: Application
+              value: Domain
+          triggers:
+            - uuid: 34a1776214ec4a71945369dabb66ee60
+              expression: 'nodata(/Additional Template Module Domain Registration/get.domain.info[{HOST.DNS}],{$DOMAIN_NODATA_INTERVAL})=1'
+              name: '{HOST.DNS} has no data'
+              priority: HIGH
+      macros:
+        - macro: '{$DOMAIN_DAYS_TO_EXPIRE_AVERAGE}'
+          value: '35'
+        - macro: '{$DOMAIN_DAYS_TO_EXPIRE_HIGH}'
+          value: '30'
+        - macro: '{$DOMAIN_DAYS_TO_EXPIRE_INFO}'
+          value: '45'
+        - macro: '{$DOMAIN_DAYS_TO_EXPIRE_WARN}'
+          value: '40'
+        - macro: '{$DOMAIN_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$DOMAIN_GET_INTERVAL}'
+          value: 12h
+        - macro: '{$DOMAIN_NODATA_INTERVAL}'
+          value: 1d

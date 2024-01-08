@@ -1,0 +1,1284 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: c81f68e2520f42cf84824c7907ddbc01
+      template: 'Additional Template SNMP Synology DiskStation'
+      name: 'Additional Template SNMP Synology DiskStation'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 797b916cee4e46ffbf7d9e6ff624fb78
+          name: 'CPU fan status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.4.2.0
+          key: cpu.fan.status
+          history: 1w
+          description: |
+            Synology cpu fan status
+            Each meanings of status represented describe below.
+            Normal(1):All CPU fans functional normally.
+            Failed(2):One of CPU fan stopped
+          valuemap:
+            name: SynologyCPUFanStatus
+          tags:
+            - tag: Application
+              value: 'Synology system'
+          triggers:
+            - uuid: 4ff38e59223f4422bfd4beacaedb1f35
+              expression: 'last(/Additional Template SNMP Synology DiskStation/cpu.fan.status)<>1'
+              name: 'CPU Fan CRITICAL on {HOST.NAME}'
+              priority: HIGH
+        - uuid: c9e7a074c4e24e2ca306245db2721f48
+          name: 'CPU idle'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.11.0
+          key: cpu.idle
+          history: 1w
+          units: '%'
+          description: 'The percentage of processor time spent idle, calculated over the last minute.'
+          tags:
+            - tag: Application
+              value: CPU
+          triggers:
+            - uuid: 592649085b9c47bb983c80d61cac3c91
+              expression: 'avg(/Additional Template SNMP Synology DiskStation/cpu.idle,5m)<30'
+              name: 'CPU Usage High on {HOST.NAME}'
+              priority: WARNING
+            - uuid: 242199c7647347ee8319e3ade35682cf
+              expression: 'avg(/Additional Template SNMP Synology DiskStation/cpu.idle,5m)<10'
+              name: 'CPU Usage Very High on {HOST.NAME}'
+              priority: HIGH
+        - uuid: a099cc77ab924a55a056274b388ef951
+          name: 'CPU system'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.10.0
+          key: cpu.system
+          history: 1w
+          units: '%'
+          description: 'The percentage of CPU time spent processing system-level code, calculated over the last minute.'
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: 1c346d515fbb43cead06506cac5a8c04
+          name: 'CPU user'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.9.0
+          key: cpu.user
+          history: 1w
+          units: '%'
+          description: 'The percentage of CPU time spent processing user-level code.'
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: 386f89de5d15411eaeb8a186aa675f6d
+          name: 'Fan status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.4.1.0
+          key: fan.status
+          history: 1w
+          description: |
+            Synology system fan status
+            Each meanings of status represented describe below.
+            Normal(1):All Internal fans functional normally.
+            Failed(2):One of internal fan stopped
+          valuemap:
+            name: SynologyFanStatus
+          tags:
+            - tag: Application
+              value: 'Synology system'
+          triggers:
+            - uuid: c61ca19c22f04198aa0652e4a1a6aaa8
+              expression: 'last(/Additional Template SNMP Synology DiskStation/fan.status)<>1'
+              name: 'System Fan Status CRITCAL on {HOST.NAME}'
+              priority: WARNING
+        - uuid: 2a0320b77cc0428abe2ae449c0d388df
+          name: 'Total physical available'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.6.0
+          key: memory.available.real
+          history: 1w
+          units: B
+          description: 'The amount of real/physical memory currently unused or available.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: da424512829244988fd5cbbaca226b18
+          name: 'Total swap available'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.4.0
+          key: memory.available.swap
+          history: 1w
+          units: B
+          description: 'The amount of swap space currently unused or available.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 8f02b3d1f6974bc99c410846880fb76b
+          name: 'Total buffer memory'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.14.0
+          key: memory.buffer
+          history: 1w
+          units: B
+          description: 'The total amount of real or virtual memory currently allocated for use as memory buffers.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 169db94c82d34ea78ba9030f4a7eaf39
+          name: 'Total cached memory'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.15.0
+          key: memory.cached
+          history: 1w
+          units: B
+          description: 'The total amount of real or virtual memory currently allocated for use as cached memory.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 976a57407c7241fdbea79d6212d00e8b
+          name: 'Total shared memory'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.13.0
+          key: memory.shared
+          history: 1w
+          units: B
+          description: 'The total amount of real or virtual memory currently allocated for use as shared memory.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 5eff1734606d4378a2e89eb24fbb0bec
+          name: 'Total free memory'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.11.0
+          key: memory.total.free
+          history: 1w
+          units: B
+          description: 'The total amount of memory free or available for use on this host.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: a2aa437178eb47b28b802bc11551a275
+          name: 'Total physical memory'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.5.0
+          key: memory.total.real
+          history: 1w
+          units: B
+          description: 'The total amount of real/physical memory installed on this host.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 6ded121661a14dce9a6d369958681928
+          name: 'Total swap space'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.3.0
+          key: memory.total.swap
+          history: 1w
+          units: B
+          description: 'The total amount of swap space configured for this host.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1024'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: e0d0e0a4541a49fa9e59a4df78869c81
+          name: 'Model name'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.5.1.0
+          key: model.name
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'Model name of this NAS.'
+          inventory_link: MODEL
+          tags:
+            - tag: Application
+              value: 'System information'
+        - uuid: 77b5c00c5aad44e78a76f7af6b9f6d0f
+          name: 'OS version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.5.3.0
+          key: os.version
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'The version of DSM'
+          inventory_link: OS
+          tags:
+            - tag: Application
+              value: 'System information'
+        - uuid: 72111101290b4780abefca850c31d318
+          name: 'Power status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.3.0
+          key: power.status
+          history: 1w
+          description: |
+            Synology power status
+            Each meanings of status represented describe below.
+            Normal(1):All power supplies functional normally.
+            Failed(2):One of power supply has failed.
+          valuemap:
+            name: SysnologyPowerStatus
+          tags:
+            - tag: Application
+              value: 'Synology system'
+          triggers:
+            - uuid: 86984006a9df4a2387e88a4fa4192804
+              expression: 'last(/Additional Template SNMP Synology DiskStation/power.status)<>1'
+              name: 'Power Status FAILED on {HOST.NAME}'
+              priority: HIGH
+        - uuid: 12c88ff43f6245b083123f3887f68eaf
+          name: 'Serial number'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.5.2.0
+          key: serial.number
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'Model serial number'
+          inventory_link: SERIALNO_A
+          tags:
+            - tag: Application
+              value: 'System information'
+        - uuid: 253c8627e1c54202bed93b97ab45001b
+          name: 'Load average 1 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.5.1
+          key: System.laLoadInt.1
+          history: 1w
+          value_type: FLOAT
+          description: '1 minute load.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: 7777d2f31f4d41fabe44e528c62544a8
+          name: 'Load average 5 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.5.2
+          key: System.laLoadInt.2
+          history: 1w
+          value_type: FLOAT
+          description: '5 minute load.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: 69682d844cb947559e27b99765b1497a
+          name: 'Load average 15 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.5.3
+          key: System.laLoadInt.3
+          history: 1w
+          value_type: FLOAT
+          description: '15 minute load.'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: e1aad21afb3c4b8f95248d151f41d87a
+          name: 'System status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.1.0
+          key: system.status
+          history: 1w
+          description: |
+            Synology system status
+            Each meanings of status represented describe below.
+            Normal(1):System functionals normally.
+            Failed(2):Volume has crashed
+          valuemap:
+            name: SynologySystemStatus
+          tags:
+            - tag: Application
+              value: 'Synology system'
+          triggers:
+            - uuid: 4accd98b2b1b43dbbee93af836c2ac1b
+              expression: 'last(/Additional Template SNMP Synology DiskStation/system.status)<>1'
+              name: 'System Partition CRITICAL on {HOST.NAME}'
+              priority: DISASTER
+        - uuid: ce9987c32d91453796cc7101d3dc949a
+          name: 'System temperature'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.2.0
+          key: system.temperature
+          history: 1w
+          units: C
+          description: |
+            Synology system temperature
+            The temperature of Disk Station uses Celsius degree
+          tags:
+            - tag: Application
+              value: 'Synology system'
+          triggers:
+            - uuid: 3520a6deaef146eca187fe2caf7457ea
+              expression: 'avg(/Additional Template SNMP Synology DiskStation/system.temperature,#4)>60'
+              name: 'System Temperature CRITICAL on {HOST.NAME}'
+              priority: AVERAGE
+        - uuid: 6e49a64c5073455a93a97b086dac074a
+          name: 'Upgrade available'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.5.4.0
+          key: upgrade.available
+          delay: 1h
+          history: 1w
+          description: |
+            This oid is for checking whether there is a latest DSM can be upgraded.
+            Available(1):There is version ready for download.
+            Unavailable(2):The DSM is latest version.
+            Connecting(3):Checking for the latest DSM.
+            Disconnected(4):Failed to connect to server.
+            Others(5):If DSM is upgrading or downloading, the status will show others
+          valuemap:
+            name: SynologyUpgradeAvailable
+          tags:
+            - tag: Application
+              value: 'System information'
+          triggers:
+            - uuid: a3d82acec5094c62a112da980fb92b4a
+              expression: 'last(/Additional Template SNMP Synology DiskStation/upgrade.available)=1'
+              name: 'Update available on {HOST.NAME}'
+              priority: INFO
+              manual_close: 'YES'
+      discovery_rules:
+        - uuid: a5f472e578724724b70bab902b1cd1cd
+          name: Disk
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#IFINDEX},.1.3.6.1.2.1.25.2.3.1.1,{#IFDESCR},.1.3.6.1.2.1.25.2.3.1.3,{#IFUNIT},.1.3.6.1.2.1.25.2.3.1.4]'
+          key: host.hrStorage.hrStorageTable.hrStorageEntry
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#IFDESCR}'
+                value: /volume
+                formulaid: A
+          item_prototypes:
+            - uuid: 21e656d6ef334cad87901e92a5929d69
+              name: 'Storage size on {#IFDESCR}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.25.2.3.1.5.{#IFINDEX}'
+              key: 'host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageSize[{#IFINDEX}]'
+              history: 1w
+              units: B
+              description: 'The size of the storage represented by this entry, in units of hrStorageAllocationUnits.'
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '4096'
+              tags:
+                - tag: Application
+                  value: Disk
+            - uuid: 9457857de6954510a1da5fb5c2109e32
+              name: 'Storage used on {#IFDESCR} (%)'
+              type: CALCULATED
+              key: 'host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageUsed[{#IFINDEX},pct]'
+              history: 1w
+              units: '%'
+              params: 'last(//host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageUsed[{#IFINDEX}])/last(//host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageSize[{#IFINDEX}])*100'
+              description: '% of disk space used.'
+              tags:
+                - tag: Application
+                  value: Disk
+              trigger_prototypes:
+                - uuid: 0789c89b613b4553b286d61409455105
+                  expression: 'last(/Additional Template SNMP Synology DiskStation/host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageUsed[{#IFINDEX},pct])>{$DISK_UTIL_HIGH}'
+                  name: 'Disk Space is CRITICAL on {#IFDESCR}'
+                  priority: HIGH
+                - uuid: 2b47c7cd991448b6b1b9da6ed85064e7
+                  expression: 'last(/Additional Template SNMP Synology DiskStation/host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageUsed[{#IFINDEX},pct])>{$DISK_UTIL_WARN}'
+                  name: 'Disk Space is LOW on {#IFDESCR}'
+                  priority: WARNING
+            - uuid: 529f1c6fb37644d4a67395d3d3c64594
+              name: 'Storage used on {#IFDESCR}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.25.2.3.1.6.{#IFINDEX}'
+              key: 'host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageUsed[{#IFINDEX}]'
+              history: 1w
+              units: B
+              description: 'The amount of the storage represented by this entry.'
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '4096'
+              tags:
+                - tag: Application
+                  value: Disk
+          graph_prototypes:
+            - uuid: 9262c16067304d88aa1ade1797ec3898
+              name: 'Disk: Storage Evolution on {#IFDESCR}'
+              height: '300'
+              graph_items:
+                - color: '000000'
+                  calc_fnc: ALL
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageSize[{#IFINDEX}]'
+                - sortorder: '1'
+                  drawtype: FILLED_REGION
+                  color: 0000EE
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageUsed[{#IFINDEX}]'
+            - uuid: 1b6660a60d46484d9c40c072fc941120
+              name: 'Disk: Storage Utilization on {#IFDESCR}'
+              width: '600'
+              height: '340'
+              yaxismax: '0'
+              show_work_period: 'NO'
+              show_triggers: 'NO'
+              type: PIE
+              show_3d: 'YES'
+              graph_items:
+                - color: 5B5B5B
+                  calc_fnc: LAST
+                  type: GRAPH_SUM
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageSize[{#IFINDEX}]'
+                - sortorder: '1'
+                  color: AEEE00
+                  calc_fnc: LAST
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'host.hrStorage.hrStorageTable.hrStorageEntry.hrStorageUsed[{#IFINDEX}]'
+        - uuid: 9f938d93cd8e4850b70a3f05f6306c68
+          name: Network
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#IFALIAS},1.3.6.1.2.1.31.1.1.1.18,{#IFNAME},1.3.6.1.2.1.31.1.1.1.1]'
+          key: ifMIB.ifMIBObjects.ifXTable.ifXEntry
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#IFNAME}'
+                value: eth
+                formulaid: A
+          item_prototypes:
+            - uuid: c11d4db8700246f98648d3c285a92eca
+              name: 'Incomming packets on interface {#IFNAME}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}'
+              key: 'ifMIB.ifMIBObjects.ifXTable.ifXEntry.ifHCInOctets.[{#IFNAME}]'
+              history: 1w
+              value_type: FLOAT
+              units: bps
+              description: 'The total number of octets received on the interface.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Network
+            - uuid: 82c09a9cf1f24cc38817cc7a0a94037d
+              name: 'Outgoing packets on interface {#IFNAME}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}'
+              key: 'ifMIB.ifMIBObjects.ifXTable.ifXEntry.ifHCOutOctets.[{#IFNAME}]'
+              history: 1w
+              value_type: FLOAT
+              units: bps
+              description: 'The total number of octets transmitted out of the interface.'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: Network
+          graph_prototypes:
+            - uuid: 75e48ba8266f46019dbdb370da3ac00a
+              name: 'Network: Traffic on Interface {#IFNAME}'
+              graph_items:
+                - drawtype: GRADIENT_LINE
+                  color: 00AA00
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'ifMIB.ifMIBObjects.ifXTable.ifXEntry.ifHCInOctets.[{#IFNAME}]'
+                - sortorder: '1'
+                  drawtype: GRADIENT_LINE
+                  color: 3333FF
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'ifMIB.ifMIBObjects.ifXTable.ifXEntry.ifHCOutOctets.[{#IFNAME}]'
+        - uuid: d9e67dc2248a441e923d6d9e73315a0c
+          name: 'Synology space IO'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.6574.102.1.1.2]'
+          key: spaceIO.spaceIOTable.spaceIOEntry
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#SNMPVALUE}'
+                value: sd
+                formulaid: A
+          description: 'An entry containing a device and its statistics.'
+          item_prototypes:
+            - uuid: fd9108468d254268af4e7974bf28c6c0
+              name: 'Space load of disk {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.102.1.1.7.{#SNMPINDEX}'
+              key: 'spaceIO.spaceIOTable.spaceIOEntry.spaceIOLA.[{#SNMPINDEX}]'
+              history: 1w
+              units: '%'
+              description: 'The load of disk in the volume (%).'
+              tags:
+                - tag: Application
+                  value: 'Synology space IO'
+            - uuid: 8798458107dc42a4a6966bdbc7ca0896
+              name: '{#SNMPVALUE} byte(s) read since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.102.1.1.3.{#SNMPINDEX}'
+              key: 'spaceIO.spaceIOTable.spaceIOEntry.spaceIONRead.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: byte(s)
+              description: 'The number of bytes read from this volume since boot (32-bit ver.).'
+              tags:
+                - tag: Application
+                  value: 'Synology space IO'
+            - uuid: e098710bbea54107aede2daafa8bd317
+              name: '{#SNMPVALUE} read access(es) since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.102.1.1.5.{#SNMPINDEX}'
+              key: 'spaceIO.spaceIOTable.spaceIOEntry.spaceIONReads.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: byte(s)
+              description: 'The number of read accesses from this volume since boot.'
+              tags:
+                - tag: Application
+                  value: 'Synology space IO'
+            - uuid: 05903f6ceeea4319b0100bdac08f7a95
+              name: '{#SNMPVALUE} write accesses since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.102.1.1.6.{#SNMPINDEX}'
+              key: 'spaceIO.spaceIOTable.spaceIOEntry.spaceIONWrites.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: byte(s)
+              description: 'The number of write accesses to this volume since boot (32-bit ver.).'
+              tags:
+                - tag: Application
+                  value: 'Synology space IO'
+            - uuid: 2bde7a82bb2b42e681748e9cfa9e217c
+              name: '{#SNMPVALUE} byte(s) written since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.102.1.1.4.{#SNMPINDEX}'
+              key: 'spaceIO.spaceIOTable.spaceIOEntry.spaceIONWritten.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: byte(s)
+              description: 'The number of bytes written to this volume since boot (32-bit ver.).'
+              tags:
+                - tag: Application
+                  value: 'Synology space IO'
+          graph_prototypes:
+            - uuid: a356c91205874e49b6232781235564c9
+              name: 'SpaceIO: Load on Disk {#SNMPVALUE} (in %)'
+              graph_items:
+                - color: EE00EE
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'spaceIO.spaceIOTable.spaceIOEntry.spaceIOLA.[{#SNMPINDEX}]'
+        - uuid: 86fccf74bd484c63905515f005ecf4b4
+          name: 'Synology storage IO'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.6574.101.1.1.2]'
+          key: storageIO.storageIOTable.storageIOEntry
+          delay: 1h
+          filter:
+            conditions:
+              - macro: '{#SNMPVALUE}'
+                value: sd
+                formulaid: A
+          description: 'An entry containing a device and its statistics.'
+          item_prototypes:
+            - uuid: a94f4872b9644868933b95d1dd3a5526
+              name: 'Storage load on disk {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.8.{#SNMPINDEX}'
+              key: 'storageIO.storageIOTable.storageIOEntry.storageIOLA.[{#SNMPINDEX}]'
+              history: 1w
+              units: '%'
+              description: 'The load of disk (in %).'
+              tags:
+                - tag: Application
+                  value: 'Synology storage IO'
+            - uuid: bb86007f53af447893242b54aaf7a0e8
+              name: '{#SNMPVALUE} byte(s) read since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.3.{#SNMPINDEX}'
+              key: 'storageIO.storageIOTable.storageIOEntry.storageIONRead.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: byte(s)
+              description: 'The number of bytes read from this device since boot (32-bit VER.).'
+              tags:
+                - tag: Application
+                  value: 'Synology storage IO'
+            - uuid: 70b9496015074075b10ce6e2c01fefd8
+              name: '{#SNMPVALUE} byte(s) written since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.4.{#SNMPINDEX}'
+              key: 'storageIO.storageIOTable.storageIOEntry.storageIONWritten.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: byte(s)
+              description: 'The number of bytes written to this device since boot (32-bit VER.).'
+              tags:
+                - tag: Application
+                  value: 'Synology storage IO'
+            - uuid: 5e99aa353a9d41a4a0901a19bf82bd14
+              name: '{#SNMPVALUE} read access(es) since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.5.{#SNMPINDEX}'
+              key: 'storageIO.storageIOTable.storageIOEntry.storageIOReads.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: access(es)
+              description: 'The number of read accesses from this device since boot (32-bit VER.).'
+              tags:
+                - tag: Application
+                  value: 'Synology storage IO'
+            - uuid: dc585efd6a2f4d52920793ab0e34abaa
+              name: '{#SNMPVALUE} write access(es) since boot'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.6.{#SNMPINDEX}'
+              key: 'storageIO.storageIOTable.storageIOEntry.storageIOWrites.[{#SNMPINDEX}]'
+              history: 1w
+              status: DISABLED
+              units: access(es)
+              description: 'The number of write accesses from this device since boot (32-bit VER.).'
+              tags:
+                - tag: Application
+                  value: 'Synology storage IO'
+          graph_prototypes:
+            - uuid: c483d1a11813436a9a4ab2cec8d8e9a0
+              name: 'StorageIO: Load on Disk {#SNMPVALUE}'
+              show_work_period: 'NO'
+              show_triggers: 'NO'
+              ymin_type_1: ITEM
+              ymin_item_1:
+                host: 'Additional Template SNMP Synology DiskStation'
+                key: 'storageIO.storageIOTable.storageIOEntry.storageIOLA.[{#SNMPINDEX}]'
+              ymax_type_1: ITEM
+              ymax_item_1:
+                host: 'Additional Template SNMP Synology DiskStation'
+                key: 'storageIO.storageIOTable.storageIOEntry.storageIOLA.[{#SNMPINDEX}]'
+              graph_items:
+                - drawtype: BOLD_LINE
+                  color: 0000EE
+                  calc_fnc: ALL
+                  type: GRAPH_SUM
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'storageIO.storageIOTable.storageIOEntry.storageIOLA.[{#SNMPINDEX}]'
+        - uuid: 0197f2a0c16343e088038ec069014528
+          name: 'Synology disk'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.6574.2.1.1.2]'
+          key: synoDisk.diskTable.diskEntry
+          delay: 1h
+          description: 'For all disk entry.'
+          item_prototypes:
+            - uuid: 6502b17ccb1345078906c7b5fff4b4de
+              name: '{#SNMPVALUE} Model'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.2.1.1.3.{#SNMPINDEX}'
+              key: 'synoDisk.diskTable.diskEntry.diskModel.[{#SNMPINDEX}]'
+              delay: 1d
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              description: 'Synology disk model name: the disk model name will be showed here.'
+              tags:
+                - tag: Application
+                  value: 'Synology disk'
+              trigger_prototypes:
+                - uuid: 3d766de2af494293a05ad8c6bed053f0
+                  expression: '(last(/Additional Template SNMP Synology DiskStation/synoDisk.diskTable.diskEntry.diskModel.[{#SNMPINDEX}],#1)<>last(/Additional Template SNMP Synology DiskStation/synoDisk.diskTable.diskEntry.diskModel.[{#SNMPINDEX}],#2))>0'
+                  name: '{#SNMPVALUE} was changed'
+                  priority: INFO
+                  description: 'Disk was changed'
+            - uuid: 982c2d44b07741e48f34501ef22279ae
+              name: '{#SNMPVALUE} Status'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.2.1.1.5.{#SNMPINDEX}'
+              key: 'synoDisk.diskTable.diskEntry.diskStatus.[{#SNMPINDEX}]'
+              history: 1w
+              description: |
+                Synology disk status: each meanings of status represented describe below:
+                [1] Normal: the hard disk functions normally.
+                [2] Initialized: the hard disk has system partition but no data.
+                [3] NotInitialized: the hard disk does not have system in system partition.	
+                [4] SystemPartitionFailed: the system partitions on the hard disks are damaged.
+                [5] Crashed: the hard disk has damaged.
+              valuemap:
+                name: SynologyDiskStatus
+              tags:
+                - tag: Application
+                  value: 'Synology disk'
+              trigger_prototypes:
+                - uuid: 49b5d85d10f94b4792b08b75d88b269d
+                  expression: 'last(/Additional Template SNMP Synology DiskStation/synoDisk.diskTable.diskEntry.diskStatus.[{#SNMPINDEX}])=5'
+                  name: '{#SNMPVALUE} disk damaged'
+                  priority: HIGH
+                  description: 'The disk is damaged'
+                - uuid: b26997a1533441b8a1d14f697da5ce54
+                  expression: 'last(/Additional Template SNMP Synology DiskStation/synoDisk.diskTable.diskEntry.diskStatus.[{#SNMPINDEX}])=4'
+                  name: '{#SNMPVALUE} partition damaged'
+                  priority: AVERAGE
+                  description: 'Partitions on the disk are damaged'
+            - uuid: f8f8635401444cecba6aed49b5335f29
+              name: '{#SNMPVALUE} Temperature'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.2.1.1.6.{#SNMPINDEX}'
+              key: 'synoDisk.diskTable.diskEntry.diskTemperature.[{#SNMPINDEX}]'
+              history: 1w
+              units: C
+              description: 'Synology disk temperature: the temperature of each disk uses Celsius degree.'
+              tags:
+                - tag: Application
+                  value: 'Synology disk'
+              trigger_prototypes:
+                - uuid: ce9e364312b145e7bf775d63d1cb288e
+                  expression: 'avg(/Additional Template SNMP Synology DiskStation/synoDisk.diskTable.diskEntry.diskTemperature.[{#SNMPINDEX}],#4)>60'
+                  name: '{#SNMPVALUE} temperature'
+                  priority: WARNING
+            - uuid: 8642466b7fb94aeab14c596204af0f19
+              name: '{#SNMPVALUE} Type'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.2.1.1.4.{#SNMPINDEX}'
+              key: 'synoDisk.diskTable.diskEntry.diskType.[{#SNMPINDEX}]'
+              delay: 1d
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              description: 'Synology disk type: the type of disk will be showed here, including SATA, SSD and so on.'
+              tags:
+                - tag: Application
+                  value: 'Synology disk'
+          graph_prototypes:
+            - uuid: a1ebf3d5a28145fc917202dd7343d9cf
+              name: 'Temperature: Disk {#SNMPVALUE}'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: 2774A4
+                  calc_fnc: ALL
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'synoDisk.diskTable.diskEntry.diskTemperature.[{#SNMPINDEX}]'
+                - sortorder: '1'
+                  color: 3333FF
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: system.temperature
+        - uuid: 1c7682fdc6ea4002b5ba75419f0a3e16
+          name: 'Synology disk SMART'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.6574.5.1.1.2,{#ATTRNAME},.1.3.6.1.4.1.6574.5.1.1.3,{#ATTRID},.1.3.6.1.4.1.6574.5.1.1.4,{#ATTRCURRENT},.1.3.6.1.4.1.6574.5.1.1.5,{#ATTRWORST},.1.3.6.1.4.1.6574.5.1.1.6,{#ATTRTHRESHOLD},.1.3.6.1.4.1.6574.5.1.1.7,{#ATTRRAW},.1.3.6.1.4.1.6574.5.1.1.8,{#ATTRSTATUS},.1.3.6.1.4.1.6574.5.1.1.9]'
+          key: synologyDiskSMART.diskSMARTTable.diskSMARTEntry
+          delay: 1h
+          description: 'An entry containing a disk SMART information.'
+          item_prototypes:
+            - uuid: 270bb530779a44919ac6a92729e0333a
+              name: '{#ATTRNAME} on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.5.1.1.9.{#SNMPINDEX}'
+              key: 'synologyDiskSMART.diskSMARTTable.diskSMARTEntry.[{#SNMPINDEX}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Synology disk SMART'
+              trigger_prototypes:
+                - uuid: fc099c81d7b8484fb0f3f5f03dc28027
+                  expression: '(last(/Additional Template SNMP Synology DiskStation/synologyDiskSMART.diskSMARTTable.diskSMARTEntry.[{#SNMPINDEX}],#1)<>last(/Additional Template SNMP Synology DiskStation/synologyDiskSMART.diskSMARTTable.diskSMARTEntry.[{#SNMPINDEX}],#2))>0'
+                  name: 'Disk SMART attribute {#ATTRNAME} state was changed on {#SNMPVALUE}'
+                  priority: HIGH
+        - uuid: 913127191ab34ae69943f7db4bbfafbb
+          name: 'Synology iSCSI LUN'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#LUNINDEX},.1.3.4.1.4.1.6574.104.1.1.1,{#LUNUID},.1.3.4.1.4.1.6574.104.1.1.2,{#LUNNAME},.1.3.4.1.4.1.6574.104.1.1.3]'
+          key: synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry
+          delay: 1h
+          description: 'An entry containing iscsi lun information.'
+          item_prototypes:
+            - uuid: 4a3e1ce1b23543b4ba3735eb68b1ad99
+              name: 'Disk latency read on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.10.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNDiskLatencyRead[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: ms
+              description: 'LUN read disk latency.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: c8c154be525b4f859c6a6dc14b54730c
+              name: 'Disk latency write on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.11.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNDiskLatencyWrite[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: ms
+              description: 'LUN write disk latency.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: e4d806ed99ee434a88f9a60e60c7f2d7
+              name: 'IOPS read on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.8.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNIopsRead[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: iops
+              description: 'LUN read iops.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: cb19b99612b347699781fb61abcb9103
+              name: 'IOPS write on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.9.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNIopsWrite[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: iops
+              description: 'LUN write iops.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: 0f55c57ec19c4d2691419ce0b01c8ae2
+              name: 'IO size read on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.14.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNIoSizeRead[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: B
+              description: 'LUN average io size when reading.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: 4d57b7458ab347f9962c7b49d1427537
+              name: 'IO size write on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.15.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNIoSizeWrite[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: B
+              description: 'LUN average io size when writing.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: ddfc6ac79b2f4dfaa20e7719c18d1f43
+              name: 'Network latency TX on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.12.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNNetworkLatencyTx[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: ms
+              description: 'LUN network tx latency.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: 8daffc8465af46c5998175397838ffc7
+              name: 'Throughput read high on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.4.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNThroughputReadHigh[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: bps
+              description: 'LUN read throughput over 32 bits part.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: 616c8c7c79a34383b6fc9683e0ca30d7
+              name: 'Throughput read low on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.5.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNThroughputReadLow[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: bps
+              description: 'LUN read throughput over 32 bits part.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: 87f60f96bb4d4573a493857e362f74ec
+              name: 'Throughput write high on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.6.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNThroughputWriteHigh[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: bps
+              description: 'The higher 32 bit of write throughput.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+            - uuid: 85f8b8fa34b845b48c7b3881f43b4d7d
+              name: 'Throughput write low on LUN {#LUNNAME} ({#LUNUID})'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.4.1.4.1.6574.104.1.1.7.[{#LUNINDEX}]'
+              key: 'synologyiSCSILUN.iSCSILUNTable.iSCSILUNEntry.iSCSILUNThroughputWriteLow[{#LUNINDEX}]'
+              history: 1w
+              value_type: FLOAT
+              units: bps
+              description: 'The lower 32 bit of write throughput.'
+              tags:
+                - tag: Application
+                  value: 'Synology iSCSI LUN'
+        - uuid: ba038eb1449a4121b16c3e5867b837d4
+          name: 'Synology service'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.6574.6.1.1.2]'
+          key: synologyService.serviceTable.serviceEntry
+          delay: 1h
+          description: 'An entry containing Service information.'
+          item_prototypes:
+            - uuid: 5182e205444d43bebda2d5a23bd04404
+              name: '{#SNMPVALUE} Users'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.6.1.1.3.{#SNMPINDEX}'
+              key: 'synologyService.serviceTable.serviceEntry.serviceUsers.[{#SNMPINDEX}]'
+              history: 1w
+              units: user(s)
+              description: 'Number of users using this service.'
+              tags:
+                - tag: Application
+                  value: 'Synology services'
+          graph_prototypes:
+            - uuid: 8c4181802884457c90f539efe7959d93
+              name: 'Service: {#SNMPVALUE} Users'
+              show_triggers: 'NO'
+              ymin_type_1: ITEM
+              ymin_item_1:
+                host: 'Additional Template SNMP Synology DiskStation'
+                key: 'synologyService.serviceTable.serviceEntry.serviceUsers.[{#SNMPINDEX}]'
+              ymax_type_1: ITEM
+              ymax_item_1:
+                host: 'Additional Template SNMP Synology DiskStation'
+                key: 'synologyService.serviceTable.serviceEntry.serviceUsers.[{#SNMPINDEX}]'
+              graph_items:
+                - color: 0000EE
+                  calc_fnc: ALL
+                  item:
+                    host: 'Additional Template SNMP Synology DiskStation'
+                    key: 'synologyService.serviceTable.serviceEntry.serviceUsers.[{#SNMPINDEX}]'
+        - uuid: cb1cdd4ad0d84f83a3ace5ce694082e1
+          name: 'Synology RAID volume'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.6574.3.1.1.2]'
+          key: synoRaid.raidTable.raidEntry
+          delay: 1h
+          item_prototypes:
+            - uuid: b41c9084f5584784b9acca93758d9ac3
+              name: '{#SNMPVALUE} RAID name'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.3.1.1.2.{#SNMPINDEX}'
+              key: 'synoRaid.raidTable.raidEntry.raidName.[{#SNMPINDEX}]'
+              delay: 1d
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              description: 'Synology raid name: the name of each raid will be showed here.'
+              tags:
+                - tag: Application
+                  value: 'Synology RAID'
+            - uuid: 6b4344a68699453b9519f09bafce7c68
+              name: '{#SNMPVALUE} RAID status'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.3.1.1.3.{#SNMPINDEX}'
+              key: 'synoRaid.raidTable.raidEntry.raidStatus.[{#SNMPINDEX}]'
+              history: 1w
+              description: |
+                Synology Raid status: each meanings of status represented describe below:
+                [1] Normal: the raid functions normally.
+                [11] Degrade: degrade happens when a tolerable failure of disk(s) occurs.
+                [12] Crashed: raid has crashed and just uses for read-only operation.
+                
+                Note: other status will be showed when creating or deleting raids, including below status:
+                [2] Repairing,
+                [3] Migrating,
+                [4] Expanding, 
+                [5] Deleting,
+                [6] Creating(6),
+                [7] RaidSyncing,
+                [8] RaidParityChecking,
+                [9] RaidAssembling and
+                [10] Canceling.
+              valuemap:
+                name: SynologyRaidStatus
+              tags:
+                - tag: Application
+                  value: 'Synology RAID'
+              trigger_prototypes:
+                - uuid: d3c40cf034944debb59e7fecfd7d0f17
+                  expression: 'last(/Additional Template SNMP Synology DiskStation/synoRaid.raidTable.raidEntry.raidStatus.[{#SNMPINDEX}])>1 and last(/Additional Template SNMP Synology DiskStation/synoRaid.raidTable.raidEntry.raidStatus.[{#SNMPINDEX}])<11'
+                  name: 'Raid status on {HOSTNAME}: abnormal'
+                  priority: WARNING
+                  description: |
+                    Repairing(2)
+                    Migrating(3)
+                    Expanding(4)
+                    Deleting(5)
+                    Creating(6)
+                    RaidSyncing(7)
+                    RaidParityChecking(8)
+                    RaidAssembling(9)
+                    Canceling(10)
+                - uuid: 104bc86da69b4fbaa4a3f0757a260c70
+                  expression: 'last(/Additional Template SNMP Synology DiskStation/synoRaid.raidTable.raidEntry.raidStatus.[{#SNMPINDEX}])=12'
+                  name: 'Raid status on {HOSTNAME}: crashed'
+                  priority: HIGH
+                  description: 'RAID has crashed and is now read-only.'
+                - uuid: 4a79caadd4a14c52adc3cd4cfd502941
+                  expression: 'last(/Additional Template SNMP Synology DiskStation/synoRaid.raidTable.raidEntry.raidStatus.[{#SNMPINDEX}])=11'
+                  name: 'Raid status on {HOSTNAME}: degrade'
+                  priority: AVERAGE
+                  description: 'Degrade is shown when a tolerable failure of disk(s) occurs.'
+      macros:
+        - macro: '{$DISK_UTIL_HIGH}'
+          value: '90'
+        - macro: '{$DISK_UTIL_WARN}'
+          value: '80'
+      valuemaps:
+        - uuid: 92a5283fdc1d450ea196297ac64d2628
+          name: SynologyCPUFanStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed
+        - uuid: 664b4f3bc4564df1bf2974987e62476a
+          name: SynologyDiskStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Initialized
+            - value: '3'
+              newvalue: NotInitialized
+            - value: '4'
+              newvalue: 'System Partition Failed'
+            - value: '5'
+              newvalue: Crashed
+        - uuid: 27b5c678c0234308828b23bd59a3f7c6
+          name: SynologyFanStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed
+        - uuid: 7d80f62c876d4290873ad64d3103a8da
+          name: SynologyRaidStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Repairing
+            - value: '3'
+              newvalue: Migrating
+            - value: '4'
+              newvalue: Expanding
+            - value: '5'
+              newvalue: Deleting
+            - value: '6'
+              newvalue: Creating
+            - value: '7'
+              newvalue: 'Raid Syncing'
+            - value: '8'
+              newvalue: 'Raid Parity Checking'
+            - value: '9'
+              newvalue: 'Raid Assembling'
+            - value: '10'
+              newvalue: Canceling
+            - value: '11'
+              newvalue: Degrade
+            - value: '12'
+              newvalue: Crashed
+            - value: '13'
+              newvalue: 'Data Scrubbing'
+            - value: '14'
+              newvalue: 'Raid Deploying'
+            - value: '15'
+              newvalue: 'Raid Un Deploying'
+            - value: '16'
+              newvalue: 'Raid Mount Cache'
+            - value: '17'
+              newvalue: 'Raid Unmount Cache'
+            - value: '18'
+              newvalue: 'Raid Expanding Unfinished SHR'
+            - value: '19'
+              newvalue: 'Raid Convert SHR To Pool'
+            - value: '20'
+              newvalue: 'Raid Migrate SHR1 To SHR2'
+            - value: '21'
+              newvalue: 'Raid Unknown Status'
+        - uuid: 990c72de64b140ce922400ddf131ebb3
+          name: SynologySystemStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed
+        - uuid: 8863042e61ec40179ed39f632da5e992
+          name: SynologyUpgradeAvailable
+          mappings:
+            - value: '1'
+              newvalue: Available
+            - value: '2'
+              newvalue: Unavailable
+            - value: '3'
+              newvalue: Connecting
+            - value: '4'
+              newvalue: Disconnected
+            - value: '5'
+              newvalue: 'Upgrading or Downloading'
+        - uuid: 4c50adf454b042ccbef347697c9b7a7f
+          name: SysnologyPowerStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed
+  graphs:
+    - uuid: 5a9224cef4d24898bb9cfe803c5085d5
+      name: 'CPU: Idle System User'
+      height: '300'
+      graph_items:
+        - drawtype: BOLD_LINE
+          color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: cpu.idle
+        - sortorder: '1'
+          color: F63100
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: cpu.system
+        - sortorder: '2'
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: cpu.user
+    - uuid: 895b753d8f2a4f7aa89fcb8204838395
+      name: 'Memory: Physical Memory (Exploded)'
+      width: '600'
+      height: '340'
+      yaxismax: '0'
+      show_work_period: 'NO'
+      show_triggers: 'NO'
+      type: EXPLODED
+      show_3d: 'YES'
+      graph_items:
+        - color: 6C59DC
+          calc_fnc: LAST
+          type: GRAPH_SUM
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: memory.total.real
+        - sortorder: '1'
+          color: EEEE00
+          calc_fnc: LAST
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: memory.available.real
+    - uuid: f4ad009e8a8c4fa7b42bca9d2d1fa615
+      name: 'Memory: Swap Memory (Exploded)'
+      width: '600'
+      height: '340'
+      yaxismax: '0'
+      show_work_period: 'NO'
+      show_triggers: 'NO'
+      type: EXPLODED
+      show_3d: 'YES'
+      graph_items:
+        - color: A54F10
+          calc_fnc: LAST
+          type: GRAPH_SUM
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: memory.total.swap
+        - sortorder: '1'
+          color: 2774A4
+          calc_fnc: LAST
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: memory.available.swap
+    - uuid: 031b5dbf255d4ad789b90059bef781b2
+      name: 'System: Temperature'
+      graph_items:
+        - drawtype: FILLED_REGION
+          color: 2774A4
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template SNMP Synology DiskStation'
+            key: system.temperature

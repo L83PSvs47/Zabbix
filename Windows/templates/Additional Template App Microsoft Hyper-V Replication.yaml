@@ -1,0 +1,85 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: fb50aaf9126d4787a992fd3c5f61eaf8
+      template: 'Additional Template App Microsoft Hyper-V Replication'
+      name: 'Additional Template App Microsoft Hyper-V Replication'
+      description: 'Мониторинг работы репликации Hyper-V.'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 6059501a8139448d9f8b856c2f2645cf
+          name: 'Hyper-V replication critical'
+          type: DEPENDENT
+          key: hyperv.replication.critical
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''ReplicationCritical'']'
+          master_item:
+            key: 'powershell[Get-HyperVReplication]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: replication
+          triggers:
+            - uuid: 4ba08ce0d60d4f29bbdab232abc37f00
+              expression: 'last(/Additional Template App Microsoft Hyper-V Replication/hyperv.replication.critical)<>0'
+              name: 'Hyper-V replication critical'
+              priority: HIGH
+        - uuid: 6eb0adaabb3c4b4aa71decebac00cc73
+          name: 'Hyper-V replication warning'
+          type: DEPENDENT
+          key: hyperv.replication.warning
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''ReplicationWarning'']'
+          master_item:
+            key: 'powershell[Get-HyperVReplication]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: replication
+          triggers:
+            - uuid: 41f4cde769b34394b372300a94393881
+              expression: 'last(/Additional Template App Microsoft Hyper-V Replication/hyperv.replication.warning)<>0'
+              name: 'Hyper-V replication warning'
+              priority: WARNING
+        - uuid: 01ead16de3854a2bad9241cb2bb55be6
+          name: 'PowerShell get Hyper-V replication'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Get-HyperVReplication]'
+          delay: '{$HV_REPLICATION_GET_INTERVAL}'
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'Get replication state from PowerShell script'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$HV_REPLICATION_DISCARD_UNCHANGED}'
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Application
+              value: 'PowerShell raw items'
+            - tag: Hyper-V
+              value: replication
+      macros:
+        - macro: '{$HV_REPLICATION_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$HV_REPLICATION_GET_INTERVAL}'
+          value: 15m

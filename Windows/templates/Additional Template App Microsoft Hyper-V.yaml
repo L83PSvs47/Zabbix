@@ -1,0 +1,1553 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: bbc2d665b02d442185c756db4b973610
+      template: 'Additional Template App Microsoft Hyper-V'
+      name: 'Additional Template App Microsoft Hyper-V'
+      description: |
+        Мониторинг сервера Hyper-V.
+        
+        Template for monitoring node from Microsoft Failover cluster with Hyper-V role or standalone Hyper-V.
+        
+        Read this before:
+        
+        Main concept
+        https://blogs.msdn.microsoft.com/tvoellm/2009/04/22/monitoring-hyper-v-performance/
+        
+        CPU
+        https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/
+        
+        Memory
+        https://blogs.technet.microsoft.com/neales/2016/11/22/hyper-v-performance-memory/
+        
+        Performance
+        https://docs.microsoft.com/en-us/windows-server/administration/performance-tuning/role/hyper-v-server/detecting-virtualized-environment-bottlenecks
+        
+        WMI classes
+        http://wutils.com/wmi/root/cimv2/win32_perfrawdata/
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 77377bdefc61443ead957ac751cd95db
+          name: 'Hypervisor free physical memory'
+          type: CALCULATED
+          key: hyperv.free.physical.memory
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          units: B
+          params: 'last(//vm.memory.size[total])-last(//vm.memory.size[used])'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 51863f071a844c9c800847e59b85cbf8
+          name: 'Hypervisor root memory assigned'
+          type: CALCULATED
+          key: hyperv.root.memory.assigned
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          units: B
+          params: 'last(//vm.memory.size[total])-last(//hyperv.vms.memory.assigned)-last(//hyperv.free.physical.memory)'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: cab7783487de42e4b02dd67403e8d5cd
+          name: 'Hypervisor vCPU ratio'
+          type: CALCULATED
+          key: hyperv.virtual.cpu.ratio
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          params: 'last(//perf_counter_en["\Hyper-V Hypervisor\Virtual Processors"])/last(//perf_counter_en["\Hyper-V Hypervisor\Logical Processors"])'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: ce3842a205b8438a8f47eb6fc50a2273
+              expression: 'last(/Additional Template App Microsoft Hyper-V/hyperv.virtual.cpu.ratio)>{$HV_VIRTUAL_TO_LOGICAL_CPU_RATIO}'
+              name: 'Calc Hyper-V Virtual to Logical CPU Ratio > {$HV_VIRTUAL_TO_LOGICAL_CPU_RATIO}'
+              priority: WARNING
+              manual_close: 'YES'
+        - uuid: f4036213085a4eceb7d826fd72f36302
+          name: 'VMs cluster state off'
+          type: DEPENDENT
+          key: hyperv.vms.cluster.state.off
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsClusterStateOff'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'cluster vms'
+        - uuid: b4d17b8818314c03b0a89d6f432488ed
+          name: 'VMs cluster state other'
+          type: DEPENDENT
+          key: hyperv.vms.cluster.state.other
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsClusterStateOther'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'cluster vms'
+        - uuid: ba8f4884a70048d287e7c04e2a28e618
+          name: 'VMs cluster state paused'
+          type: DEPENDENT
+          key: hyperv.vms.cluster.state.paused
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsClusterStatePaused'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'cluster vms'
+          triggers:
+            - uuid: dd258a4b72c74ae388493c3235c36ca7
+              expression: 'last(/Additional Template App Microsoft Hyper-V/hyperv.vms.cluster.state.paused)>last(/Additional Template App Microsoft Hyper-V/hyperv.vms.cluster.state.paused,#2) and last(/Additional Template App Microsoft Hyper-V/hyperv.vms.cluster.state.paused,#2)>last(/Additional Template App Microsoft Hyper-V/hyperv.vms.cluster.state.paused,#3)'
+              name: '{ITEM.LASTVALUE1} VMs changed state to paused'
+              priority: WARNING
+        - uuid: 56aa4c51a87d4cb794274b4ae870b0c0
+          name: 'VMs cluster state running'
+          type: DEPENDENT
+          key: hyperv.vms.cluster.state.running
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsClusterStateRunning'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'cluster vms'
+        - uuid: 4f037e5287974fdf83cf5c9fe004b2c0
+          name: 'VMs cluster state saved'
+          type: DEPENDENT
+          key: hyperv.vms.cluster.state.saved
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsClusterStateSaved'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'cluster vms'
+        - uuid: 231af5bde4084c0982300692e6ea57d9
+          name: 'VMs host state off'
+          type: DEPENDENT
+          key: hyperv.vms.host.state.off
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsHostStateOff'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: dbba66faf8934ac0a0f76f62b2b0fae8
+          name: 'VMs host state other'
+          type: DEPENDENT
+          key: hyperv.vms.host.state.other
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsHostStateOther'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: aa2997310cd04d659a9d66c6fc969495
+          name: 'VMs host state paused'
+          type: DEPENDENT
+          key: hyperv.vms.host.state.paused
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsHostStatePaused'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: db74fecd4cf64c1f9e599c132e9cd940
+          name: 'VMs host state running'
+          type: DEPENDENT
+          key: hyperv.vms.host.state.running
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsHostStateRunning'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: c7b413f121c84f178196e1525f54bae1
+          name: 'VMs host state saved'
+          type: DEPENDENT
+          key: hyperv.vms.host.state.saved
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsHostStateSaved'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: 3b7cefed5f68491da84187063d61b4dc
+          name: 'VMs memory assigned'
+          type: DEPENDENT
+          key: hyperv.vms.memory.assigned
+          delay: '0'
+          history: 1w
+          units: B
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsMemoryAssigned'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: d172eac225ec417298aa64e6b436d818
+          name: 'VMs memory demand'
+          type: DEPENDENT
+          key: hyperv.vms.memory.demand
+          delay: '0'
+          history: 1w
+          units: B
+          description: 'Memory is need for VMs'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsMemoryDemand'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: e81f493360684b08b54564c591b0f887
+          name: 'VMs memory maximum'
+          type: DEPENDENT
+          key: hyperv.vms.memory.maximum
+          delay: '0'
+          history: 1w
+          units: B
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsMemoryMaximum'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: 10860744f2dc41acad3b388aca27a087
+          name: 'VMs memory minimum'
+          type: DEPENDENT
+          key: hyperv.vms.memory.minimum
+          delay: '0'
+          history: 1w
+          units: B
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsMemoryMinimum'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: bbb23857108b4841bc47edbebfcafbd3
+          name: 'VMs memory startup'
+          type: DEPENDENT
+          key: hyperv.vms.memory.startup
+          delay: '0'
+          history: 1w
+          units: B
+          description: 'Memory is need for VMs'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''vmsMemoryStartup'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: 'host vms'
+        - uuid: b7e7d48a4494411c99f767ed555a89ff
+          name: 'VMs online'
+          type: CALCULATED
+          key: hyperv.vms.online
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          params: 'last(//perf_counter_en["\Hyper-V Hypervisor\Partitions"])-1'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 94d6868972224b0f91614442fbe78060
+          name: 'VMs used physical memory  %'
+          type: CALCULATED
+          key: hyperv.vms.used.physical.memory.percent
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          params: '(last(//hyperv.vms.memory.assigned)*100)/last(//vm.memory.size[total])'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 9de364eb80cf4234895ed2f1a427f82a
+          name: 'Hypervisor dynamic memory maximum load per host'
+          type: DEPENDENT
+          key: hypervisor.dynamic.memory.maximum.load.per.host
+          delay: '0'
+          history: 1w
+          value_type: FLOAT
+          description: |
+            This monitor calculates the relationship between sum of all maximum virtual machine memory in a host and the physical memory of the host.
+            
+            Formula
+            ((SUM of Maximum RAM Memory for all running VMs with DM + SUM of RAM Memory of all running VMs with Static Memory) / (Physical Memory))*100
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''hostUsedPerc'']'
+          master_item:
+            key: 'powershell[Get-HyperV,all]'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: a25516c162bb467d8873fc9f2cb02f70
+              expression: 'last(/Additional Template App Microsoft Hyper-V/hypervisor.dynamic.memory.maximum.load.per.host)>{$HV_MEMORY_MAXIMUM_LOAD_PER_HOST}'
+              name: 'Sum of memory for all VMs in this host is over the physical memory of the host'
+              priority: HIGH
+        - uuid: 652df2168f664da6bc52bb0a0315c2c8
+          name: 'Hypervisor dynamic memory balancer available memory'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Dynamic Memory Balancer(*)\Available Memory"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          units: B
+          description: |
+            This counter represents the amount of memory left on the node.
+            
+            wmi.get[root\cimv2, select AvailableMemory FROM Win32_PerfFormattedData_BalancerStats_HyperVDynamicMemoryBalancer]
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1048576'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 2c222d895c8a47c6b988b9cc363ac2ec
+          name: 'Hypervisor logical processor guest run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Guest Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the processor in guest code.
+            
+            wmi.get[root\cimv2, select PercentGuestRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: c9d246a3faa74ee79d722b76bc9c490f
+          name: 'Hypervisor logical processor hypervisor run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Hypervisor Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the processor in hypervisor code.
+            
+            wmi.get[root\cimv2, select PercentHypervisorRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: abd9185e6b4f49c6b49aeb2f10187983
+          name: 'Hypervisor logical processor idle run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Idle Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the processor in an idle state.
+            
+            wmi.get[root\cimv2, select PercentIdleTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: 0606238d175d4069a326c2d39d66863f
+              expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Idle Time"],#3)<{$HV_LOGICAL_PROCESSOR_IDLE_TIME}'
+              name: 'Hypervisor logical processor idle time < {$HV_LOGICAL_PROCESSOR_IDLE_TIME}%'
+              priority: WARNING
+        - uuid: cebcb905c6b24466b8f0e59a48692731
+          name: 'Hypervisor logical processor total run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the processor in guest code.
+            
+            wmi.get[root\cimv2, select PercentTotalRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: baddba632f864796ac4ae692fcd05c9b
+              expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],5s)>{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_AVERAGE}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],15s)<{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_AVERAGE}'
+              name: 'Hypervisor logical processor total runtime > {$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_AVERAGE}%'
+              url: 'https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/'
+              priority: AVERAGE
+              description: |
+                If _Total meets this, identify sources of CPU load (sounds obvious but.. )
+                
+                If single / small % of CPUs consistently affected, especially (but not necessarily) CPU 0 look for VMQ / RSS config issues, or other hardware issue.
+                
+                If a small number of CPUs are impacted, but the busy CPU does vary, then check the two "% Guest Run Time" processor counters below
+              dependencies:
+                - name: 'Hypervisor logical processor total runtime > {$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_HIGH}%'
+                  expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],5s)>{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_HIGH}'
+                  recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],15s)<{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_HIGH}'
+            - uuid: c1756f2ec7cc49288f2009d36ced2a04
+              expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],5s)>{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_HIGH}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],15s)<{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_HIGH}'
+              name: 'Hypervisor logical processor total runtime > {$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_HIGH}%'
+              url: 'https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/'
+              priority: HIGH
+              description: |
+                If _Total meets this, identify sources of CPU load (sounds obvious but.. )
+                
+                If single / small % of CPUs consistently affected, especially (but not necessarily) CPU 0 look for VMQ / RSS config issues, or other hardware issue.
+                
+                If a small number of CPUs are impacted, but the busy CPU does vary, then check the two "% Guest Run Time" processor counters below
+            - uuid: 2ff5304fc1bc46008bb527b13cbf3448
+              expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],5s)>{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_WARNING}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],15s)<{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_WARNING}'
+              name: 'Hypervisor logical processor total runtime > {$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_WARNING}%'
+              url: 'https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/'
+              priority: WARNING
+              description: |
+                If _Total meets this, identify sources of CPU load (sounds obvious but.. )
+                
+                If single / small % of CPUs consistently affected, especially (but not necessarily) CPU 0 look for VMQ / RSS config issues, or other hardware issue.
+                
+                If a small number of CPUs are impacted, but the busy CPU does vary, then check the two "% Guest Run Time" processor counters below
+              dependencies:
+                - name: 'Hypervisor logical processor total runtime > {$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_AVERAGE}%'
+                  expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],5s)>{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_AVERAGE}'
+                  recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_Total)\% Total Run Time"],15s)<{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_AVERAGE}'
+        - uuid: 71b6e9ed48674555a3db6008194d78b4
+          name: 'Hypervisor logical processor context switching /sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Logical Processor(_total)\Context Switches/sec"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          description: |
+            The rate of virtual processor context switches on the processor.
+            
+            wmi.get[root\cimv2, select ContextSwitchesPersec FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorLogicalProcessor]
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: 921578e87e10457daf07b05c720531bf
+              expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_total)\Context Switches/sec"],15m)>{$HV_LOGICAL_PROCESSOR_CONTEXT_SWITCHES}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Logical Processor(_total)\Context Switches/sec"],30m)<{$HV_LOGICAL_PROCESSOR_CONTEXT_SWITCHES}'
+              name: 'Hypervisor logical processor context switches/sec > {$HV_LOGICAL_PROCESSOR_CONTEXT_SWITCHES}'
+              url: 'https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/'
+              priority: WARNING
+              description: |
+                Why: We use this as a general health & performance indicator for the host & virtual machines. This counter must be used in context with all other activity based counters (CPU, Disk & Network, latency & throughput).
+                
+                What to do if threshold is exceeded:
+                Check VM config (particularly remove / disable any active & busy emulated devices)
+                Check that the VM is using the correct version of the integration components.
+                Check host operating system utilization Root VP CPU usage (host OS utilization) - see the "Hyper-V Hypervisor Root Virtual Processor" counter section for the specifics.
+                Check drivers - particularly network and storage drivers, but other too.
+                Check for significant inconsistency across your hosts - it can indicate significant configuration or load differences.
+        - uuid: b1399b6f4190448c88d05b438816fcc4
+          name: 'Hypervisor root virtual processor guest run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Guest Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor in guest code.
+            
+            wmi.get[root\cimv2, select PercentGuestRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 42b80a05681b479aa3c336d2a3c790a4
+          name: 'Hypervisor root virtual processor hypervisor run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Hypervisor Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor in hypervisor code.
+            
+            wmi.get[root\cimv2, select PercentHypervisorRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 21994c060b764a76a01d4c3363baf12c
+          name: 'Hypervisor root virtual processor remote run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Remote Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor running on a remote node.
+            
+            wmi.get[root\cimv2, select PercentRemoteRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 277b324e0c93469db3db432984dd1722
+          name: 'Hypervisor root virtual processor total run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Root Virtual Processor(_Total)\% Total Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor in guest and hypervisor code.
+            
+            wmi.get[root\cimv2, select PercentTotalRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorRootVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: ae6a826b02b14d6d9f7dfdd85a864cc8
+          name: 'Hypervisor virtual processor guest run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor in guest code.
+            
+            wmi.get[root\cimv2, select PercentGuestRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: c3ca3974cfd44cfeac265608da3a3054
+              expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time"],15m)>{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_AVERAGE}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time"],30m)<{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_AVERAGE}'
+              name: 'Hypervisor root virtual processor guest runtime > {$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_AVERAGE}%'
+              url: 'https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/'
+              description: |
+                Why: The host OS doesn't compete for CPU time in Hyper-V. It always immediately gets any CPU time it needs, which is necessary to provide great performance for virtual machines. This means any unnecessary CPU usage in the host OS can have a significant negative performance impact on all virtual machines - which is why the guidance is to install as little as possible on the host OS (absolute minimum of agents, services & applications).
+                
+                What to do if threshold is exceeded:
+                Check for any non-default OS running services / agents / processes in this OS, and review if they are really necessary.
+                Check VMQ/RSS configuration (if 10GB NICs are in use) and for bad drivers - especially if this the CPU usage is focused on a small percentage of the hosts OS's VPs.
+                Standard CPU performance troubleshooting - as if it was a physical machine.
+                For general administration, use remote management tools instead of locally or via RDP on the host.
+              dependencies:
+                - name: 'Hypervisor root virtual processor guest runtime > {$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_HIGH}%'
+                  expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time"],15m)>{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_HIGH}'
+                  recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time"],30m)<{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_HIGH}'
+            - uuid: a4e3a5688d9a40e686790a43f1e1625e
+              expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time"],15m)>{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_HIGH}'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'avg(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Guest Run Time"],30m)<{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_HIGH}'
+              name: 'Hypervisor root virtual processor guest runtime > {$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_HIGH}%'
+              url: 'https://blogs.technet.microsoft.com/neales/2016/10/24/hyper-v-performance-cpu/'
+              priority: INFO
+              description: |
+                Why: The host OS doesn't compete for CPU time in Hyper-V. It always immediately gets any CPU time it needs, which is necessary to provide great performance for virtual machines. This means any unnecessary CPU usage in the host OS can have a significant negative performance impact on all virtual machines - which is why the guidance is to install as little as possible on the host OS (absolute minimum of agents, services & applications).
+                
+                What to do if threshold is exceeded:
+                Check for any non-default OS running services / agents / processes in this OS, and review if they are really necessary.
+                Check VMQ/RSS configuration (if 10GB NICs are in use) and for bad drivers - especially if this the CPU usage is focused on a small percentage of the hosts OS's VPs.
+                Standard CPU performance troubleshooting - as if it was a physical machine.
+                For general administration, use remote management tools instead of locally or via RDP on the host.
+        - uuid: 31e165edbbfe45bcae1f35f0302f919c
+          name: 'Hypervisor virtual processor hypervisor run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Hypervisor Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor in hypervisor code.
+            
+            wmi.get[root\cimv2, select PercentHypervisorRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 63f4a1dbf92045448735bf03508d9124
+          name: 'Hypervisor virtual processor remote run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Remote Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor running on a remote node.
+            
+            wmi.get[root\cimv2, select PercentRemoteRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 66e2fdaedd964686a973114d21fa6d26
+          name: 'Hypervisor virtual processor total run time %'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor Virtual Processor(_Total)\% Total Run Time"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            The percentage of time spent by the virtual processor in guest and hypervisor code.
+            
+            wmi.get[root\cimv2, select PercentTotalRunTime FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorVirtualProcessor WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 9ef1d9491b094ad7b6ebfc7e91f3dee6
+          name: 'Hypervisor logical processors'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor\Logical Processors"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            The number of logical processors present in the system.
+            
+            wmi.get[root\cimv2, select LogicalProcessors FROM Win32_PerfFormattedData_HvStats_HyperVHypervisor]
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 26ff20c776974a0b925efacc33922a61
+          name: 'Hypervisor monitored notifications'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor\Monitored Notifications"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: 'This parameter displays the number of monitored notifications registered with the Hypervisor.'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 8d336673acd444c0bad9910e5569c26b
+          name: 'Hypervisor partitions (virtual machines)'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor\Partitions"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            The number of partitions (virtual machines) present in the system.
+            
+            Partitions - Each virtual machine on the system is run in a container called a partition.   If you have no VM`s running this value will be set to 1 because the "host OS" called the "root" in Hyper-V is also running in a partition.  So if you have 2 guest VM`s running this value will be 3.  +1 for each guest and +1 for the root.
+            
+            wmi.get[root\cimv2, select Partitions FROM Win32_PerfFormattedData_HvStats_HyperVHypervisor]
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: a40f3b99a94147239d83a00a5428c98a
+          name: 'Hypervisor total pages'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor\Total Pages"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: 'Displays the number of pages bootstrapped and deposited in the Hypervisor.'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 421087c1f8e549d9be159ce8549ab771
+          name: 'Hypervisor virtual processors'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Hypervisor\Virtual Processors"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            The number of virtual processors present in the partition.
+            
+            wmi.get[root\cimv2, select VirtualProcessors FROM Win32_PerfFormattedData_HvStats_HyperVHypervisorPartition]
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: 44c697c1a9844ff4891de2b81aa2434a
+          name: 'VMs health critical'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Virtual Machine Health Summary\Health Critical"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            The number of critical VMs on a host.
+            
+            This counter represents the number of virtual machines with critical health.
+            http://wutils.com/wmi/root/cimv2/win32_perfrawdata_vmmsvirtualmachinestats_hypervvirtualmachinehealthsummary/
+            
+            wmi.get[root\cimv2, select HealthCritical FROM Win32_PerfFormattedData_VmmsVirtualMachineStats_HyperVVirtualMachineHealthSummary]
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: 60b72d5af1554611acf4b71f02d9695e
+              expression: 'last(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Virtual Machine Health Summary\Health Critical"])<>0'
+              name: 'Host has critical VMs'
+              priority: HIGH
+              description: 'The number of VMs running in a critical state.'
+        - uuid: 4d412733b7d240e583db295eeaffeb00
+          name: 'VMs health OK'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V Virtual Machine Health Summary\Health Ok"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            The number of OK VM's on a host.
+            
+            This counter represents the number of virtual machines with ok health.
+            http://wutils.com/wmi/root/cimv2/win32_perfrawdata_vmmsvirtualmachinestats_hypervvirtualmachinehealthsummary/
+            
+            wmi.get[root\cimv2, select HealthOk FROM Win32_PerfFormattedData_VmmsVirtualMachineStats_HyperVVirtualMachineHealthSummary]
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+          triggers:
+            - uuid: 1f06b4152a3846dba75d460ddb501451
+              expression: 'last(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Virtual Machine Health Summary\Health Ok"])=0'
+              name: 'Host has 0 VMs in OK state'
+              priority: AVERAGE
+              description: 'Number of VMs in an OK state.'
+        - uuid: 58a3d1217c3b4b0684e3059d123ed912
+          name: 'Hypervisor VM VID partition physical pages allocated'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Hyper-V VM VID Partition(_total)\Physical Pages Allocated"]'
+          delay: '{$HV_PERFORMANCE_INTERVAL}'
+          history: 1w
+          description: |
+            The number of physical pages allocated. Pages = 4Kb
+            
+            The Physical Pages Allocated counter enables you to determine the percentage of the virtual machine`s memory that is split between more than one physical NUMA node.
+            
+            wmi.get[root\cimv2, select PhysicalPagesAllocated FROM Win32_PerfFormattedData_VidPerfProvider_HyperVVMVidPartition WHERE Name='_Total']
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Hyper-V
+              value: host
+        - uuid: b57760706f1d4147bb3fb549bc72fe8b
+          name: 'PowerShell get Hyper-V host'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Get-HyperV,all]'
+          delay: '{$HV_GET_INTERVAL}'
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'Get statistics from PowerShell script'
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '3600'
+          tags:
+            - tag: Application
+              value: Hyper-V
+            - tag: Application
+              value: 'PowerShell raw items'
+      discovery_rules:
+        - uuid: bcedc362e86f478ba2e7032bbd508ec8
+          name: 'Virtual machine discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-HyperV,vmname]'
+          delay: '{$HV_REQUEST_INTERVAL}'
+          description: 'Under constructions'
+          item_prototypes:
+            - uuid: abf36fe9ae5d4eb8ac6a38039bf12317
+              name: 'VM {#HV.VMNAME} uptime'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},"vmUptime"]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: s
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmUptime'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 81cd2c3bc91d4d418e9c40cfdaa65367
+              name: 'VM {#HV.VMNAME} chekpoint count'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmChekpointCount]'
+              delay: '0'
+              history: 1w
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmChekpointCount'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+              trigger_prototypes:
+                - uuid: 4ba646975eb64e2f93dc582ce51d89ba
+                  expression: 'avg(/Additional Template App Microsoft Hyper-V/hyperv[{#HV.VMNAME},vmChekpointCount],1d)>=1'
+                  name: 'VM {#HV.VMNAME} chekpoint enabled'
+                  priority: HIGH
+            - uuid: 3fd3ad7afc7244cfbdb50861ee540bcc
+              name: 'VM {#HV.VMNAME} CPU usage'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmCPUUsage]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmCPUUsage'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 79e097b782404c2da32d36f33b486df6
+              name: 'VM {#HV.VMNAME} integration services state'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmIntegrationServicesState]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: 'Hyper-V VM Integration Services State'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmIntegrationServicesState'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 8386d8bcf44d466587250a8fda9e2b27
+              name: 'VM {#HV.VMNAME} integration services version'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmIntegrationServicesVersion]'
+              delay: '0'
+              history: 1w
+              trends: '0'
+              status: DISABLED
+              discover: NO_DISCOVER
+              value_type: CHAR
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmIntegrationServicesVersion'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: f08ebecd3a8f400896d8882f5ecb39c2
+              name: 'VM {#HV.VMNAME} is clustered'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmIsClustered]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmIsClustered'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 1a84500d642d4d75b6c5778bf44ae7cd
+              name: 'VM {#HV.VMNAME} memory assigned'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmMemoryAssigned]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: B
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmMemoryAssigned'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: e79beb288c374e1092fbcb694acfb85b
+              name: 'VM {#HV.VMNAME} memory status'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmMemoryStatus]'
+              delay: '0'
+              history: 1w
+              trends: '0'
+              status: DISABLED
+              discover: NO_DISCOVER
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmMemoryStatus'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 91478140b6a34e01b1f1c4bcad164e4d
+              name: 'VM {#HV.VMNAME} numa nodes count'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmNumaNodesCount]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmNumaNodesCount'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: a9efd58b8ec148b5a80f96f30444b35e
+              name: 'VM {#HV.VMNAME} numa sockets count'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmNumaSocketCount]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmNumaSocketCount'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 2600413444874d32a1a6fe3705f0db0f
+              name: 'VM {#HV.VMNAME} vm owner node'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmOwnerNode]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmOwnerNode'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: da3ed6a0d92e447784a49c9200a52679
+              name: 'VM {#HV.VMNAME} owner'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmOwner]'
+              delay: '0'
+              history: 1w
+              trends: '0'
+              status: DISABLED
+              discover: NO_DISCOVER
+              value_type: TEXT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmOwner'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 5af6819067ea41b0acb3f07d29596d5e
+              name: 'VM {#HV.VMNAME} processor count'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmProcessorCount]'
+              delay: '0'
+              history: 1w
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmProcessorCount'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+              trigger_prototypes:
+                - uuid: 983ba593427b4a59a23080562b640aaf
+                  expression: 'last(/Additional Template App Microsoft Hyper-V/hyperv[{#HV.VMNAME},vmProcessorCount])=1'
+                  name: 'VM {#HV.VMNAME} only one processor assigned'
+                  priority: HIGH
+            - uuid: d297942c4d5045fead43a31f85f4e1cb
+              name: 'VM {#HV.VMNAME} replication health'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmReplicationHealth]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: 'Hyper-V VM Replication Health'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmReplicationHealth'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 39bda024fb9c4d488edf875b04a23357
+              name: 'VM {#HV.VMNAME} replication mode'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmReplicationMode]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: 'Hyper-V VM Replication Mode'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmReplicationMode'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 3a092602a9274134b32c94844778ada9
+              name: 'VM {#HV.VMNAME} replication state'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmReplicationState]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: 'Hyper-V VM Replication State'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmReplicationState'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: e13dd931d23b458f9232dcbb99efd5c9
+              name: 'VM {#HV.VMNAME} state'
+              type: DEPENDENT
+              key: 'hyperv[{#HV.VMNAME},vmState]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: 'Hyper-V VM State'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''vmState'']'
+              master_item:
+                key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: a953c36d00e7470294cb99a35d549a2e
+              name: 'VM {#HV.VMNAME} average memory pressure'
+              type: ZABBIX_ACTIVE
+              key: 'perf_counter_en["\Hyper-V Dynamic Memory VM({#HV.VMNAME})\Average Pressure"]'
+              delay: '{$HV_PERFORMANCE_INTERVAL}'
+              history: 1w
+              units: '%'
+              description: 'This counter represents the average pressure in the VM. This displays the ratio of committed memory within the VM to the memory allocated to the virtual machine. This indicates whether the virtual machine has enough memory for its current needs, and values close to and over 100 indicate performance impacting page file use within the virtual machine.'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+              trigger_prototypes:
+                - uuid: 3b5b151013214a0cbbab9db5e2e2269d
+                  expression: 'last(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Dynamic Memory VM({#HV.VMNAME})\Average Pressure"])> {$HV_VM_MEMORY_PREASURE_AVERAGE}'
+                  name: 'VM {#HV.VMNAME} average memory pressure > {$HV_VM_MEMORY_PREASURE_AVERAGE}'
+                  priority: AVERAGE
+                  description: |
+                    Ideally the proportion should be consistently reported around 80, definitely below 100 and no spikes above 100. Some highly tuned systems that are very dense may run higher than 80.
+                    
+                    So long as the proportion stays under 100 there is enough available memory to service all virtual machines on the Hyper-V server. If the proportion exceeds 100 then virtual machine(s) are doing paging operations with the virtual machine itself and there will be performance degradation.
+                  dependencies:
+                    - name: 'VM {#HV.VMNAME} average memory pressure > {$HV_VM_MEMORY_PREASURE_HIGH}'
+                      expression: 'last(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Dynamic Memory VM({#HV.VMNAME})\Average Pressure"])>{$HV_VM_MEMORY_PREASURE_HIGH}'
+                - uuid: 0eba6240131247449e9c5b3451bd210b
+                  expression: 'last(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Dynamic Memory VM({#HV.VMNAME})\Average Pressure"])>{$HV_VM_MEMORY_PREASURE_HIGH}'
+                  name: 'VM {#HV.VMNAME} average memory pressure > {$HV_VM_MEMORY_PREASURE_HIGH}'
+                  priority: HIGH
+                  description: |
+                    Ideally the proportion should be consistently reported around 80, definitely below 100 and no spikes above 100. Some highly tuned systems that are very dense may run higher than 80.
+                    
+                    So long as the proportion stays under 100 there is enough available memory to service all virtual machines on the Hyper-V server. If the proportion exceeds 100 then virtual machine(s) are doing paging operations with the virtual machine itself and there will be performance degradation.
+                - uuid: 8a7ad0de7e384e8096a2b51fd36c5fc7
+                  expression: 'last(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Dynamic Memory VM({#HV.VMNAME})\Average Pressure"])>{$HV_VM_MEMORY_PREASURE_WARNING}'
+                  name: 'VM {#HV.VMNAME} average memory pressure > {$HV_VM_MEMORY_PREASURE_WARNING}'
+                  priority: WARNING
+                  description: |
+                    Ideally the proportion should be consistently reported around 80, definitely below 100 and no spikes above 100. Some highly tuned systems that are very dense may run higher than 80.
+                    
+                    So long as the proportion stays under 100 there is enough available memory to service all virtual machines on the Hyper-V server. If the proportion exceeds 100 then virtual machine(s) are doing paging operations with the virtual machine itself and there will be performance degradation.
+                  dependencies:
+                    - name: 'VM {#HV.VMNAME} average memory pressure > {$HV_VM_MEMORY_PREASURE_AVERAGE}'
+                      expression: 'last(/Additional Template App Microsoft Hyper-V/perf_counter_en["\Hyper-V Dynamic Memory VM({#HV.VMNAME})\Average Pressure"])> {$HV_VM_MEMORY_PREASURE_AVERAGE}'
+            - uuid: 2bcf18c844cd4fe19499d40379ba358d
+              name: 'VM {#HV.VMNAME} physical memory'
+              type: ZABBIX_ACTIVE
+              key: 'perf_counter_en["\Hyper-V Dynamic Memory VM({#HV.VMNAME})\Physical Memory"]'
+              delay: '{$HV_PERFORMANCE_INTERVAL}'
+              history: 1w
+              units: B
+              description: 'This counter represents the current amount of memory in the VM.'
+              preprocessing:
+                - type: MULTIPLIER
+                  parameters:
+                    - '1048576'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VM'
+                  value: '{#HV.VMNAME}'
+            - uuid: 46224b2a1e8b4b90b74ec91f2775a49f
+              name: 'PowerShell get VM {#HV.VMNAME}'
+              type: ZABBIX_ACTIVE
+              key: 'powershell[Get-HyperV,{#HV.VMNAME}]'
+              delay: '{$HV_GET_INTERVAL}'
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$HV_DISCARD_UNCHANGED}'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: Application
+                  value: 'PowerShell raw items'
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+        - uuid: 11cf0f599c0c4002a1f9991fdf6932c9
+          name: 'Virtual switch discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-HyperV,vsname]'
+          delay: '{$HV_REQUEST_INTERVAL}'
+          item_prototypes:
+            - uuid: a6350a8f408e43d5afbff40e8fe70688
+              name: 'VS {#HV.VSNAME} bytes received /sec'
+              type: ZABBIX_ACTIVE
+              key: 'perf_counter_en["\Hyper-V Virtual Switch({#HV.VSNAME})\Bytes Received/sec"]'
+              delay: '{$HV_PERFORMANCE_INTERVAL}'
+              history: 1w
+              value_type: FLOAT
+              units: Bits/sec
+              description: 'This counter indicates the total bytes received per second on all ports of your Virtual Switch.'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VS'
+                  value: '{#HV.VSNAME}'
+            - uuid: 52d5472590e34a4e8e505e774c8ccbb4
+              name: 'VS {#HV.VSNAME} bytes sent /sec'
+              type: ZABBIX_ACTIVE
+              key: 'perf_counter_en["\Hyper-V Virtual Switch({#HV.VSNAME})\Bytes Sent/sec"]'
+              delay: '{$HV_PERFORMANCE_INTERVAL}'
+              history: 1w
+              value_type: FLOAT
+              units: Bits/sec
+              description: 'This counter indicates the total bytes sent per second on all ports of your Virtual Switch.'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VS'
+                  value: '{#HV.VSNAME}'
+            - uuid: 572c844312fc4d6abbe8f720c92ebccc
+              name: 'VS {#HV.VSNAME} dropped incoming packets/sec'
+              type: ZABBIX_ACTIVE
+              key: 'perf_counter_en["\Hyper-V Virtual Switch({#HV.VSNAME})\Dropped Packets Incoming/sec"]'
+              delay: '{$HV_PERFORMANCE_INTERVAL}'
+              history: 1w
+              value_type: FLOAT
+              description: 'This counter represents the total number of packet dropped per second by the virtual switch in the incoming direction.'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VS'
+                  value: '{#HV.VSNAME}'
+            - uuid: ce317e34ff474a9ca26bceaefdf50021
+              name: 'VS {#HV.VSNAME} dropped outgoing packets/sec'
+              type: ZABBIX_ACTIVE
+              key: 'perf_counter_en["\Hyper-V Virtual Switch({#HV.VSNAME})\Dropped Packets Outgoing/sec"]'
+              delay: '{$HV_PERFORMANCE_INTERVAL}'
+              history: 1w
+              value_type: FLOAT
+              description: 'This counter represents the total number of packet dropped per second by the virtual switch in the outgoing direction'
+              tags:
+                - tag: Application
+                  value: Hyper-V
+                - tag: 'Hyper-V VS'
+                  value: '{#HV.VSNAME}'
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+      macros:
+        - macro: '{$HV_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$HV_GET_INTERVAL}'
+          value: 15m
+        - macro: '{$HV_LOGICAL_PROCESSOR_CONTEXT_SWITCHES}'
+          value: '20000'
+        - macro: '{$HV_LOGICAL_PROCESSOR_IDLE_TIME}'
+          value: '10'
+        - macro: '{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_AVERAGE}'
+          value: '75'
+        - macro: '{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_HIGH}'
+          value: '85'
+        - macro: '{$HV_LOGICAL_PROCESSOR_TOTAL_RUNTIME_WARNING}'
+          value: '50'
+        - macro: '{$HV_MEMORY_MAXIMUM_LOAD_PER_HOST}'
+          value: '90'
+        - macro: '{$HV_PERFORMANCE_INTERVAL}'
+          value: 5m
+        - macro: '{$HV_REQUEST_INTERVAL}'
+          value: 1h
+        - macro: '{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_AVERAGE}'
+          value: '5'
+        - macro: '{$HV_ROOT_VIRTUAL_PROCESSOR_GUEST_RUNTIME_HIGH}'
+          value: '10'
+        - macro: '{$HV_VIRTUAL_TO_LOGICAL_CPU_RATIO}'
+          value: '8'
+        - macro: '{$HV_VM_MEMORY_PREASURE_AVERAGE}'
+          value: '100'
+        - macro: '{$HV_VM_MEMORY_PREASURE_HIGH}'
+          value: '120'
+        - macro: '{$HV_VM_MEMORY_PREASURE_WARNING}'
+          value: '80'
+      valuemaps:
+        - uuid: 2e61bece0ceb4a478093fc812589db5a
+          name: 'Hyper-V VM Integration Services State'
+          mappings:
+            - value: '0'
+              newvalue: 'Up to date'
+            - value: '1'
+              newvalue: 'Update required'
+            - value: '2'
+              newvalue: Unknown
+        - uuid: ea4e12eb605d4873b20549faebbe8e33
+          name: 'Hyper-V VM Replication Health'
+          mappings:
+            - value: '0'
+              newvalue: NotApplicable
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Warning
+            - value: '3'
+              newvalue: Critical
+        - uuid: 34d10d5b9a744165a40e53f19ce62021
+          name: 'Hyper-V VM Replication Mode'
+          mappings:
+            - value: '0'
+              newvalue: None
+            - value: '1'
+              newvalue: Primary
+            - value: '2'
+              newvalue: Replica
+            - value: '3'
+              newvalue: TestReplica
+            - value: '4'
+              newvalue: ExtendedReplica
+        - uuid: b16de8f31ee6453696726df7355ab070
+          name: 'Hyper-V VM Replication State'
+          mappings:
+            - value: '0'
+              newvalue: Disabled
+            - value: '1'
+              newvalue: ReadyForInitialReplication
+            - value: '2'
+              newvalue: InitialReplicationInProgress
+            - value: '3'
+              newvalue: WaitingForInitialReplication
+            - value: '4'
+              newvalue: Replicating
+            - value: '5'
+              newvalue: PreparedForFailover
+            - value: '6'
+              newvalue: FailedOverWaitingCompletion
+            - value: '7'
+              newvalue: FailedOver
+            - value: '8'
+              newvalue: Suspended
+            - value: '9'
+              newvalue: Error
+            - value: '10'
+              newvalue: WaitingForStartResynchronize
+            - value: '11'
+              newvalue: Resynchronizing
+            - value: '12'
+              newvalue: ResynchronizeSuspended
+            - value: '13'
+              newvalue: RecoveryInProgress
+            - value: '14'
+              newvalue: FailbackInProgress
+            - value: '15'
+              newvalue: FailbackComplete
+        - uuid: e368f19350554bf38e0c3c91dc14200e
+          name: 'Hyper-V VM State'
+          mappings:
+            - value: '1'
+              newvalue: Other
+            - value: '2'
+              newvalue: Running
+            - value: '3'
+              newvalue: 'Off'
+            - value: '4'
+              newvalue: Stopping
+            - value: '6'
+              newvalue: Saved
+            - value: '9'
+              newvalue: Paused
+            - value: '10'
+              newvalue: Starting
+            - value: '11'
+              newvalue: Reset
+            - value: '32773'
+              newvalue: Saving
+            - value: '32776'
+              newvalue: Pausing
+            - value: '32777'
+              newvalue: Resuming
+            - value: '32779'
+              newvalue: FastSaved
+            - value: '32780'
+              newvalue: FastSaving
+            - value: '32781'
+              newvalue: RunningCritical
+            - value: '32782'
+              newvalue: OffCritical
+            - value: '32783'
+              newvalue: StoppingCritical
+            - value: '32784'
+              newvalue: SavedCritical
+            - value: '32785'
+              newvalue: PausedCritical
+            - value: '32786'
+              newvalue: StartingCritical
+            - value: '32787'
+              newvalue: ResetCritical
+            - value: '32788'
+              newvalue: SavingCritical
+            - value: '32789'
+              newvalue: PausingCritical
+            - value: '32790'
+              newvalue: ResumingCritical
+            - value: '32791'
+              newvalue: FastSavedCritical
+            - value: '32792'
+              newvalue: FastSavingCritical

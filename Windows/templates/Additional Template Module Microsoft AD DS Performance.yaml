@@ -1,0 +1,488 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: 01548d1b601f4732b8b26c229305e5bf
+      template: 'Additional Template Module Microsoft AD DS Performance'
+      name: 'Additional Template Module Microsoft AD DS Performance'
+      description: |
+        ## Overview
+        Performance counters
+        * DRA Inbound Bytes Total/Sec
+        * DRA Inbound Object Updates Remaining in Packet
+        * DRA Outbound Bytes Total/Sec
+        * DRA Pending Replication Synchronizations
+        * Kerberos Authentications/Sec
+        * LDAP Bind Time
+        * LDAP Client Sessions
+        * LDAP Searches/Sec
+        * LDAP Successful Binds/Sec
+        * LDAP Active Threads
+        * LDAP Writes/Sec
+        * NTLM Authentications
+      groups:
+        - name: 'Additional Templates/Modules'
+      items:
+        - uuid: 91dc10e30b9244cc8584124a159d303c
+          name: 'LDAP Port is running'
+          type: SIMPLE
+          key: 'net.tcp.service[ldap]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          valuemap:
+            name: 'Service state'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+          triggers:
+            - uuid: 261faef601b54be4acc42985f5f3d88f
+              expression: 'max(/Additional Template Module Microsoft AD DS Performance/net.tcp.service[ldap],#3)=0'
+              name: 'LDAP service is down on {HOST.NAME}'
+              priority: AVERAGE
+        - uuid: 3db6e037983940d9be2c778c5d4bfade
+          name: 'I/O Database Reads/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Database Reads/sec"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          description: 'perf_counter[\Database ==> Instances(lsass/NTDSA)\I/O Database Reads/sec]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+          triggers:
+            - uuid: 71807bb6e6d0416fbaa68fb74833be03
+              expression: 'min(/Additional Template Module Microsoft AD DS Performance/perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Database Reads/sec"],#3)>10'
+              name: 'I/O Database Reads/sec > 10 on {HOST.NAME}'
+              priority: WARNING
+        - uuid: 7c33e63e882a48148348477a866a7545
+          name: 'I/O Database Reads Average Latency'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Database Reads Average Latency"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: ms
+          description: 'perf_counter[\Database ==> Instances(lsass/NTDSA)\I/O Database Reads Average Latency]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+          triggers:
+            - uuid: 4ba50e9ab3c548ed9f7670aaf2d9fc64
+              expression: 'min(/Additional Template Module Microsoft AD DS Performance/perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Database Reads Average Latency"],#3)>15'
+              name: 'I/O Database Reads Average Latency > 15ms on {HOST.NAME}'
+              priority: WARNING
+        - uuid: e95e676378d24f9cb5cfe58da9e24218
+          name: 'I/O Log Writes Average Latency'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Log Writes Average Latency"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: ms
+          description: 'perf_counter[\Database ==> Instances(lsass/NTDSA)\I/O Log Writes Average Latency]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+          triggers:
+            - uuid: 611b5fa4963348ac8e79dae0bce0233f
+              expression: 'min(/Additional Template Module Microsoft AD DS Performance/perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Log Writes Average Latency"],#3)>10'
+              name: 'I/O Log Writes Average Latency > 10ms on {HOST.NAME}'
+              priority: WARNING
+        - uuid: a0714f8bb24a482481d5c84f77962b80
+          name: 'I/O Log Writes/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\Log Writes/sec"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          description: 'perf_counter[\Database ==> Instances(lsass/NTDSA)\I/O Log Writes/sec]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: e3063ed6bcb242d6ba43b4f3ca117ced
+          name: 'DRA Inbound Bytes Total/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Inbound Bytes Total/sec"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          description: 'perf_counter[\NTDA\DRA Inbound Bytes Total/sec]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: edd8fbbf1dd449d495c03a6c895cbdb9
+          name: 'DRA Inbound Object Updates Remaining in Packet'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Inbound Object Updates Remaining in Packet"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          description: 'perf_counter[\NTDA\DRA Inbound Object Updates Remaining in Packet]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: c372fa1cf8404fff9ffcdf1c86497171
+          name: 'DRA Outbound Bytes Total/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Outbound Objects/sec"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          description: 'perf_counter[\NTDA\DRA Outbound Bytes Total/sec]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: ec722579ddf44498ae228a54231f0c5f
+          name: 'DRA Pending Replication Synchronizations'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Pending Replication Synchronizations"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          description: 'perf_counter[\NTDA\DRA Pending Replication Synchronizations]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: fe58cbd89ba94e34a70e09603bfda810
+          name: 'LDAP Active Threads'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\NTDS\LDAP Active Threads"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          description: 'perf_counter[\NTDS\LDAP Active Threads]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: fd3c312d6c944f4c8455a258dbb0ecd5
+          name: 'LDAP Client Sessions'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\NTDS\LDAP Client Sessions"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          description: |
+            perf_counter[\NTDS\LDAP Client Sessions]
+            
+            perf_counter[\6956\17274]
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: 0a0508bd91f146669482a2bdc45749a7
+          name: 'LDAP Searches/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\NTDS\LDAP Searches/sec"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          description: 'perf_counter[\NTDS\LDAP Searches/sec]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: fb193d229d3b4757b289c8ad40f09b1a
+          name: 'LDAP Writes/sec'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\NTDS\LDAP Writes/sec"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: 398955ae5e6745ba84b275862bca1031
+          name: 'Kerberos Authentications'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Security System-Wide Statistics\Kerberos Authentications"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          description: 'perf_counter[\Security system-wide statistics\Kerberos Authentications]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: 23535be77abd4eb5a262f9953978cf80
+          name: 'NTLM Authentications'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Security System-Wide Statistics\NTLM Authentications"]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: /s
+          description: 'perf_counter[\Security system-wide statistics\NTLM Authentications]'
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: 74f30bad16e44877a869105e6f8bcc52
+          name: 'LSASS Processor Time'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en[\Process(lsass)\% Processor Time]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          description: |
+            Metric Process % Processor Time of LSASS
+            perf_counter[\Process(lsass)\% Processor Time]
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: ba3ea33ddbe0483aa1dd88c68b1e517b
+          name: 'Database Size'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.file.size[{$ADDS_DB_PATH}]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          units: Bytes
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+        - uuid: dc3cc0c66aa145c1bceab822e32c6556
+          name: 'Log File Size'
+          type: ZABBIX_ACTIVE
+          key: 'vfs.file.size[{$ADDS_LOG_PATH}]'
+          delay: '{$ADDS_PERFORMANCE_INTERVAL}'
+          history: 1w
+          units: Bytes
+          tags:
+            - tag: Application
+              value: 'AD DS performance'
+      macros:
+        - macro: '{$ADDS_DB_PATH}'
+          value: 'c:\windows\ntds\ntds.dit'
+        - macro: '{$ADDS_LOG_PATH}'
+          value: 'c:\windows\ntds\edb.log'
+        - macro: '{$ADDS_PERFORMANCE_INTERVAL}'
+          value: 3m
+      dashboards:
+        - uuid: 4a4228994faa45e986d06e13aa970d5d
+          name: 'AD DS Health and Performance'
+          pages:
+            - widgets:
+                - type: graph
+                  width: '12'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Additional Template Module Microsoft AD DS Performance'
+                        name: 'AD DS DB and Log Size'
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  'y': '5'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Additional Template Module Microsoft AD DS Performance'
+                        name: 'AD DS Authentications'
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  'y': '10'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Additional Template Module Microsoft AD DS Performance'
+                        name: 'Database ==> Instances Statistics'
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  x: '12'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Additional Template Module Microsoft AD DS Performance'
+                        name: 'LSASS Processor Time'
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  x: '12'
+                  'y': '5'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Additional Template Module Microsoft AD DS Performance'
+                        name: 'LDAP Statistics'
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+                - type: graph
+                  x: '12'
+                  'y': '10'
+                  width: '12'
+                  height: '5'
+                  fields:
+                    - type: GRAPH
+                      name: graphid
+                      value:
+                        host: 'Additional Template Module Microsoft AD DS Performance'
+                        name: 'DRA Statistics'
+                    - type: INTEGER
+                      name: source_type
+                      value: '0'
+      valuemaps:
+        - uuid: 7d7a9ff770b0415781bbc49c400a60ed
+          name: 'Service state'
+          mappings:
+            - value: '0'
+              newvalue: Down
+            - value: '1'
+              newvalue: Up
+        - uuid: 533232df55a847d4861fd1dd95d73baa
+          name: 'Windows service state'
+          mappings:
+            - value: '0'
+              newvalue: Running
+            - value: '1'
+              newvalue: Paused
+            - value: '2'
+              newvalue: 'Start pending'
+            - value: '3'
+              newvalue: 'Pause pending'
+            - value: '4'
+              newvalue: 'Continue pending'
+            - value: '5'
+              newvalue: 'Stop pending'
+            - value: '6'
+              newvalue: Stopped
+            - value: '7'
+              newvalue: Unknown
+            - value: '255'
+              newvalue: 'No such service'
+  graphs:
+    - uuid: e0e4a9ff9ece4fa6b353ea55412f6763
+      name: 'AD DS Authentications'
+      ymin_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\Security System-Wide Statistics\Kerberos Authentications"]'
+        - sortorder: '1'
+          color: F63100
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\Security System-Wide Statistics\NTLM Authentications"]'
+    - uuid: bc99aef7310540cfa51279096b10d1ec
+      name: 'AD DS DB and Log Size'
+      ymin_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'vfs.file.size[{$ADDS_DB_PATH}]'
+        - sortorder: '1'
+          color: F63100
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'vfs.file.size[{$ADDS_LOG_PATH}]'
+    - uuid: d2bf271b0e4d4a33af6ffb19f8e289f2
+      name: 'Database ==> Instances Statistics'
+      ymin_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          yaxisside: RIGHT
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Database Reads/sec"]'
+        - sortorder: '1'
+          color: F63100
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Database Reads Average Latency"]'
+        - sortorder: '2'
+          color: 2774A4
+          yaxisside: RIGHT
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\Log Writes/sec"]'
+        - sortorder: '3'
+          color: A54F10
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\Database ==> Instances(lsass/NTDSA)\I/O Log Writes Average Latency"]'
+    - uuid: 8abeb5f241e14635a3ba13d12fed6b07
+      name: 'DRA Statistics'
+      ymin_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Inbound Object Updates Remaining in Packet"]'
+        - sortorder: '1'
+          color: F63100
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Pending Replication Synchronizations"]'
+        - sortorder: '2'
+          color: 2774A4
+          yaxisside: RIGHT
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Inbound Bytes Total/sec"]'
+        - sortorder: '3'
+          color: A54F10
+          yaxisside: RIGHT
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\DirectoryServices(NTDS)\DRA Outbound Objects/sec"]'
+    - uuid: 2833f9419ee542f794a3d78a22761661
+      name: 'LDAP Statistics'
+      ymin_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\NTDS\LDAP Client Sessions"]'
+        - sortorder: '1'
+          color: F63100
+          yaxisside: RIGHT
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\NTDS\LDAP Searches/sec"]'
+        - sortorder: '2'
+          color: 2774A4
+          yaxisside: RIGHT
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en["\NTDS\LDAP Writes/sec"]'
+    - uuid: 884320ad4d09490bafa58242da0fdc9a
+      name: 'LSASS Processor Time'
+      show_work_period: 'NO'
+      show_triggers: 'NO'
+      show_legend: 'NO'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        - drawtype: FILLED_REGION
+          color: 1A7C11
+          item:
+            host: 'Additional Template Module Microsoft AD DS Performance'
+            key: 'perf_counter_en[\Process(lsass)\% Processor Time]'

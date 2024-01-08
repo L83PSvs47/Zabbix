@@ -1,0 +1,116 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: 08f5579979164c00a9c4d67771202f3e
+      template: 'Additional Template Module Microsoft Check Reboot Required'
+      name: 'Additional Template Module Microsoft Check Reboot Required'
+      description: 'Мониторинг необходимости перезагрузки машины с ОС Windows.'
+      groups:
+        - name: 'Additional Templates/Modules'
+      items:
+        - uuid: ae5c396fc9154b95b4d099a165694bb0
+          name: 'PowerShell get pending reboot'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Get-PendingReboot]'
+          delay: '{$REBOOT_GET_INTERVAL}'
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$REBOOT_DISCARD_UNCHANGED}'
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+          tags:
+            - tag: Application
+              value: 'PowerShell raw items'
+            - tag: Application
+              value: 'Reboot required'
+        - uuid: f0c575b2c4d0460fbaf4692273e6c0a9
+          name: 'Pending file rename operations'
+          type: DEPENDENT
+          key: reboot.pending.file.rename.operations
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''FileRenameOperations'']'
+            - type: BOOL_TO_DECIMAL
+              parameters:
+                - ''
+          master_item:
+            key: 'powershell[Get-PendingReboot]'
+          tags:
+            - tag: Application
+              value: 'Reboot required'
+          triggers:
+            - uuid: 7f53a0d2421c456da0754269f2ab3bc5
+              expression: 'last(/Additional Template Module Microsoft Check Reboot Required/reboot.pending.file.rename.operations)=1'
+              name: 'Host reboot required (pending file rename operations)'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Host reboot required'
+                  expression: 'last(/Additional Template Module Microsoft Check Reboot Required/reboot.restart.required)=1'
+        - uuid: 0cce59182cf0400c84bd3e44e7580847
+          name: 'Pending unimportant file rename operations'
+          type: DEPENDENT
+          key: reboot.pending.unimportant.file.rename.operations
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''FileRenameUnimportant'']'
+            - type: BOOL_TO_DECIMAL
+              parameters:
+                - ''
+          master_item:
+            key: 'powershell[Get-PendingReboot]'
+          tags:
+            - tag: Application
+              value: 'Reboot required'
+          triggers:
+            - uuid: 3bdb1465bf744d82bedb6cac8c66db39
+              expression: 'last(/Additional Template Module Microsoft Check Reboot Required/reboot.pending.unimportant.file.rename.operations)=1'
+              name: 'Host reboot required (pending unimportant file rename operations)'
+              priority: INFO
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Host reboot required (pending file rename operations)'
+                  expression: 'last(/Additional Template Module Microsoft Check Reboot Required/reboot.pending.file.rename.operations)=1'
+        - uuid: 59387e355c764e25822f25201e0cb332
+          name: 'Reboot required'
+          type: DEPENDENT
+          key: reboot.restart.required
+          delay: '0'
+          history: 1w
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''RestartRequired'']'
+            - type: BOOL_TO_DECIMAL
+              parameters:
+                - ''
+          master_item:
+            key: 'powershell[Get-PendingReboot]'
+          tags:
+            - tag: Application
+              value: 'Reboot required'
+          triggers:
+            - uuid: 7e76a29439504a8a895320665793a752
+              expression: 'last(/Additional Template Module Microsoft Check Reboot Required/reboot.restart.required)=1'
+              name: 'Host reboot required'
+              priority: AVERAGE
+              manual_close: 'YES'
+      macros:
+        - macro: '{$REBOOT_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$REBOOT_GET_INTERVAL}'
+          value: 15m

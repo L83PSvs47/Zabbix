@@ -1,0 +1,563 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 8be439b3351d4d02aaccadba166a297e
+      template: 'Additional Template SNMP Printer'
+      name: 'Additional Template SNMP Printer'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: f22b0e7c8c92485595e637d17cf1f9cd
+          name: 'Device Type'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.25.3.2.1.3.1
+          key: hrDeviceDescr
+          delay: 1d
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: TYPE
+          tags:
+            - tag: Application
+              value: General
+        - uuid: d216d28a0716463fbc75f548f0a5ca3e
+          name: 'Printer error state'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.25.3.5.1.2.1
+          key: hrPrinterDetectedErrorState
+          history: 1w
+          value_type: FLOAT
+          valuemap:
+            name: 'Printer error state'
+          tags:
+            - tag: Application
+              value: 'Printer information'
+          triggers:
+            - uuid: acebd262d4a34dcfa24b1d832e2c607f
+              expression: 'last(/Additional Template SNMP Printer/hrPrinterDetectedErrorState,#1:now-600s)<>0'
+              name: 'Error on Printer {HOST.NAME}'
+              url: 'http://{HOST.IP}'
+              priority: WARNING
+            - uuid: 12b3941d9ade44bba4470bed2819a775
+              expression: 'last(/Additional Template SNMP Printer/hrPrinterDetectedErrorState)=0'
+              name: 'Printer Error'
+              priority: WARNING
+        - uuid: fa7c7bc54e8f4882ba07f63f0e2285b7
+          name: 'Printer status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.25.3.5.1.1.1
+          key: hrPrinterStatus
+          history: 1w
+          valuemap:
+            name: 'Printer status'
+          tags:
+            - tag: Application
+              value: 'Printer information'
+        - uuid: 70c8382d496845c99607a211c8377030
+          name: 'Device MAC address'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.2.2.1.6.1
+          key: ifPhysAddress
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: MACADDRESS_A
+          tags:
+            - tag: Application
+              value: General
+        - uuid: 7f13311899ab4b0bbb5ec229bdaa4973
+          name: 'Device console display'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.16.5.1.2.1.1
+          key: prtConsoleDisplayBufferText
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          tags:
+            - tag: Application
+              value: 'Printer information'
+        - uuid: c1de6e2f73c84ce4bf627953cd3e7fb9
+          name: 'Device serial number'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.5.1.1.17.1
+          key: prtGeneralSerialNumber
+          delay: 1d
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SERIALNO_A
+          tags:
+            - tag: Application
+              value: General
+        - uuid: 8fcdd457017643df9f5f0a97804bf0f2
+          name: 'Printer lifetime counter'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.10.2.1.4.1.1
+          key: prtMarkerLifeCount
+          history: 1w
+          valuemap:
+            name: 'Printer status'
+          tags:
+            - tag: Application
+              value: 'Printer information'
+        - uuid: b7b04239fcc648998a9e0c4642abe4c5
+          name: 'Printer power on counter'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.43.10.2.1.5.1.1
+          key: prtMarkerPowerOnCount
+          history: 1w
+          valuemap:
+            name: 'Printer status'
+          tags:
+            - tag: Application
+              value: 'Printer information'
+      discovery_rules:
+        - uuid: 15feaddad2bc4552b6245e62c6774798
+          name: Cover
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.6.1.1.2]'
+          key: prtCoverDescription
+          delay: 1h
+          item_prototypes:
+            - uuid: 372058bc602e4321848eff8aa9796d03
+              name: 'Cover $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.6.1.1.2.{#SNMPINDEX}'
+              key: 'prtCoverDescription[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer cover'
+            - uuid: 32d05182f5054ef0b5a304e6a8c048ff
+              name: 'Cover status of $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.6.1.1.3.{#SNMPINDEX}'
+              key: 'prtCoverStatus[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              valuemap:
+                name: 'Printer cover state'
+              tags:
+                - tag: Application
+                  value: 'Printer cover'
+              trigger_prototypes:
+                - uuid: 2796de70df734f1791c62651b1cc7f99
+                  expression: 'last(/Additional Template SNMP Printer/prtCoverStatus[{#SNMPVALUE}],#1:now-600s)<>4 and last(/Additional Template SNMP Printer/prtCoverStatus[{#SNMPVALUE}],#1:now-600s)<>6'
+                  name: 'Cover {#SNMPVALUE} on printer {HOST.NAME} is not closed'
+                  priority: INFO
+        - uuid: c862609caf374bb0a8a745ff99a0a34c
+          name: Input
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.8.2.1.18]'
+          key: prtInputDescription
+          delay: 1h
+          item_prototypes:
+            - uuid: 72849ec55d704239be6dea784ff5fe20
+              name: 'Input capacity $1'
+              type: CALCULATED
+              key: 'prtInputCapacity[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              value_type: FLOAT
+              units: '%'
+              params: '100*last(//prtInputCurrentLevel[{#SNMPVALUE}])/last(//prtInputMaxCapacity[{#SNMPVALUE}])'
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+            - uuid: c1dce16fe2e64ac2a60d8c8daebad4e9
+              name: 'Input current level $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.10.{#SNMPINDEX}'
+              key: 'prtInputCurrentLevel[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              value_type: FLOAT
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+            - uuid: df210e7144264fbcbca4a341afb0727d
+              name: 'Input $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.18.{#SNMPINDEX}'
+              key: 'prtInputDescription[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+            - uuid: 8d449d81c0574b0593ae098d8a9d570d
+              name: 'Input max capacity $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.9.{#SNMPINDEX}'
+              key: 'prtInputMaxCapacity[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              value_type: FLOAT
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+            - uuid: 527e23ac49384622bdcb4cbf4620883d
+              name: 'Input media name $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.12.{#SNMPINDEX}'
+              key: 'prtInputMediaName[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+            - uuid: c7b7bf9e49a44189ab2f1d574a588e57
+              name: 'Input model $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.15.{#SNMPINDEX}'
+              key: 'prtInputModel[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+            - uuid: 0021c26d6eb642eaa98961663049ff5c
+              name: 'Input serial number $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.17.{#SNMPINDEX}'
+              key: 'prtInputSerialNumber[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+            - uuid: 567abf709ee8414f871f7b1799e39e4b
+              name: 'Input status $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.11.{#SNMPINDEX}'
+              key: 'prtInputStatus[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+              trigger_prototypes:
+                - uuid: a3d18c8120c548babc40f5edd3ffbe51
+                  expression: 'last(/Additional Template SNMP Printer/prtInputStatus[{#SNMPVALUE}],#1:now-600s)<>0'
+                  name: 'Input {#SNMPVALUE} on printer {HOST.NAME} has changed'
+                  status: DISABLED
+                  priority: INFO
+            - uuid: 141de99adbcb4b849be202db52c47582
+              name: 'Input type $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.8.2.1.2.{#SNMPINDEX}'
+              key: 'prtInputType[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer input'
+        - uuid: c5b5c45a164b458192da8a8c1c4be361
+          name: Supplies
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.11.1.1.6]'
+          key: prtMarkerSuppliesDescription
+          delay: 1h
+          item_prototypes:
+            - uuid: a7e01326ead14d579a3bdbb357e80f31
+              name: 'Color value of supplies $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.12.1.1.4.{#SNMPINDEX}'
+              key: 'prtMarkerColorantValue[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer supplies'
+            - uuid: fe49dcbaf4aa47f1878d4639b1f9e4dd
+              name: 'Capacity of supplies $1'
+              type: CALCULATED
+              key: 'prtMarkerSuppliesCapacity[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              units: '%'
+              params: '100*last(//prtMarkerSuppliesLevel[{#SNMPVALUE}])/last(//prtMarkerSuppliesMaxCapacity[{#SNMPVALUE}])'
+              tags:
+                - tag: Application
+                  value: 'Printer supplies'
+              trigger_prototypes:
+                - uuid: 440b60112b584f63a8e4bcabd2088733
+                  expression: 'last(/Additional Template SNMP Printer/prtMarkerSuppliesCapacity[{#SNMPVALUE}])<10'
+                  name: '{#SNMPVALUE} is low on printer {HOST.NAME}'
+                  priority: INFO
+            - uuid: b2fd031086564fb1a506fa2101f5cb65
+              name: 'Description of supplies $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.11.1.1.6.{#SNMPINDEX}'
+              key: 'prtMarkerSuppliesDescription[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: CHAR
+              tags:
+                - tag: Application
+                  value: 'Printer supplies'
+            - uuid: 48627672d7484aa095f4994aeee2d62a
+              name: 'Level of supplies $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.11.1.1.9.{#SNMPINDEX}'
+              key: 'prtMarkerSuppliesLevel[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              value_type: FLOAT
+              tags:
+                - tag: Application
+                  value: 'Printer supplies'
+            - uuid: a3bd57ae73b04e2db4d5c7a1748a1697
+              name: 'Max capacity of supplies $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.11.1.1.8.{#SNMPINDEX}'
+              key: 'prtMarkerSuppliesMaxCapacity[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              value_type: FLOAT
+              tags:
+                - tag: Application
+                  value: 'Printer supplies'
+          graph_prototypes:
+            - uuid: 6b90910e43564a1ba711ddc0c856a7b6
+              name: 'Level of supplies {#SNMPVALUE} line'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: 1A7C11
+                  item:
+                    host: 'Additional Template SNMP Printer'
+                    key: 'prtMarkerSuppliesLevel[{#SNMPVALUE}]'
+            - uuid: ed9b1cb7946c44cf9da38609e28d66dd
+              name: 'Level of supplies {#SNMPVALUE} pie'
+              width: '400'
+              yaxismax: '0'
+              show_work_period: 'NO'
+              show_triggers: 'NO'
+              type: PIE
+              graph_items:
+                - color: 1A7C11
+                  item:
+                    host: 'Additional Template SNMP Printer'
+                    key: 'prtMarkerSuppliesLevel[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  color: F63100
+                  type: GRAPH_SUM
+                  item:
+                    host: 'Additional Template SNMP Printer'
+                    key: 'prtMarkerSuppliesMaxCapacity[{#SNMPVALUE}]'
+        - uuid: c27671f3b9c04f8fb493c88a8abdb844
+          name: 'Media path'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.13.4.1.10]'
+          key: prtMediaPathDescription
+          delay: 1h
+          item_prototypes:
+            - uuid: 790def2ae18e47b78655cbb789002db1
+              name: 'Media path description of supplies $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.13.4.1.10.{#SNMPINDEX}'
+              key: 'prtMediaPathDescription[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: CHAR
+              tags:
+                - tag: Application
+                  value: 'Printer media path'
+            - uuid: 510ec9b084c647a293039ef82dcf1154
+              name: 'Media path status of supplies $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.13.4.1.11.{#SNMPINDEX}'
+              key: 'prtMediaPathStatus[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              tags:
+                - tag: Application
+                  value: 'Printer media path'
+            - uuid: 7affa2bd372842de9231d8be4046805d
+              name: 'Media path type of supplies $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.13.4.1.9.{#SNMPINDEX}'
+              key: 'prtMediaPathType[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer media path'
+        - uuid: ae07889259e14b2a97053c39c221db9e
+          name: Output
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.2.1.43.9.2.1.12]'
+          key: prtOutputDescription
+          delay: 1h
+          item_prototypes:
+            - uuid: 1dd7eaf51d9c4734ba7d970d32244624
+              name: 'Output $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.9.2.1.12.{#SNMPINDEX}'
+              key: 'prtOutputDescription[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              tags:
+                - tag: Application
+                  value: 'Printer output'
+            - uuid: 4d03e02f71cb4323b41da8d8dba106b5
+              name: 'Output max capacity $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.9.2.1.4.{#SNMPINDEX}'
+              key: 'prtOutputMaxCapacity[{#SNMPVALUE}]'
+              delay: 1h
+              history: 1w
+              value_type: FLOAT
+              tags:
+                - tag: Application
+                  value: 'Printer output'
+            - uuid: cb251a2c90a74b7ba4a35feaed07199c
+              name: 'Output remaining capacity $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.9.2.1.5.{#SNMPINDEX}'
+              key: 'prtOutputRemainingCapacity[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              value_type: FLOAT
+              tags:
+                - tag: Application
+                  value: 'Printer output'
+            - uuid: 2676c3f8f4fd40578c713eade6b205e0
+              name: 'Output status $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.43.9.2.1.6.{#SNMPINDEX}'
+              key: 'prtOutputStatus[{#SNMPVALUE}]'
+              delay: 10m
+              history: 1w
+              tags:
+                - tag: Application
+                  value: 'Printer output'
+              trigger_prototypes:
+                - uuid: 49b97090db10440c929e58df28d77b81
+                  expression: 'last(/Additional Template SNMP Printer/prtOutputStatus[{#SNMPVALUE}],#1:now-600s)<>0'
+                  name: 'Output {#SNMPVALUE} on printer {HOST.NAME} has changed'
+                  status: DISABLED
+                  priority: INFO
+      dashboards:
+        - uuid: 7c8f70601677410f90538dd920f3384c
+          name: Printer
+          pages:
+            - widgets:
+                - type: graphprototype
+                  width: '24'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: columns
+                      value: '1'
+                    - type: GRAPH_PROTOTYPE
+                      name: graphid
+                      value:
+                        host: 'Additional Template SNMP Printer'
+                        name: 'Level of supplies {#SNMPVALUE} pie'
+                    - type: INTEGER
+                      name: rows
+                      value: '1'
+                    - type: INTEGER
+                      name: source_type
+                      value: '2'
+      valuemaps:
+        - uuid: afbbdaaf2bae43e3b0447380db79ea08
+          name: 'Printer cover state'
+          mappings:
+            - value: '1'
+              newvalue: other
+            - value: '3'
+              newvalue: doorOpen
+            - value: '4'
+              newvalue: doorClosed
+            - value: '5'
+              newvalue: interlockOpen
+            - value: '6'
+              newvalue: interlockClosed
+        - uuid: b6bc23a525dc4efdb9a8dd9b35d4646d
+          name: 'Printer error state'
+          mappings:
+            - value: '0'
+              newvalue: lowPaper
+            - value: '1'
+              newvalue: noPaper
+            - value: '2'
+              newvalue: lowToner
+            - value: '3'
+              newvalue: noToner
+            - value: '4'
+              newvalue: doorOpen
+            - value: '5'
+              newvalue: jammed
+            - value: '6'
+              newvalue: offline
+            - value: '7'
+              newvalue: serviceRequested
+            - value: '8'
+              newvalue: inputTrayMissing
+            - value: '9'
+              newvalue: outputTrayMissing
+            - value: '10'
+              newvalue: markerSupplyMissing
+            - value: '11'
+              newvalue: outputNearFull
+            - value: '12'
+              newvalue: outputFull
+            - value: '13'
+              newvalue: inputTrayEmpty
+            - value: '14'
+              newvalue: overduePreventMaint
+        - uuid: 402c3a62f21e40c0878a44397946bbfb
+          name: 'Printer status'
+          mappings:
+            - value: '1'
+              newvalue: other
+            - value: '2'
+              newvalue: unknown
+            - value: '3'
+              newvalue: idle
+            - value: '4'
+              newvalue: printing
+            - value: '5'
+              newvalue: warmup
+  graphs:
+    - uuid: fc81c32663bc4ed18d35dafb26f331f2
+      name: 'Print Counter'
+      show_work_period: 'NO'
+      show_triggers: 'NO'
+      show_legend: 'NO'
+      graph_items:
+        - drawtype: FILLED_REGION
+          color: 1A7C11
+          calc_fnc: ALL
+          item:
+            host: 'Additional Template SNMP Printer'
+            key: prtMarkerLifeCount

@@ -1,0 +1,329 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: b7077659ba834de5a52500ea0d74608e
+      template: 'Additional Template SNMP APC UPS'
+      name: 'Additional Template SNMP APC UPS'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: c043adf7eaee44e1a4b4d2d48c510321
+          name: 'UPS battery capacity (%)'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.2.2.1.0
+          key: upsAdvBatteryCapacity
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: a8e6f267f51a47bcb25dea38ae170df6
+          name: 'UPS battery temperature'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.2.2.0
+          key: upsAdvBatteryTemperature
+          history: 1w
+          units: °C
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 85fd73b865614a89b47102fd0e1e90e6
+              expression: 'last(/Additional Template SNMP APC UPS/upsAdvBatteryTemperature)>40'
+              name: 'High battery temperature on {HOST.NAME}'
+              priority: HIGH
+        - uuid: cef93d7db14b458e9349de13854c81b2
+          name: 'Software version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.1.2.1.0
+          key: upsAdvIdentFirmwareRevision
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: OS
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 6728bc17d4514846a2430d073bf7a8a0
+          name: 'Device Serial Number'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.1.2.3.0
+          key: upsAdvIdentSerialNumber
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SERIALNO_A
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 439840bbc8524389807e170b16596f85
+          name: 'UPS input voltage'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.3.2.1.0
+          key: upsAdvInputVoltage
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 59c37fdb6839483ca75c3447303b2059
+          name: 'UPS current load (Amps)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.4.2.4.0
+          key: upsAdvOutputCurrent
+          history: 1w
+          value_type: FLOAT
+          units: amp
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 5da966e235a14818b69c1dcf40bdfc4b
+          name: 'UPS output frequency'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.2.0
+          key: upsAdvOutputFrequency
+          history: 1w
+          value_type: FLOAT
+          units: Hz
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 80aba02b92fc4e368972ebaf6840fe47
+          name: 'UPS output load (%)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.4.2.3.0
+          key: upsAdvOutputLoad
+          history: 1w
+          value_type: FLOAT
+          units: '%'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: c84cfc3f1d80484f8ccd5a3a0f8057dd
+              expression: 'last(/Additional Template SNMP APC UPS/upsAdvOutputLoad)>95'
+              name: 'Output load Critical on {HOST.NAME}'
+              priority: HIGH
+            - uuid: ede2d22d46914329931b00da4da7df2d
+              expression: 'last(/Additional Template SNMP APC UPS/upsAdvOutputLoad)>90'
+              name: 'Output load High on {HOST.NAME}'
+              priority: WARNING
+        - uuid: 1db669dc75404a29b492845e05f426a4
+          name: 'UPS output voltage'
+          type: SNMP_AGENT
+          snmp_oid: 1.3.6.1.4.1.318.1.1.1.4.2.1.0
+          key: upsAdvOutputVoltage
+          history: 1w
+          value_type: FLOAT
+          units: VAC
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: 45a668b7d9a449368c71416f19a6263f
+          name: 'UPS replace battery indicator'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.2.4.0
+          key: upsAdvReplaceBatteryIndicator
+          history: 1w
+          valuemap:
+            name: 'APC Battery Replacement Status'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: a5aa1f12dc5a4a1d82148cda67a02f92
+              expression: 'last(/Additional Template SNMP APC UPS/upsAdvReplaceBatteryIndicator)<>1'
+              name: 'Replace battery on {HOST.NAME}'
+              priority: DISASTER
+        - uuid: 5bc950faa084472694cfd69cee4c2aa9
+          name: 'UPS run time remaining'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.2.3.0
+          key: upsAdvRunTimeRemaining
+          history: 1w
+          units: s
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 3cfd7f1424774ac8884a8e26e09ec820
+              expression: 'last(/Additional Template SNMP APC UPS/upsAdvRunTimeRemaining)<5'
+              name: 'Run time remaining CRITICAL on {HOST.NAME}'
+              priority: DISASTER
+            - uuid: abf01c5c628e42b8ba0ef25cf8d33274
+              expression: 'last(/Additional Template SNMP APC UPS/upsAdvRunTimeRemaining)<10'
+              name: 'Run time remaining LOW on {HOST.NAME}'
+              priority: HIGH
+        - uuid: 4b5d3b1a6eff40388b8e7f828f76a708
+          name: 'UPS battery status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.1.1.0
+          key: upsBasicBatteryStatus
+          history: 1w
+          valuemap:
+            name: 'APC Battery Status'
+          tags:
+            - tag: Application
+              value: Operational
+          triggers:
+            - uuid: 6cbc41c88452422493ffe2ff612fb867
+              expression: 'last(/Additional Template SNMP APC UPS/upsBasicBatteryStatus)=3'
+              name: 'The battery power is too low to support the load on {HOST.NAME}'
+              priority: DISASTER
+        - uuid: cd69ca8eebd04985b5e9d323d475b573
+          name: 'UPS time on battery'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.2.1.2.0
+          key: upsBasicBatteryTimeOnBattery
+          history: 1w
+          units: s
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: Operational
+        - uuid: fb82dc55811546bcaa249afb64f33eda
+          name: 'Device Model Name'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.1.1.1.0
+          key: upsBasicIdentModel
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: TYPE
+          tags:
+            - tag: Application
+              value: System
+        - uuid: b7a5cab9fcf5472588b636b985accb9b
+          name: 'UPS status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.318.1.1.1.4.1.1.0
+          key: upsBasicOutputStatus
+          history: 1w
+          valuemap:
+            name: 'APC Status'
+          tags:
+            - tag: Application
+              value: Operational
+      valuemaps:
+        - uuid: 8f6cb5166a6a4ed7a0a3643d1544a79d
+          name: 'APC Battery Replacement Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: notInstalled
+            - value: '3'
+              newvalue: ok
+            - value: '4'
+              newvalue: failed
+            - value: '5'
+              newvalue: highTemperature
+            - value: '6'
+              newvalue: replaceImmediately
+            - value: '7'
+              newvalue: lowCapacity
+        - uuid: 86434540d0f44969a7ad858f4b5ce2f4
+          name: 'APC Battery Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: batteryNormal
+            - value: '3'
+              newvalue: batteryLow
+        - uuid: eec254257fcb4a63aeefa1f4bd4c2923
+          name: 'APC Status'
+          mappings:
+            - value: '1'
+              newvalue: unknown
+            - value: '2'
+              newvalue: onLine
+            - value: '3'
+              newvalue: onBattery
+            - value: '4'
+              newvalue: onSmartBoost
+            - value: '5'
+              newvalue: timedSleeping
+            - value: '6'
+              newvalue: softwareBypass
+            - value: '7'
+              newvalue: 'off'
+            - value: '8'
+              newvalue: rebooting
+            - value: '9'
+              newvalue: switchedBypass
+            - value: '10'
+              newvalue: harwareFailureBypass
+            - value: '11'
+              newvalue: sleepingUnitPowerReturn
+            - value: '12'
+              newvalue: onSmartTrim
+            - value: '13'
+              newvalue: ecoMode
+            - value: '14'
+              newvalue: hotStandby
+            - value: '15'
+              newvalue: onBatteryTest
+  graphs:
+    - uuid: 2321252d09c843c69a0c187c6c492b36
+      name: 'Battery status'
+      ymin_type_1: FIXED
+      graph_items:
+        - drawtype: BOLD_LINE
+          color: C80000
+          item:
+            host: 'Additional Template SNMP APC UPS'
+            key: upsBasicBatteryStatus
+        - sortorder: '1'
+          drawtype: BOLD_LINE
+          color: 00C800
+          item:
+            host: 'Additional Template SNMP APC UPS'
+            key: upsAdvReplaceBatteryIndicator
+    - uuid: 2ab10399f3d84dcdb5554c40a17f74fe
+      name: 'UPS load'
+      graph_items:
+        - color: C80000
+          item:
+            host: 'Additional Template SNMP APC UPS'
+            key: upsAdvOutputCurrent
+        - sortorder: '1'
+          color: 0000CC
+          item:
+            host: 'Additional Template SNMP APC UPS'
+            key: upsAdvOutputLoad
+    - uuid: 56f9815900a64300ae8713fb793195be
+      name: 'UPS temperature'
+      ymin_type_1: FIXED
+      graph_items:
+        - drawtype: GRADIENT_LINE
+          color: '660000'
+          item:
+            host: 'Additional Template SNMP APC UPS'
+            key: upsAdvBatteryTemperature
+    - uuid: 5752db19d03245f086a22a299daf75f7
+      name: 'UPS voltage'
+      graph_items:
+        - color: 0000CC
+          item:
+            host: 'Additional Template SNMP APC UPS'
+            key: upsAdvOutputVoltage
+        - sortorder: '1'
+          color: CC0000
+          item:
+            host: 'Additional Template SNMP APC UPS'
+            key: upsAdvInputVoltage

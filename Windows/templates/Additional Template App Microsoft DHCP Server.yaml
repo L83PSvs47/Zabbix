@@ -1,0 +1,106 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: ebb503c64e0c4ddd9e873560d26e9e6c
+      template: 'Additional Template App Microsoft DHCP Server'
+      name: 'Additional Template App Microsoft DHCP Server'
+      description: 'Мониторинг сервера DHCP.'
+      groups:
+        - name: 'Additional Templates'
+      discovery_rules:
+        - uuid: 9f17d41054dd406592627bb883dc5e7b
+          name: 'DHCP scope discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-DHCPScope]'
+          delay: '{$DHCP_REQUEST_INTERVAL}'
+          lifetime: 1w
+          item_prototypes:
+            - uuid: 2e79c0da582444658cab063b68f71cf8
+              name: 'Scope {#DHCP.SCOPEID} free'
+              type: DEPENDENT
+              key: 'dhcp.scope.free[{#DHCP.SCOPEID}]'
+              delay: '0'
+              history: 1w
+              value_type: FLOAT
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''Free'']'
+              master_item:
+                key: 'powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]'
+              tags:
+                - tag: Application
+                  value: DHCP
+                - tag: DHCP
+                  value: '{#DHCP.SCOPEID}'
+              trigger_prototypes:
+                - uuid: 8ebad5300316426688876d2b76dab5fc
+                  expression: 'last(/Additional Template App Microsoft DHCP Server/dhcp.scope.free[{#DHCP.SCOPEID}])=0'
+                  name: 'Scope {#DHCP.SCOPEID} 0 IP addresses are available in the range'
+                  priority: HIGH
+                - uuid: f9c6dda8794c4fefba64dc603c2c4b3f
+                  expression: 'last(/Additional Template App Microsoft DHCP Server/dhcp.scope.free[{#DHCP.SCOPEID}])<10'
+                  name: 'Scope {#DHCP.SCOPEID} only 10 IP addresses are available in the range'
+                  priority: WARNING
+            - uuid: 7549f757e5bc49258d1e1f8a17db0857
+              name: 'Scope {#DHCP.SCOPEID} percentage in use'
+              type: DEPENDENT
+              key: 'dhcp.scope.percentageinuse[{#DHCP.SCOPEID}]'
+              delay: '0'
+              history: 1w
+              value_type: FLOAT
+              units: '%'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''PercentageInUse'']'
+              master_item:
+                key: 'powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]'
+              tags:
+                - tag: Application
+                  value: DHCP
+                - tag: DHCP
+                  value: '{#DHCP.SCOPEID}'
+              trigger_prototypes:
+                - uuid: 12734249f19245a5acd3d338966b49d3
+                  expression: 'last(/Additional Template App Microsoft DHCP Server/dhcp.scope.percentageinuse[{#DHCP.SCOPEID}])=100'
+                  name: 'Scope {#DHCP.SCOPEID} using IP addresses in the range = 100%'
+                  priority: HIGH
+                - uuid: 8607d94ffc2c40ef91582acbd54880cf
+                  expression: 'last(/Additional Template App Microsoft DHCP Server/dhcp.scope.percentageinuse[{#DHCP.SCOPEID}])>90'
+                  name: 'Scope {#DHCP.SCOPEID} using IP addresses in the range > 90%'
+                  priority: WARNING
+            - uuid: 58b771e5a107436b93ca30d24df3417b
+              name: 'PowerShell get DHCP scope {#DHCP.SCOPEID} statistics'
+              type: ZABBIX_ACTIVE
+              key: 'powershell[Get-DHCPScopeStatistics,{#DHCP.SCOPEID}]'
+              delay: '{$DHCP_GET_INTERVAL}'
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$DHCP_DISCARD_UNCHANGED}'
+                - type: CHECK_JSON_ERROR
+                  parameters:
+                    - '$[0][''Error'']'
+              tags:
+                - tag: Application
+                  value: DHCP
+                - tag: Application
+                  value: 'PowerShell raw items'
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+      macros:
+        - macro: '{$DHCP_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$DHCP_GET_INTERVAL}'
+          value: 1h
+        - macro: '{$DHCP_REQUEST_INTERVAL}'
+          value: 1d

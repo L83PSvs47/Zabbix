@@ -1,0 +1,38 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: c0e3791534a144a7ac40cba140b99185
+      template: 'Additional Template Module Microsoft Windows Server Backup Eventlog'
+      name: 'Additional Template Module Microsoft Windows Server Backup Eventlog'
+      description: 'Мониторинг работы Windows Server Backup. Шаблон основан на мониторинге ошибок в Microsoft Eventlog.'
+      groups:
+        - name: 'Additional Templates/Modules'
+      items:
+        - uuid: 1868aadcfe684d16aa2ac4d0c586eedf
+          name: 'Windows Backup Status'
+          type: ZABBIX_ACTIVE
+          key: 'eventlog[Microsoft-Windows-Backup,,"Information|Error|Critical|Warning",,{$WSB_EVENT_FILTER},,skip]'
+          delay: '{$WSB_EVENT_INTERVAL}'
+          history: 1w
+          trends: '0'
+          value_type: LOG
+          tags:
+            - tag: Application
+              value: 'Windows Backup eventlog'
+          triggers:
+            - uuid: 64f31cb00ed64c9d8f06fc261e25d98b
+              expression: 'nodata(/Additional Template Module Microsoft Windows Server Backup Eventlog/eventlog[Microsoft-Windows-Backup,,"Information|Error|Critical|Warning",,{$WSB_EVENT_FILTER},,skip],2d)=1'
+              name: 'No Windows Backup Reported in the last 2 days'
+              priority: AVERAGE
+            - uuid: f6ce9ba82cf649a4ab5dfd5d73830c4c
+              expression: 'logseverity(/Additional Template Module Microsoft Windows Server Backup Eventlog/eventlog[Microsoft-Windows-Backup,,"Information|Error|Critical|Warning",,{$WSB_EVENT_FILTER},,skip])<>1'
+              name: 'Windows Backup Error'
+              priority: HIGH
+      macros:
+        - macro: '{$WSB_EVENT_FILTER}'
+          value: '^([0-9]|[1-9][0-3]|[1-9][5-9]|[1-2][0-9][0-2]|[1-2][0-9][4-9]|[1-2][0][0-9]|[1-2][2-9][0-9])$'
+        - macro: '{$WSB_EVENT_INTERVAL}'
+          value: 15m

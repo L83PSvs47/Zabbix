@@ -1,0 +1,123 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: 633eaec42f74412e986a0a6a1644cf45
+      template: 'Additional Template Module Microsoft Certificates'
+      name: 'Additional Template Module Microsoft Certificates'
+      description: |
+        Мониторинг срока истечения сертификатов на машинах с ОС Windows.
+        Cert:\LocalMachine\My\
+      groups:
+        - name: 'Additional Templates/Modules'
+      discovery_rules:
+        - uuid: 45e43bb442fd40fe92aca884e152b177
+          name: 'Windows certificates discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-Certificate,{$MS_CERTIFICATE_VALID_DAYS}]'
+          delay: '{$MS_CERTIFICATE_REQUEST_INTERVAL}'
+          lifetime: 1w
+          item_prototypes:
+            - uuid: 922462331f2644a5aed6b8d152b5b3f2
+              name: 'Certificate "{#CERT.NAME}" days to expire'
+              type: DEPENDENT
+              key: 'certificate.daystoexpire[{#CERT.THUMBPRINT}]'
+              delay: '0'
+              history: 1w
+              value_type: FLOAT
+              description: 'When cert will be expire'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''DaysToExpire'']'
+              master_item:
+                key: 'powershell[Get-Certificate,{#CERT.THUMBPRINT}]'
+              tags:
+                - tag: Application
+                  value: Certificate
+                - tag: Certificate
+                  value: '{#CERT.NAME}'
+              trigger_prototypes:
+                - uuid: 1a7c4ea6026d45d5af117ecf542b23cd
+                  expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<=0'
+                  name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                  status: DISABLED
+                  discover: NO_DISCOVER
+                  priority: DISASTER
+                  manual_close: 'YES'
+                - uuid: 16d97bc4364d4238ab487421a0275a0a
+                  expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<={$MS_CERTIFICATE_DAYS_TO_EXPIRE_AVERAGE}'
+                  name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                  priority: AVERAGE
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                      expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<{$MS_CERTIFICATE_DAYS_TO_EXPIRE_HIGH} and last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])>=0'
+                - uuid: 2fb20996124f4f3895fdecdd67d5fecf
+                  expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<={$MS_CERTIFICATE_DAYS_TO_EXPIRE_INFO}'
+                  name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                  priority: INFO
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                      expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<={$MS_CERTIFICATE_DAYS_TO_EXPIRE_WARNING}'
+                - uuid: 5753993a75364169ae56dee592eee513
+                  expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<={$MS_CERTIFICATE_DAYS_TO_EXPIRE_WARNING}'
+                  name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                      expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<={$MS_CERTIFICATE_DAYS_TO_EXPIRE_AVERAGE}'
+                - uuid: c100f9502b564013b59f5a1fb4dad7c7
+                  expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<{$MS_CERTIFICATE_DAYS_TO_EXPIRE_HIGH} and last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])>=0'
+                  name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Certificate {#CERT.NAME} (Thumbprint {#CERT.THUMBPRINT}) will expire in {ITEM.VALUE} days'
+                      expression: 'last(/Additional Template Module Microsoft Certificates/certificate.daystoexpire[{#CERT.THUMBPRINT}])<=0'
+            - uuid: 2bee7d20e1be4c5bb013c3aa3fc8f288
+              name: 'PowerShell get certificate "{#CERT.NAME}"'
+              type: ZABBIX_ACTIVE
+              key: 'powershell[Get-Certificate,{#CERT.THUMBPRINT}]'
+              delay: '{$MS_CERTIFICATE_GET_INTERVAL}'
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$MS_CERTIFICATE_DISCARD_UNCHANGED}'
+                - type: CHECK_JSON_ERROR
+                  parameters:
+                    - '$[0][''Error'']'
+              tags:
+                - tag: Application
+                  value: Certificate
+                - tag: Application
+                  value: 'PowerShell raw items'
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+      macros:
+        - macro: '{$MS_CERTIFICATE_DAYS_TO_EXPIRE_AVERAGE}'
+          value: '35'
+        - macro: '{$MS_CERTIFICATE_DAYS_TO_EXPIRE_HIGH}'
+          value: '30'
+        - macro: '{$MS_CERTIFICATE_DAYS_TO_EXPIRE_INFO}'
+          value: '45'
+        - macro: '{$MS_CERTIFICATE_DAYS_TO_EXPIRE_WARNING}'
+          value: '40'
+        - macro: '{$MS_CERTIFICATE_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$MS_CERTIFICATE_GET_INTERVAL}'
+          value: 12h
+        - macro: '{$MS_CERTIFICATE_REQUEST_INTERVAL}'
+          value: 1d
+        - macro: '{$MS_CERTIFICATE_VALID_DAYS}'
+          value: '30'
+          description: 'valid to - valid from. By default 0 (all certificates)'

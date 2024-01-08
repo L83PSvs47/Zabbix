@@ -1,0 +1,1165 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: fd9f377a2ab34d57a53178200334f515
+      template: 'Additional Template SNMP KEMP LoadMaster'
+      name: 'Additional Template SNMP KEMP LoadMaster'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 663a115175434d4bbef89c6d52269ff7
+          name: Connections
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.12.3.0
+          key: conns
+          history: 1w
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+        - uuid: 44e60752b691405dbe919fe2c4309cc9
+          name: 'Daemon state'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.13.0.7.0
+          key: daemonState
+          history: 1w
+          description: |
+            0:none
+            1:master
+            2:backup
+        - uuid: e5f91f477d614ff691974f3de4265ba1
+          name: 'HA state'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.13.0.9.0
+          key: hAstate
+          history: 1w
+          description: |
+            0:none
+            1:Master
+            2:Standby
+            3:Passive
+          triggers:
+            - uuid: 8941f1ea57a34f9cb2d882c5e7b836cd
+              expression: 'last(/Additional Template SNMP KEMP LoadMaster/hAstate)<>1'
+              name: 'HA Status Change'
+              priority: WARNING
+        - uuid: 295c768abe1b49fab409f9cefa44b1ce
+          name: 'Network traffic incoming bit'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.12.6.0
+          key: inBit
+          history: 1w
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: 'System network traffic'
+        - uuid: c594f1906a994f69bb3e73338b08846b
+          name: 'Network traffic incoming bytes'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.12.6.0
+          key: inBytes
+          history: 1w
+          units: B
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'System network traffic'
+        - uuid: b38d10f71a934bd78e0719edf1e6ea21
+          name: 'Network traffic incoming packets'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.12.4.0
+          key: inPkts
+          history: 1w
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'System network traffic'
+        - uuid: b1e4954f3cba496da48ddff9113cde55
+          name: 'Load average 1 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.5.1
+          key: laLoadInt.1
+          history: 1w
+          value_type: FLOAT
+          description: 'UCD-SNMP-MIB::laLoadInt.1'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: 'Load average'
+        - uuid: 6f577b4a44c343be9f02aeb4f16cb833
+          name: 'Load average 5 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.5.2
+          key: laLoadInt.2
+          history: 1w
+          value_type: FLOAT
+          description: 'UCD-SNMP-MIB::laLoadInt.2'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: 'Load average'
+        - uuid: 5945ad4a6d5441e28541da62c4c9fb8c
+          name: 'Load average 15 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.5.3
+          key: laLoadInt.3
+          history: 1w
+          value_type: FLOAT
+          description: 'UCD-SNMP-MIB::laLoadInt.3'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '0.01'
+          tags:
+            - tag: Application
+              value: 'Load average'
+        - uuid: 56f432ad6c514bb5bbf94310c560a6f7
+          name: 'Memory free'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.6.0
+          key: memAvailReal.0
+          history: 1w
+          units: B
+          description: 'UCD-SNMP-MIB::memAvailReal.0'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1000'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: e95ae20db3d84b1f857d261fd533bef4
+          name: 'Memory buffer'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.14.0
+          key: memBuffer.0
+          history: 1w
+          units: B
+          description: 'UCD-SNMP-MIB::memBuffer.0'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1000'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 88df1ea768a441a1a899a5e6b648bac9
+          name: 'Memory cached'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.15.0
+          key: memCached.0
+          history: 1w
+          units: B
+          description: 'UCD-SNMP-MIB::memCached.0'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1000'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: c43912ecf0df4014b5cbb90128a77732
+          name: 'Memory shared'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.13.0
+          key: memShared.0
+          history: 1w
+          units: B
+          description: 'UCD-SNMP-MIB::memShared.0'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1000'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 628cf6c86f344da8a4c8c2c36c80dbd7
+          name: 'Memory total'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.4.5.0
+          key: memTotalReal.0
+          history: 1w
+          units: B
+          description: 'UCD-SNMP-MIB::memTotalReal.0'
+          preprocessing:
+            - type: MULTIPLIER
+              parameters:
+                - '1000'
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: 2a164ba1125c4c3cb623da1824796fe6
+          name: 'Memory used'
+          type: CALCULATED
+          key: memUsed
+          history: 1w
+          units: B
+          params: last(//memTotalReal.0)-(last(//memAvailReal.0)+last(//memShared.0)+last(//memCached.0)+last(//memBuffer.0))
+          tags:
+            - tag: Application
+              value: Memory
+        - uuid: affae5148fc648a98212fcb132a5665d
+          name: 'Total virtual services'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.13.0.2.0
+          key: numServices
+          history: 1w
+          description: LoadMasterに登録されている全体のVS数
+        - uuid: cc802605726b4c6f9ac50e84ec77ec65
+          name: 'Network traffic outgoing bit'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.12.7.0
+          key: outBit
+          history: 1w
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: 'System network traffic'
+        - uuid: 4262a033c73847c9827183349200b1eb
+          name: 'Network traffic outgoing bytes'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.12.7.0
+          key: outBytes
+          history: 1w
+          units: B
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'System network traffic'
+        - uuid: fdb6a150c9b44b12ab310ffe45699b7b
+          name: 'Network traffic outgoing packets'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.12.5.0
+          key: outPkts
+          history: 1w
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'System network traffic'
+        - uuid: b2a301f9253b4826a089700ce4472c30
+          name: 'LoadMaster version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.13.0.10.0
+          key: patchVersion
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: OS
+        - uuid: 15f2028bea264cdab709b5cd4aca0bb9
+          name: 'SSL TPS'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.13.0.12.0
+          key: sslTps
+          history: 1w
+          units: TPS
+          tags:
+            - tag: Application
+              value: TPS
+        - uuid: cf5d0500bdb64e02948f709da86eb81a
+          name: 'CPU idle time'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.53.0
+          key: system.cpu.time.idle
+          history: 1w
+          description: 'UCD-SNMP-MIB::ssCpuRawIdle.0'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'CPU utilization'
+        - uuid: 74bacd8606cb4ba6bcf9e25cb5cde7f8
+          name: 'CPU interrupt time'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.56.0
+          key: system.cpu.time.interrupt
+          history: 1w
+          description: 'UCD-SNMP-MIB::ssCpuRawInterrupt.0'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'CPU utilization'
+        - uuid: 855667e0ee794a4993ccace87e3e57d5
+          name: 'CPU nice time'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.51.0
+          key: system.cpu.time.nice
+          history: 1w
+          description: 'UCD-SNMP-MIB::ssCpuRawNice.0'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'CPU utilization'
+        - uuid: b9a035d801d84111a6f19cc7cf3fd461
+          name: 'CPU soft IRQ time'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.61.0
+          key: system.cpu.time.softirq
+          history: 1w
+          description: 'UCD-SNMP-MIB::ssCpuRawSoftIRQ.0'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'CPU utilization'
+        - uuid: 9f42ec6034fe4eda89331325bdf4693e
+          name: 'CPU system time'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.52.0
+          key: system.cpu.time.system
+          history: 1w
+          description: 'UCD-SNMP-MIB::ssCpuRawSystem.0'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'CPU utilization'
+        - uuid: 7f2c9d0cee094da0bef6f091af2680a4
+          name: 'CPU user time'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.11.50.0
+          key: system.cpu.time.user
+          history: 1w
+          description: 'UCD-SNMP-MIB::ssCpuRawUser.0'
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'CPU utilization'
+        - uuid: ec1c5d24a1a1414b93c17c4d80b1c6a0
+          name: TPS
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.12196.13.0.11.0
+          key: totalTps
+          history: 1w
+          units: TPS
+          tags:
+            - tag: Application
+              value: TPS
+      discovery_rules:
+        - uuid: 8b80869713fb44d1b01c8c3a57dea66c
+          name: 'Network interface'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.2.1.31.1.1.1.1]'
+          key: '.1.3.6.1.2.1.31.1.1.1.1.[{#SNMPINDEX}]'
+          delay: 1h
+          description: 'IF-MIB::ifName'
+          item_prototypes:
+            - uuid: 437c37c3a9224824838743f82536a69d
+              name: 'Network interface inbound broadcast packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.9.{#SNMPINDEX}'
+              key: 'ifHCInBroadcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              description: 'IF-MIB::ifHCInBroadcastPkts'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: 8fe5a0e915874f02af4c4613fb6b495e
+              name: 'Network interface inbound multicast packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.8.{#SNMPINDEX}'
+              key: 'ifHCInMulticastPkts[{#SNMPVALUE}]'
+              history: 1w
+              description: 'IF-MIB::ifHCInMulticastPkts'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: 834c0555bffd40e88fd224be526e9eec
+              name: 'Network interface inbound traffic (bit) on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}'
+              key: 'ifHCInOctets.bit[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'IF-MIB::ifHCInOctets × 8bit (bps)'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: ac08f732c7e243f9995fdf53ad0f3275
+              name: 'Network interface inbound traffic (byte) on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.6.{#SNMPINDEX}'
+              key: 'ifHCInOctets[{#SNMPVALUE}]'
+              history: 1w
+              units: B
+              description: 'IF-MIB::ifHCInOctets'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: 5fc218151c0a4d3b9832c8952234baca
+              name: 'Network interface inbound unicast packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.7.{#SNMPINDEX}'
+              key: 'ifHCInUcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              description: 'IF-MIB::ifHCInUcastPkts'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: 2859809f02d6456a8117124da8a7beb2
+              name: 'Network interface outbound broadcast packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.13.{#SNMPINDEX}'
+              key: 'ifHCOutBroadcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              description: 'IF-MIB::ifHCOutBroadcastPkts'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: e34959e499ff4cb08daa1c4393040d30
+              name: 'Network interface outbound multicast packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.12.{#SNMPINDEX}'
+              key: 'ifHCOutMulticastPkts[{#SNMPVALUE}]'
+              history: 1w
+              description: 'IF-MIB::ifHCOutMulticastPkts'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: ee6fe5ef3a7745f0a251c3fd659c7d89
+              name: 'Network interface outbound traffic (bit) on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}'
+              key: 'ifHCOutOctets.bit[{#SNMPVALUE}]'
+              history: 1w
+              units: bps
+              description: 'IF-MIB::ifHCOutOctets × 8bit (bps)'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+                - type: MULTIPLIER
+                  parameters:
+                    - '8'
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: 78f13dd8da1c4d8ea7ee7dd2702bff56
+              name: 'Network interface outbound traffic (byte) on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.10.{#SNMPINDEX}'
+              key: 'ifHCOutOctets[{#SNMPVALUE}]'
+              history: 1w
+              units: B
+              description: ifHCOutOctets
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: 3662e570ed0e491b8367726ebcc25a18
+              name: 'Network interface outbound unicast packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.11.{#SNMPINDEX}'
+              key: 'ifHCOutUcastPkts[{#SNMPVALUE}]'
+              history: 1w
+              description: 'IF-MIB::ifHCOutUcastPkts'
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+            - uuid: a214ae5828894347b684cc5b83fb364d
+              name: 'Network interface speed on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.2.1.31.1.1.1.15.{#SNMPINDEX}'
+              key: 'ifHighSpeed[{#SNMPVALUE}]'
+              history: 1w
+              description: 'IF-MIB::ifHighSpeed'
+              tags:
+                - tag: Application
+                  value: 'System network interface stats'
+          graph_prototypes:
+            - uuid: 4cd1fc56d68346a6820243fc641028e5
+              name: 'Network Interface Packets on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - color: 00CCFF
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCOutBroadcastPkts[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  color: 0066FF
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCOutMulticastPkts[{#SNMPVALUE}]'
+                - sortorder: '2'
+                  color: 0000FF
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCOutUcastPkts[{#SNMPVALUE}]'
+                - sortorder: '3'
+                  color: 00FF00
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCInBroadcastPkts[{#SNMPVALUE}]'
+                - sortorder: '4'
+                  color: 00CC00
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCInMulticastPkts[{#SNMPVALUE}]'
+                - sortorder: '5'
+                  color: '009900'
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCInUcastPkts[{#SNMPVALUE}]'
+            - uuid: 9805fcb905724a23ab4bf7b24ef8b2b3
+              name: 'Network Interface Speed on {#SNMPVALUE}'
+              graph_items:
+                - color: C80000
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHighSpeed[{#SNMPVALUE}]'
+            - uuid: ded5e00f633148048138ae949f39bc71
+              name: 'Network Interface Traffic (Bit) on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: 0000DD
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCInOctets.bit[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  drawtype: FILLED_REGION
+                  color: 00C800
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCOutOctets.bit[{#SNMPVALUE}]'
+            - uuid: 81f093bcc9f14a0d88beb619d626e824
+              name: 'Network Interface Traffic (Byte) on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - color: 0000DD
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCInOctets[{#SNMPVALUE}]'
+                - sortorder: '1'
+                  color: 00DD00
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'ifHCOutOctets[{#SNMPVALUE}]'
+        - uuid: dfdfa3075ce04651a9c596b1166efeaa
+          name: 'Real server'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.12196.12.2.1.11]'
+          key: '.1.3.6.1.4.1.12196.12.2.1.11.[{#SNMPINDEX}]'
+          delay: 1h
+          description: |
+            IPVS-MIB::rSDesc
+            ※VSのNickNameを取得
+          item_prototypes:
+            - uuid: f44c9d367dad4d02b3237a75c24188c4
+              name: 'Real server active connections on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.2.1.17.{#SNMPINDEX}'
+              key: 'rSActiveConns[{#SNMPINDEX}]'
+              history: 1w
+              tags:
+                - tag: Application
+                  value: 'Real server'
+            - uuid: 3f838d987dde4a2099cce6169608d698
+              name: 'Real server connections on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.2.1.12.{#SNMPINDEX}'
+              key: 'rSConns[{#SNMPINDEX}]'
+              history: 1w
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Real server'
+            - uuid: adb4eda0cf6643ba910e5b7b7a6a82f1
+              name: 'Real server inactive connection on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.2.1.18.{#SNMPINDEX}'
+              key: 'rSInactiveConns[{#SNMPINDEX}]'
+              history: 1w
+              tags:
+                - tag: Application
+                  value: 'Real server'
+            - uuid: 108ae14138a3425280cd48d1592ad489
+              name: 'Real server incoming bytes on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.2.1.15.{#SNMPINDEX}'
+              key: 'rSInBytes[{#SNMPINDEX}]'
+              history: 1w
+              units: B
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Real server'
+            - uuid: 8d7a744c881f4f6fac97549311a5f5d6
+              name: 'Real server incoming packets on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.2.1.13.{#SNMPINDEX}'
+              key: 'rSInPkts[{#SNMPINDEX}]'
+              history: 1w
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Real server'
+            - uuid: 9277638b0b7a41ca9753dcd3c7502d57
+              name: 'Real server outgoing bytes on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.2.1.16.{#SNMPINDEX}'
+              key: 'rSOutBytes[{#SNMPINDEX}]'
+              history: 1w
+              units: B
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Real server'
+            - uuid: 8c7c851abd824ccb94368c8a3594662e
+              name: 'Real server outgoing packets on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.2.1.14.{#SNMPINDEX}'
+              key: 'rSOutPkts[{#SNMPINDEX}]'
+              history: 1w
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Real server'
+            - uuid: 3fb2f8ddf7c04e80a917abedb0deba34
+              name: 'Real server state on {#SNMPVALUE} index.{#SNMPINDEX}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.13.2.1.8.{#SNMPINDEX}'
+              key: 'rSstate[{#SNMPINDEX}]'
+              history: 1w
+              description: |
+                1:inService
+                2:outOfService
+              tags:
+                - tag: Application
+                  value: 'Real server'
+          graph_prototypes:
+            - uuid: 671012f3f4c04e9b8f9e29cdff9e5aec
+              name: 'Real Server Active Connections on {#SNMPVALUE}'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: C80000
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSActiveConns[{#SNMPINDEX}]'
+            - uuid: c42abf72a97a431fa56fe5f3706da6ae
+              name: 'Real Server Connections on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - color: 0000EE
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSConns[{#SNMPINDEX}]'
+                - sortorder: '1'
+                  color: 00C800
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSInactiveConns[{#SNMPINDEX}]'
+            - uuid: ca8e603df97b44a49a89b19eed2eaba8
+              name: 'Real Server Inactive Connection on {#SNMPVALUE}'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: C80000
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSInactiveConns[{#SNMPINDEX}]'
+            - uuid: 9d0e4477e9914a1aab93bd5a27c3f75b
+              name: 'Real Server Network Traffic (Bytes) on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - color: 0000DD
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSInBytes[{#SNMPINDEX}]'
+                - sortorder: '1'
+                  color: 00C800
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSOutBytes[{#SNMPINDEX}]'
+            - uuid: 205e2d7d8028451e99bee3ca90eea7bd
+              name: 'Real Server Network Traffic (Packets) on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - color: 0000CC
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSInPkts[{#SNMPINDEX}]'
+                - sortorder: '1'
+                  color: 00C800
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSOutPkts[{#SNMPINDEX}]'
+            - uuid: 05d7923da1674684bc2cd52592a0d530
+              name: 'Real Server State on {#SNMPVALUE}'
+              graph_items:
+                - color: C80000
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'rSstate[{#SNMPINDEX}]'
+        - uuid: c8088ec772b14b52a6fa9dac369ce9d0
+          name: 'Virtual service'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#SNMPVALUE},.1.3.6.1.4.1.12196.13.1.1.13]'
+          key: '.1.3.6.1.4.1.12196.13.1.1.13.[{#SNMPINDEX}]'
+          delay: 1h
+          description: |
+            B100-MIB::vSname
+            ※VSのNickNameを取得
+          item_prototypes:
+            - uuid: 29824bb4f5074a95b71bbe54e774a960
+              name: 'Virtual service active connections on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.1.1.17.{#SNMPINDEX}'
+              key: 'vSActivConns[{#SNMPINDEX}]'
+              history: 1w
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+            - uuid: 6633082ddd9949a79162b6cfd5c8d61a
+              name: 'Virtual service connections on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.1.1.12.{#SNMPINDEX}'
+              key: 'vSConns[{#SNMPINDEX}]'
+              history: 1w
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+            - uuid: 1f60d08252ff41d1bc64321858518f18
+              name: 'Virtual service incoming bytes on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.1.1.15.{#SNMPINDEX}'
+              key: 'vSInBytes[{#SNMPINDEX}]'
+              history: 1w
+              units: B
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+            - uuid: d8b8bcf02b974f72a8b65c454d6bcc74
+              name: 'Virtual service incoming packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.1.1.13.{#SNMPINDEX}'
+              key: 'vSInPkts[{#SNMPINDEX}]'
+              history: 1w
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+            - uuid: ce10d55f08184a1ab4143b4973a801be
+              name: 'Real server for this virtual service on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.13.1.1.10.{#SNMPINDEX}'
+              key: 'vSnumDests[{#SNMPINDEX}]'
+              history: 1w
+              description: 'Number of Real Server for this Virtual Service'
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+            - uuid: 23063ec73c7c422b9d8d6ca1dfa102bb
+              name: 'Virtual service outgoing bytes on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.1.1.16.{#SNMPINDEX}'
+              key: 'vSOutBytes[{#SNMPINDEX}]'
+              history: 1w
+              units: B
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+            - uuid: 5809d25fe2c2444ca68ce5dd2ea92eed
+              name: 'Virtual service outgoing packets on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.12.1.1.14.{#SNMPINDEX}'
+              key: 'vSOutPkts[{#SNMPINDEX}]'
+              history: 1w
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+            - uuid: 61828ae1242546f7bf98e73f00a29488
+              name: 'Virtual service state on {#SNMPVALUE}'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.12196.13.1.1.14.{#SNMPINDEX}'
+              key: 'vSstate[{#SNMPINDEX}]'
+              history: 1w
+              description: |
+                1:inService
+                2:outOfService
+                3:failed
+                4:disabled
+                5:sorry
+                6:redirect
+                7:errormsg
+              tags:
+                - tag: Application
+                  value: 'Virtual service'
+              trigger_prototypes:
+                - uuid: 969bd1c632db43eba9d145ff5fd41551
+                  expression: 'last(/Additional Template SNMP KEMP LoadMaster/vSstate[{#SNMPINDEX}])=4'
+                  name: '{#SNMPVALUE} Virtual Service State is Disabled on {HOST.NAME}'
+                  priority: INFO
+                - uuid: 55fa4b9bddd34a9bbe8b69489108679d
+                  expression: 'last(/Additional Template SNMP KEMP LoadMaster/vSstate[{#SNMPINDEX}])=7'
+                  name: '{#SNMPVALUE} Virtual Service State is Errormsg on {HOST.NAME}'
+                  priority: WARNING
+                  description: 'Virtual Service State is Errormsg'
+                - uuid: cb9c49b4b4cd49b281eb48b188e55f93
+                  expression: 'last(/Additional Template SNMP KEMP LoadMaster/vSstate[{#SNMPINDEX}])=3'
+                  name: '{#SNMPVALUE} Virtual Service State is failed on {HOST.NAME}'
+                  priority: HIGH
+                  description: 'Virtual Service State is failed'
+                - uuid: 471bba66ae1e4fc09fb43b88debfa165
+                  expression: 'last(/Additional Template SNMP KEMP LoadMaster/vSstate[{#SNMPINDEX}])=1'
+                  name: '{#SNMPVALUE} Virtual Service State is In Service on {HOST.NAME}'
+                  priority: INFO
+                - uuid: c776b9bdc0fa43f987efa27b815b0409
+                  expression: 'last(/Additional Template SNMP KEMP LoadMaster/vSstate[{#SNMPINDEX}])=2'
+                  name: '{#SNMPVALUE} Virtual Service State is Out Of Service on {HOST.NAME}'
+                  priority: HIGH
+                  description: 'Virtual Service State is Out Of Service'
+                - uuid: 8681c939629a44baaa2d1a5224c69433
+                  expression: 'last(/Additional Template SNMP KEMP LoadMaster/vSstate[{#SNMPINDEX}])=6'
+                  name: '{#SNMPVALUE} Virtual Service State is Redirect on {HOST.NAME}'
+                  priority: INFO
+                - uuid: ba89c401142149f58fb17cefe5d16008
+                  expression: 'last(/Additional Template SNMP KEMP LoadMaster/vSstate[{#SNMPINDEX}])=5'
+                  name: '{#SNMPVALUE} Virtual Service State is Sorry on {HOST.NAME}'
+                  priority: WARNING
+                  description: 'Virtual Service State is Sorry'
+          graph_prototypes:
+            - uuid: 8f577c0dfe1b44a0b051e6fab6636e03
+              name: 'Real Server for this Virtual Service on {#SNMPVALUE}'
+              graph_items:
+                - color: C80000
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSnumDests[{#SNMPINDEX}]'
+            - uuid: eb13014558ca4d448dde345a7b329210
+              name: 'Virtual Service Active Connections on {#SNMPVALUE}'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: C80000
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSActivConns[{#SNMPINDEX}]'
+            - uuid: 36c26135787640f483dca43613d13a7e
+              name: 'Virtual Service Connections on {#SNMPVALUE}'
+              graph_items:
+                - drawtype: FILLED_REGION
+                  color: 0000DD
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSConns[{#SNMPINDEX}]'
+            - uuid: 72b18467057b4f80b28434d10f4dde90
+              name: 'Virtual Service Network Traffic (Bytes) on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - color: 0000DD
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSInBytes[{#SNMPINDEX}]'
+                - sortorder: '1'
+                  color: 00C800
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSOutBytes[{#SNMPINDEX}]'
+            - uuid: a005c6a3ff8b4be9b3ad4caac34def66
+              name: 'Virtual Service Network Traffic (Packets) on {#SNMPVALUE}'
+              type: STACKED
+              graph_items:
+                - color: 0000DD
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSInPkts[{#SNMPINDEX}]'
+                - sortorder: '1'
+                  color: 00C800
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSOutPkts[{#SNMPINDEX}]'
+            - uuid: 858633ac78f84cd79601ba2acf7a5721
+              name: 'Virtual Service State on {#SNMPVALUE}'
+              show_triggers: 'NO'
+              graph_items:
+                - color: CC0000
+                  item:
+                    host: 'Additional Template SNMP KEMP LoadMaster'
+                    key: 'vSstate[{#SNMPINDEX}]'
+  graphs:
+    - uuid: f2b07c2abf5346c98b312a5b2176fbfc
+      name: Connections
+      graph_items:
+        - drawtype: GRADIENT_LINE
+          color: 0000EE
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: conns
+    - uuid: c3e608844ede4e60a9495406cc190662
+      name: 'CPU Util'
+      type: STACKED
+      graph_items:
+        - color: 0000CC
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: system.cpu.time.system
+        - sortorder: '1'
+          color: 0066CC
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: system.cpu.time.softirq
+        - sortorder: '2'
+          color: 0033CC
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: system.cpu.time.user
+        - sortorder: '3'
+          color: 0099CC
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: system.cpu.time.nice
+        - sortorder: '4'
+          color: 00CCCC
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: system.cpu.time.interrupt
+        - sortorder: '5'
+          color: EEFFFF
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: system.cpu.time.idle
+    - uuid: 7dd6b184bdd8406dba5e6d6841763274
+      name: 'Daemon State'
+      graph_items:
+        - color: C80000
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: daemonState
+    - uuid: af4918afe3c649da917b6ab55f549fea
+      name: 'HA State'
+      graph_items:
+        - color: C80000
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: hAstate
+    - uuid: 6a959c1202d54af9b0f5463a86bdef98
+      name: 'Load Average'
+      graph_items:
+        - color: FFCC00
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: laLoadInt.1
+        - sortorder: '1'
+          color: FF6600
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: laLoadInt.2
+        - sortorder: '2'
+          color: FF0000
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: laLoadInt.3
+    - uuid: aa7d350ce50548b292dc74ca4617f674
+      name: Memory
+      type: STACKED
+      ymax_type_1: ITEM
+      ymax_item_1:
+        host: 'Additional Template SNMP KEMP LoadMaster'
+        key: memTotalReal.0
+      graph_items:
+        - color: '510371'
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: memUsed
+        - sortorder: '1'
+          color: 9926C6
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: memShared.0
+        - sortorder: '2'
+          color: C45FEC
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: memCached.0
+        - sortorder: '3'
+          color: C483DE
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: memBuffer.0
+        - sortorder: '4'
+          color: BA9EC5
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: memAvailReal.0
+    - uuid: aa6138d409a24141a9ea873913dadc74
+      name: 'Total Network Packets'
+      type: STACKED
+      graph_items:
+        - color: 0000CC
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: inPkts
+        - sortorder: '1'
+          color: 00C800
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: outPkts
+    - uuid: f8b3e9844bd54e1abb36e5a8c2e3daed
+      name: 'Total Network Traffic (Bit)'
+      type: STACKED
+      graph_items:
+        - color: 0000DD
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: inBit
+        - sortorder: '1'
+          color: 00C800
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: outBit
+    - uuid: 846ae1513e7d41018a1e6ce579223196
+      name: 'Total Network Traffic (Byte)'
+      type: STACKED
+      graph_items:
+        - color: 0000DD
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: inBytes
+        - sortorder: '1'
+          color: 00C800
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: outBytes
+    - uuid: b9dc8b2a00ec422ab7bce1aa0fbda0ec
+      name: 'Total Virtual Services'
+      graph_items:
+        - color: C80000
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: numServices
+    - uuid: c8d33e9f833e461d827ca94f76f1a0c4
+      name: TPS
+      graph_items:
+        - drawtype: FILLED_REGION
+          color: 00C800
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: totalTps
+        - sortorder: '1'
+          color: C80000
+          item:
+            host: 'Additional Template SNMP KEMP LoadMaster'
+            key: sslTps

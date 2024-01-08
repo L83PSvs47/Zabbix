@@ -1,0 +1,374 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 035c09a99bb744d7a28cd6d0b9426981
+      template: 'Additional Template App Microsoft Exchange Server'
+      name: 'Additional Template App Microsoft Exchange Server'
+      description: |
+        Мониторинг MS Exchange Server.
+        
+        Используется официальный Zabbix Templates "Microsoft Exchange Server 2016 by Zabbix agent active".
+        
+        Дополнительно добавлено LLD Databases.
+      templates:
+        - name: 'Microsoft Exchange Server 2016 by Zabbix agent active'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: fb01514b3be64207bca64d1c5fc000f9
+          name: 'Active Mailbox Delivery Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Active Mailbox Delivery Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          description: 'Shows the number of messages in the active mailbox queues.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: cd204b2571604f6aa48520cc28f458b0
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Active Mailbox Delivery Queue Length"])>100'
+              name: 'Active Mailbox Delivery Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Active Mailbox Delivery Queue Length is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: 2cd345b05be445eaac8b026629752cfa
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Active Mailbox Delivery Queue Length"])>250'
+              name: 'Active Mailbox Delivery Queue Length is too high'
+              priority: HIGH
+              description: |
+                Active Mailbox Delivery Queue Length is too high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 70c4812ef0a5456982095d67a53efb09
+          name: 'Active Non-Smtp Delivery Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Active Non-Smtp Delivery Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          description: 'Shows the number of messages in the drop directory used by a Foreign connector.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: 1b9826238e394a1da290ffc5632f1c86
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Active Non-Smtp Delivery Queue Length"])>100'
+              name: 'Active Non-Smtp Delivery Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Active Non-Smtp Delivery Queue Length is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: 97161232855843a3ac8b089931424c4c
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Active Non-Smtp Delivery Queue Length"])>250'
+              name: 'Active Non-Smtp Delivery Queue Length is too high'
+              priority: HIGH
+              description: |
+                Active Non-Smtp Delivery Queue Length is too high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 4fa4435d84eb4148bc7bd1c153c8c509
+          name: 'Active Remote Delivery Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Active Remote Delivery Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          status: DISABLED
+          description: 'Shows the number of messages in the active remote delivery queues.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: 8be40fe5e4b8436cb04c8bb9a319ef15
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Active Remote Delivery Queue Length"])>100'
+              name: 'Active Remote Delivery Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Active Remote Delivery Queue Length is high.
+                ttp://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: b291c6c29eae400bb028b0e3a05f1b70
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Active Remote Delivery Queue Length"])>250'
+              name: 'Active Remote Delivery Queue Length is too high'
+              priority: HIGH
+              description: |
+                Active Remote Delivery Queue Length is too high.
+                ttp://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 768119426bb242b08e5ddbafcf7c6c5b
+          name: 'Aggregate Delivery Queue Length (All Queues)'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Aggregate Delivery Queue Length (All Queues)"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          status: DISABLED
+          description: 'Shows the number of messages queued for delivery in all queues.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: e82ff44c042645b598d4d4c830c762fc
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Aggregate Delivery Queue Length (All Queues)"])>3000'
+              name: 'Aggregate Delivery Queue Length is high'
+              priority: AVERAGE
+              description: 'Aggregate Delivery Queue Length is higher then the microsoft recommednded. http://technet.microsoft.com/en-us/library/ff367923.aspx'
+            - uuid: 39d5b4d0465c426789e2628b0d455d63
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Aggregate Delivery Queue Length (All Queues)"])>5000'
+              name: 'Aggregate Delivery Queue Length is too high'
+              priority: HIGH
+              description: |
+                Aggregate Delivery Queue Length is too high.
+                 http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 1a6ba50c1d0e421b9a3b432d3ade2729
+          name: 'Largest Delivery Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Largest Delivery Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          status: DISABLED
+          description: 'Shows the number of messages in the largest delivery queues.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: a5cc0b00d0fb4f37acab5cb33d439fd3
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Largest Delivery Queue Length"])>100'
+              name: 'Largest Delivery Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Largest Delivery Queue Length is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: 04f3518125e54a608ad41ce8707d3f5b
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Largest Delivery Queue Length"])>200'
+              name: 'Largest Delivery Queue Length is too high'
+              priority: HIGH
+              description: |
+                Largest Delivery Queue Length is too high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 59a17d0f7b5b4f4f80e2264bf4910b99
+          name: 'Poison Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Poison Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          description: 'Shows the number of messages in the poison message queue.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: 6cc0b4fe9cbf4d87a5672d51301a8ecd
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Poison Queue Length"])<>0'
+              name: 'Poison Queue Length is high'
+              priority: WARNING
+              description: |
+                Poison Queue Length is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 6e9b1ee5f1b544adbffec625d1b84d93
+          name: 'Retry Mailbox Delivery Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Retry Mailbox Delivery Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          description: 'Shows the number of messages in a retry state attempting to deliver a message to a remote mailbox.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: b1e1900b9f9e4722a71b6ad880362c94
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Retry Mailbox Delivery Queue Length"])>100'
+              name: 'Retry Mailbox Delivery Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Retry Mailbox Delivery Queue Length is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: dd44ace6482c44d18b672c5c8d7a0ac1
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Retry Mailbox Delivery Queue Length"])>250'
+              name: 'Retry Mailbox Delivery Queue Length is too high'
+              priority: HIGH
+              description: |
+                Retry Mailbox Delivery Queue Length is too high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 5825c17124a84dd6be0fc74071f7af2e
+          name: 'Retry Non-Smtp Delivery Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Retry Non-Smtp Delivery Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          description: 'Shows the number of messages in a retry state in the non-SMTP gateway delivery queues.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+        - uuid: 8a81fd0f3b114a26815f7cedf6a6e042
+          name: 'Retry Remote Delivery Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Retry Remote Delivery Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          status: DISABLED
+          description: 'Shows the number of messages in a retry state in the remote delivery queues.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: fb9aa281eadf4936aa94eb8c7c0aa9ac
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Retry Remote Delivery Queue Length"])>50'
+              name: 'Retry Remote Delivery Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Retry Remote Delivery Queue Length is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: 475a9856cfd347b5936db97ffa35025d
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Retry Remote Delivery Queue Length"])>100'
+              name: 'Retry Remote Delivery Queue Length is too high'
+              priority: HIGH
+              description: |
+                Retry Remote Delivery Queue Length is too high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 33823e28f30a4825a58ae3326301b318
+          name: 'Submission Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Submission Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          description: 'Shows the number of messages in the submission queue.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: dffaf13906834a8596de778d695ff841
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Submission Queue Length"])>50'
+              name: 'Submission Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Submission Queue Length is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: b4f9dd1ad55e4abd825d577df28e13ec
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Submission Queue Length"])>100'
+              name: 'Submission Queue Length is too high'
+              priority: HIGH
+              description: |
+                Submission Queue Length is too high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 934fd4abad0e4942980dbb13f8c8a14a
+          name: 'Unreachable Queue Length'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\MSExchangeTransport Queues(_total)\Unreachable Queue Length"]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          description: 'Shows the number of messages in the Unreachable queue.'
+          tags:
+            - tag: Application
+              value: 'Exchange transport'
+          triggers:
+            - uuid: 39289d16764e40bba77e0e263d1ebdd8
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Unreachable Queue Length"])>50'
+              name: 'Unreachable Queue Length is high'
+              priority: AVERAGE
+              description: |
+                Unreachable Queue is high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+            - uuid: 7cd4a5f785054d2b8e162f9f8c59968b
+              expression: 'last(/Additional Template App Microsoft Exchange Server/perf_counter_en["\MSExchangeTransport Queues(_total)\Unreachable Queue Length"])>100'
+              name: 'Unreachable Queue Length is too high'
+              priority: HIGH
+              description: |
+                Unreachable Queue is too high.
+                http://technet.microsoft.com/en-us/library/ff367923.aspx
+        - uuid: 523aec02e82942c49a5a7c17d9f28259
+          name: 'Web Service Default Web Site Current Connections'
+          type: ZABBIX_ACTIVE
+          key: 'perf_counter_en["\Web Service(Default Web Site)\Current Connections",{$PERIOD}]'
+          delay: '{$EXCHANGE_GET_INTERVAL}'
+          history: 1w
+          value_type: FLOAT
+          description: 'Shows the current number of connections established to the Default website which corresponds to the number of connections hitting the Front End CAS server role. Determines current user load.'
+          tags:
+            - tag: Application
+              value: 'Exchange CAS metrics'
+      discovery_rules:
+        - uuid: 6a759848e90641b7b419393035a8dddf
+          name: 'Exchange database discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-ExchangeMailboxDatabase,,{$EXCHANGE_VERSION}]'
+          delay: '{$EXCHANGE_REQUEST_INTERVAL}'
+          lifetime: 2d
+          description: 'Discovery all Exchange databases'
+          item_prototypes:
+            - uuid: 0e61b1b43e124f2785d80a91239bbfc9
+              name: '{#EDB.NAME} edb file size'
+              type: ZABBIX_ACTIVE
+              key: 'vfs.file.size[{#EDB.PATH}]'
+              delay: '{$EXCHANGE_GET_INTERVAL}'
+              history: 1w
+              units: B
+              description: 'Database {#DB.NAME} edb file size.'
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$EXCHANGE_DISCARD_UNCHANGED}'
+              tags:
+                - tag: Application
+                  value: Exchange
+                - tag: Exchange
+                  value: 'EDB files'
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+      macros:
+        - macro: '{$EXCHANGE_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$EXCHANGE_GET_INTERVAL}'
+          value: 5m
+        - macro: '{$EXCHANGE_REQUEST_INTERVAL}'
+          value: 1h
+        - macro: '{$EXCHANGE_VERSION}'
+          value: '2016'
+      valuemaps:
+        - uuid: d246d8ab5dcb41e293916718982cc902
+          name: 'Exchange Server 2016 Database Content Index States'
+          mappings:
+            - value: '0'
+              newvalue: Unknown
+            - value: '1'
+              newvalue: Healthy
+            - value: '2'
+              newvalue: Crawling
+            - value: '3'
+              newvalue: Failed
+            - value: '4'
+              newvalue: Seeding
+            - value: '5'
+              newvalue: FailedAndSuspended
+            - value: '6'
+              newvalue: Suspended
+            - value: '7'
+              newvalue: Disabled
+            - value: '8'
+              newvalue: AutoSuspended
+            - value: '9'
+              newvalue: HealthyAndUpgrading
+            - value: '10'
+              newvalue: DiskUnavailable
+        - uuid: 02111f1e4c5c4b24bc63dade6673d190
+          name: 'Exchange Server 2016 Database Copy State'
+          mappings:
+            - value: '0'
+              newvalue: Passive
+            - value: '1'
+              newvalue: Active
+        - uuid: 40a5b8b157d74921a3257abe94de42db
+          name: 'Exchange Server 2016 Database Mounted State'
+          mappings:
+            - value: '0'
+              newvalue: 'Not mounted'
+            - value: '1'
+              newvalue: Mounted
+        - uuid: de4d349188a0481a95cc6c74d4d0b604
+          name: 'Exchange Server 2016 Database State'
+          mappings:
+            - value: '0'
+              newvalue: Dismounted
+            - value: '1'
+              newvalue: Mounted
+            - value: '2'
+              newvalue: Healthy

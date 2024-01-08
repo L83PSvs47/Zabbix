@@ -1,0 +1,324 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: c285dbf478164689bf38aeb98511e3d7
+      template: 'Additional Template SNMP HP Procurve 1910'
+      name: 'Additional Template SNMP HP Procurve 1910'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 22c6a44340df4569814cdcea3a65c4b9
+          name: 'CPU utilization'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.25506.2.6.1.1.1.1.6.8
+          key: .1.3.6.1.4.1.25506.2.6.1.1.1.1.6.8
+          history: 1w
+          units: '%'
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: cfd5ed12f0324a57b66ac365904b5d21
+              expression: 'last(/Additional Template SNMP HP Procurve 1910/.1.3.6.1.4.1.25506.2.6.1.1.1.1.6.8,#1:now-60s)>69'
+              name: 'CPU usage on {HOSTNAME} is above of 70%'
+              priority: HIGH
+        - uuid: e01f0013485a4f63906c98aa85023d63
+          name: 'Memory usage'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.25506.2.6.1.1.1.1.8.8
+          key: .1.3.6.1.4.1.25506.2.6.1.1.1.1.8.8
+          history: 1w
+          units: '%'
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: 5563cddea33740ac878b5238c7f0da6c
+              expression: 'last(/Additional Template SNMP HP Procurve 1910/.1.3.6.1.4.1.25506.2.6.1.1.1.1.8.8,#1:now-60s)>79'
+              name: 'Lack of available memory on device {HOSTNAME}'
+              priority: HIGH
+        - uuid: 7e131b8e4887480b9422092e05d3b0cf
+          name: 'Total memory'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.25506.2.6.1.1.1.1.10.8
+          key: .1.3.6.1.4.1.25506.2.6.1.1.1.1.10.8
+          delay: 1h
+          history: 1w
+          units: b
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 5799c568c58841f1bb9a76b6e4f87f2c
+          name: Temperature
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.25506.2.6.1.1.1.1.12.8
+          key: .1.3.6.1.4.1.25506.2.6.1.1.1.1.12.8
+          history: 1w
+          units: C
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 64066229dd97408d9aaaaa2ea9e305ef
+          name: Int-Example-BCast-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCInBroadcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-BCast-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: ddcaa0b17de04129a826efd75baeae89
+          name: Int-Example-BCast-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCOutBroadcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-BCast-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: a1f2bc685ecc4105a7411d3154f6e16f
+          name: Int-Example-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCInOctets["index","ifDescr","Example"]'
+          key: Int-Example-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: add30cf08d7e417fadb1e75c56c26e8d
+          name: Int-Example-In-Err
+          type: SNMP_AGENT
+          snmp_oid: 'ifInErrors["index","ifDescr","Intnamehere"]'
+          key: Int-Example-In-Err
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: eb8897e3cf634f08aa58a57a2786efa9
+          name: Int-Example-NonUCast-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifInNUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-NonUCast-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: 9b9bffb3f1b741b7adb5392d2259fe10
+          name: Int-Example-NonUCast-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifOutNUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-NonUCast-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: 85333ca97f084065a2ce074f6674cb04
+          name: Int-Example-Opperstat
+          type: SNMP_AGENT
+          snmp_oid: 'ifOperStatus["index","ifDescr","A6"]'
+          key: Int-Example-Opperstat
+          history: 1w
+          status: DISABLED
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: 350159796f364c31a84bd084d631412b
+          name: Int-Example-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCOutOctets["index","ifDescr","A6"]'
+          key: Int-Example-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: f4dc76a8c55249cabd28f6156368e1b6
+          name: Int-Example-Out-Err
+          type: SNMP_AGENT
+          snmp_oid: 'ifOutErrors["index","ifDescr","A6"]'
+          key: Int-Example-Out-Err
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: 2e7a8a0761ed4764bb9cfe475ddee450
+          name: Int-Example-UCast-In
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCInUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-UCast-In
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: 5e8aa4e287584409bf936aefa62d4562
+          name: Int-Example-UCast-Out
+          type: SNMP_AGENT
+          snmp_oid: 'ifHCOutUcastPkts["index","ifDescr","Example"]'
+          key: Int-Example-UCast-Out
+          history: 1w
+          status: DISABLED
+          units: bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+            - type: MULTIPLIER
+              parameters:
+                - '8'
+          tags:
+            - tag: Application
+              value: Interfaces
+        - uuid: feee154cf1074269b49cb7b77dad0265
+          name: 'Base MAC'
+          type: SNMP_AGENT
+          snmp_oid: mib-2.17.1.1.0
+          key: mib-2.17.1.1.0
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: MACADDRESS_A
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 333068854df4480eb1ff2284675b1b40
+          name: 'Switch type'
+          type: SNMP_AGENT
+          snmp_oid: mib-2.47.1.1.1.1.7.1
+          key: mib-2.47.1.1.1.1.7.1
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: HARDWARE
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 3ab86187c2ba4a63b0ec33e2d04a4a35
+          name: 'OS version'
+          type: SNMP_AGENT
+          snmp_oid: mib-2.47.1.1.1.1.10.1
+          key: mib-2.47.1.1.1.1.10.1
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SOFTWARE
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 27fb59bd620040dcb8aa16542a5072f3
+          name: 'Serial number'
+          type: SNMP_AGENT
+          snmp_oid: mib-2.47.1.1.1.1.11.1
+          key: mib-2.47.1.1.1.1.11.1
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          inventory_link: SERIALNO_A
+          tags:
+            - tag: Application
+              value: System
+  graphs:
+    - uuid: 5abe0214e5d1498c950b721513b12db4
+      name: CPU
+      graph_items:
+        - color: C80000
+          calc_fnc: MAX
+          item:
+            host: 'Additional Template SNMP HP Procurve 1910'
+            key: .1.3.6.1.4.1.25506.2.6.1.1.1.1.6.8
+    - uuid: 17c3b3cfde5f4046bd0e6f7122298f80
+      name: 'Memory Usage'
+      graph_items:
+        - drawtype: BOLD_LINE
+          color: C80000
+          item:
+            host: 'Additional Template SNMP HP Procurve 1910'
+            key: .1.3.6.1.4.1.25506.2.6.1.1.1.1.8.8

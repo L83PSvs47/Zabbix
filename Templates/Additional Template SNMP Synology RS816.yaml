@@ -1,0 +1,429 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 72d2f0f93f334386ab1c936cd9256251
+      template: 'Additional Template SNMP Synology RS816'
+      name: 'Additional Template SNMP Synology RS816'
+      description: 'Cameras Server'
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 3d7cbad43e914e8e9c07517ebc2406db
+          name: 'CPU fan status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.4.2.0
+          key: cpu.fan.status
+          history: 1w
+          description: |
+            Synology cpu fan status
+            Each meanings of status represented describe below.
+            Normal(1):All CPU fans functional normally.
+            Failed(2):One of CPU fan stopped
+          valuemap:
+            name: SynologyCPUFanStatus
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: 48b5f21fda4d4218a8b9dca0d0779778
+              expression: 'last(/Additional Template SNMP Synology RS816/cpu.fan.status)=2'
+              name: 'One of CPU fan stopped'
+              url: 'https://pth-ic-01:5001/'
+              priority: WARNING
+              description: 'One of CPU fan stopped'
+        - uuid: 8c4934f11107464eb5a75c0b38433ea0
+          name: 'Fan status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.4.1.0
+          key: fan.status
+          history: 1w
+          description: |
+            Synology system fan status
+            Each meanings of status represented describe below.
+            Normal(1):All Internal fans functional normally.
+            Failed(2):One of internal fan stopped
+          valuemap:
+            name: SynologyFanStatus
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: e8e334d7822848618110578a85f6aeb6
+              expression: 'last(/Additional Template SNMP Synology RS816/fan.status)=2'
+              name: 'One of internal fan stopped'
+              url: 'https://pth-ic-01:5001/'
+              priority: WARNING
+              description: 'One of internal fan stopped.'
+        - uuid: 8dfdb63526704c588b9ac01bc2072f16
+          name: 'OS version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.5.3.0
+          key: os.version
+          delay: 1d
+          history: 1w
+          trends: '0'
+          value_type: CHAR
+          description: 'The version of this DSM'
+          tags:
+            - tag: Application
+              value: General
+        - uuid: f7fd6b0987fd42cf8f2977067287e5ac
+          name: 'Overall temperature'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.2.0
+          key: overall.temp
+          history: 1w
+          units: °C
+          description: |
+            Synology system temperature
+            The temperature of Disk Station uses Celsius degree
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: 8f54a5bd65454b07a621cfd78a37f7ae
+              expression: 'last(/Additional Template SNMP Synology RS816/overall.temp)>=65'
+              name: 'Overall temp too high'
+              url: 'https://pth-ic-01:5001/'
+              priority: WARNING
+              description: |
+                Synology system temperature
+                The temperature of Disk Station uses Celsius degree.
+        - uuid: 7fffece4e1f843e5ab05bc08c45f892c
+          name: 'Power status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.3.0
+          key: power.status
+          history: 1w
+          description: |
+            Synology power status
+            Each meanings of status represented describe below.
+            Normal(1):All power supplies functional normally.
+            Failed(2):One of power supply has failed.
+          valuemap:
+            name: SysnologyPowerStatus
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: c468c3743557496b8035c2499b40b450
+              expression: 'last(/Additional Template SNMP Synology RS816/power.status)=2'
+              name: 'One of power supply has failed'
+              url: 'https://pth-ic-01:5001/'
+              priority: WARNING
+              description: 'Failed(2):One of power supply has failed'
+        - uuid: 9f17de73104341c5b04b872ee76f0d30
+          name: 'Overall status'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.1.0
+          key: system.status
+          history: 1w
+          description: |
+            Synology system status
+            Each meanings of status represented describe below.
+            Normal(1):System functionals normally.
+            Failed(2):Volume has crashed
+          valuemap:
+            name: SynologySystemStatus
+          tags:
+            - tag: Application
+              value: System
+          triggers:
+            - uuid: 43eb7038cf7d4f028915f04ae0f2c356
+              expression: 'last(/Additional Template SNMP Synology RS816/system.status)=2'
+              name: 'Volume has crashed'
+              url: 'https://pth-ic-01:5001/'
+              priority: WARNING
+              description: 'Failed(2):Volume has crashed.'
+        - uuid: 24bb812d9b9c4763a02ef75e9c717b0b
+          name: 'Upgrade available'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.6574.1.5.4.0
+          key: Upgrade.Available
+          delay: 1d
+          history: 1w
+          description: |
+            This oid is for checking whether there is a latest DSM can be upgraded.
+            Available(1):There is version ready for download.
+            Unavailable(2):The DSM is latest version.
+            Connecting(3):Checking for the latest DSM.
+            Disconnected(4):Failed to connect to server.
+            Others(5):If DSM is upgrading or downloading, the status will show others
+          valuemap:
+            name: SynologyUpgradeAvailable
+          tags:
+            - tag: Application
+              value: General
+          triggers:
+            - uuid: 92759b61dca2455b82af36d48b371280
+              expression: 'last(/Additional Template SNMP Synology RS816/Upgrade.Available)=1'
+              name: 'There is a new OS version ready for download'
+              url: 'https://pth-ic-01:5001/'
+              priority: WARNING
+              description: 'There is version ready for download.'
+      discovery_rules:
+        - uuid: 2bf6ace06f444f52af918d1d2055cb5d
+          name: Disk
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#DISKMODEL}, .1.3.6.1.4.1.6574.2.1.1.2, {#DISKSTATUS}, .1.3.6.1.4.1.6574.2.1.1.5, {#DISKTEMP}, .1.3.6.1.4.1.6574.2.1.1.6]'
+          key: disk.discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: ef3e1a5346454483aef4129ff5e6b24b
+              name: '{#DISKMODEL}: Status'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.2.1.1.5.{#SNMPINDEX}'
+              key: 'disk.status.[{#SNMPINDEX}]'
+              history: 1w
+              description: |
+                Synology disk status
+                Each meanings of status represented describe below.
+                Normal(1):The hard disk functions normally.
+                Initialized(2):The hard disk has system partition but no data.
+                NotInitialized(3):The hard disk does not have system in system partition.
+                SystemPartitionFailed(4):The system partitions on the hard disks are damaged.
+                Crashed(5):The hard disk has damaged.
+              valuemap:
+                name: SynologyDiskStatus
+              tags:
+                - tag: Application
+                  value: Disk
+              trigger_prototypes:
+                - uuid: ec58ec24281f4121bd3a3e301ebb8ced
+                  expression: 'last(/Additional Template SNMP Synology RS816/disk.status.[{#SNMPINDEX}])=5'
+                  name: '{#DISKMODEL}: The hard disk has damaged'
+                  priority: AVERAGE
+                  description: 'The hard disk has damaged'
+                - uuid: 0f3766cdf1c34417a3e23172e14a7dd4
+                  expression: 'last(/Additional Template SNMP Synology RS816/disk.status.[{#SNMPINDEX}])=4'
+                  name: '{#DISKMODEL}: The system partitions on the hard disks are damaged'
+                  priority: WARNING
+                  description: 'The system partitions on the hard disks are damaged'
+            - uuid: 3a9db82fad564585b11c78aac1a1b56e
+              name: '{#DISKMODEL}: Temp'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.2.1.1.6.{#SNMPINDEX}'
+              key: 'disk.temp.[{#SNMPINDEX}]'
+              history: 1w
+              units: °C
+              description: |
+                Synology disk temperature
+                The temperature of each disk uses Celsius degree.
+              tags:
+                - tag: Application
+                  value: Disk
+        - uuid: 1798c8191f4b403280d6485cf8f1fd25
+          name: Load
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#DEVICE}, .1.3.6.1.4.1.6574.101.1.1.2, {#DISKLOAD}, .1.3.6.1.4.1.6574.101.1.1.8, {#DISKLOADAVG1}, .1.3.6.1.4.1.6574.101.1.1.9, {#DISKLOADAVG5}, .1.3.6.1.4.1.6574.101.1.1.10, {#DISKLOADAVG15}, .1.3.6.1.4.1.6574.101.1.1.11]'
+          key: load.discovery
+          delay: 1h
+          description: 'The load of disk (%)'
+          item_prototypes:
+            - uuid: 20ee95ef12ac4ee19d370408b69f4015
+              name: '{#DEVICE}: Load 1 min'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.9.{#SNMPINDEX}'
+              key: 'load.disk.1min[{#SNMPINDEX}]'
+              history: 1w
+              units: '%'
+              description: 'The 1 minute average load of disk (%)'
+              tags:
+                - tag: Application
+                  value: Disk
+            - uuid: 0b5c1bd556224ee58e1fbc4311a1c801
+              name: '{#DEVICE}: Load 5 min'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.10.{#SNMPINDEX}'
+              key: 'load.disk.5min[{#SNMPINDEX}]'
+              history: 1w
+              units: '%'
+              description: 'The 5 minute average load of disk (%)'
+              tags:
+                - tag: Application
+                  value: Disk
+            - uuid: 6e51217a214b4d38a0203dfbaff77b64
+              name: '{#DEVICE}: Load 15 min'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.11.{#SNMPINDEX}'
+              key: 'load.disk.15min[{#SNMPINDEX}]'
+              history: 1w
+              units: '%'
+              description: 'The 15 minute average load of disk (%)'
+              tags:
+                - tag: Application
+                  value: Disk
+            - uuid: df342903c9904b13ad9135b2a01646f5
+              name: '{#DEVICE}: Load'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.101.1.1.8.{#SNMPINDEX}'
+              key: 'load.disk[{#SNMPINDEX}]'
+              history: 1w
+              units: '%'
+              description: 'The load of disk (%)'
+              tags:
+                - tag: Application
+                  value: Disk
+              trigger_prototypes:
+                - uuid: 7c69ebe786be4674a6caa49e0ea23245
+                  expression: 'last(/Additional Template SNMP Synology RS816/load.disk[{#SNMPINDEX}])>=50'
+                  name: '{#DEVICE}: High load of disk'
+                  url: 'https://pth-ic-01:5001/'
+                  priority: WARNING
+                  description: 'High load of disk'
+        - uuid: fb7f57039aff4dce8d60562e4dab3ccb
+          name: Raid
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#RAIDNAME}, .1.3.6.1.4.1.6574.3.1.1.2, {#RAIDSTATUS}, .1.3.6.1.4.1.6574.3.1.1.3]'
+          key: raid.discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: 6064432afc4243a28bad33b9d0662ea6
+              name: '{#RAIDNAME}: Status'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.6574.3.1.1.3.{#SNMPINDEX}'
+              key: 'raid.status.[{#SNMPINDEX}]'
+              history: 1w
+              description: |
+                Synology Raid status
+                Each meanings of status represented describe below.
+                Normal(1):The raid functions normally.
+                Degrade(11):Degrade happens when a tolerable failure of disk(s) occurs.
+                Crashed(12):Raid has crashed and just uses for read-only operation.
+                ** 2018/6/15 add **
+                DataScrubbing(13):Raid status is DATASCRUBBING
+                RaidDeploying(14) :Deploying Single volume on pool
+                RaidUnDeploying(15):Undeploying Single volume on pool
+                RaidMountCache(16):Mounting SSD cache
+                RaidUnmountCache(17):Unmounting SSD cache
+                RaidExpandingUnfinishedSHR(18):Continue expand SHR if interrupted
+                RaidConvertSHRToPool(19):Converting Single volume on SHR to mutiple volume on SHR
+                RaidMigrateSHR1ToSHR2(20):Migrating SHR1 to SHR2
+                RaidUnknownStatus(21):Unknown raid status
+                ** END **
+                Note:
+                Other status will be showed when creating or deleting raids, including below status, Repairing(2), Migrating(3), Expanding(4), Deleting(5), Creating(6), RaidSyncing(7), RaidParityChecking(8), RaidAssembling(9) and Canceling(10).
+              valuemap:
+                name: SynologyRaidStatus
+              tags:
+                - tag: Application
+                  value: Raid
+              trigger_prototypes:
+                - uuid: 2a71a5f471024ceb8c718589b8ac902e
+                  expression: 'last(/Additional Template SNMP Synology RS816/raid.status.[{#SNMPINDEX}])=12'
+                  name: '{#RAIDNAME}: Raid has crashed and just uses for read-only operation'
+                  priority: WARNING
+                  description: 'Crashed(12):Raid has crashed and just uses for read-only operation.'
+                - uuid: 49764c963ed04d739f5d313f43315993
+                  expression: 'last(/Additional Template SNMP Synology RS816/raid.status.[{#SNMPINDEX}])=21'
+                  name: '{#RAIDNAME}: Unknown raid status, needs attention.'
+                  priority: AVERAGE
+                  description: 'RaidUnknownStatus(21):Unknown raid status'
+      macros:
+        - macro: '{$SNMP_COMMUNITY}'
+          value: public
+      valuemaps:
+        - uuid: 8b97a5fe6f8549d8b90ebc26a811cfb6
+          name: SynologyCPUFanStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed
+        - uuid: f57dfd11946246cf9cf87c17fffff688
+          name: SynologyDiskStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Initialized
+            - value: '3'
+              newvalue: NotInitialized
+            - value: '4'
+              newvalue: 'System Partition Failed'
+            - value: '5'
+              newvalue: Crashed
+        - uuid: 2ee5e9028941479893df9119b08a06bc
+          name: SynologyFanStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed
+        - uuid: 055479b436dd4dc08e1c11accf84ee33
+          name: SynologyRaidStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Repairing
+            - value: '3'
+              newvalue: Migrating
+            - value: '4'
+              newvalue: Expanding
+            - value: '5'
+              newvalue: Deleting
+            - value: '6'
+              newvalue: Creating
+            - value: '7'
+              newvalue: 'Raid Syncing'
+            - value: '8'
+              newvalue: 'Raid Parity Checking'
+            - value: '9'
+              newvalue: 'Raid Assembling'
+            - value: '10'
+              newvalue: Canceling
+            - value: '11'
+              newvalue: Degrade
+            - value: '12'
+              newvalue: Crashed
+            - value: '13'
+              newvalue: 'Data Scrubbing'
+            - value: '14'
+              newvalue: 'Raid Deploying'
+            - value: '15'
+              newvalue: 'Raid Un Deploying'
+            - value: '16'
+              newvalue: 'Raid Mount Cache'
+            - value: '17'
+              newvalue: 'Raid Unmount Cache'
+            - value: '18'
+              newvalue: 'Raid Expanding Unfinished SHR'
+            - value: '19'
+              newvalue: 'Raid Convert SHR To Pool'
+            - value: '20'
+              newvalue: 'Raid Migrate SHR1 To SHR2'
+            - value: '21'
+              newvalue: 'Raid Unknown Status'
+        - uuid: 0e6d0ae2549e4499b6d934ebb1f5ed38
+          name: SynologySystemStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed
+        - uuid: 10679bfd8565436daf559d6daae58e3a
+          name: SynologyUpgradeAvailable
+          mappings:
+            - value: '1'
+              newvalue: Available
+            - value: '2'
+              newvalue: Unavailable
+            - value: '3'
+              newvalue: Connecting
+            - value: '4'
+              newvalue: Disconnected
+            - value: '5'
+              newvalue: 'Upgrading or Downloading'
+        - uuid: 8b3de305864d4922967b994a00f80a67
+          name: SysnologyPowerStatus
+          mappings:
+            - value: '1'
+              newvalue: Normal
+            - value: '2'
+              newvalue: Failed

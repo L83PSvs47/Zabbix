@@ -1,0 +1,416 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: c4e768dacf1d4ebb91ff0400fda01399
+      template: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+      name: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+      description: |
+        This template retrieve SNMP data from Unifi AP devices.
+        MIBS requiriments:
+        FROGFOOT-RESOURCES-MIB
+        IANAifType-MIB
+        IF-MIB
+        SNMP-FRAMEWORK-MIB
+        SNMPv2-CONF
+        SNMPv2-MIB
+        SNMPv2-SMI
+        SNMPv2-TC
+        UBNT-MIB
+        UBNT-UniFi-MIB
+        
+        Author: Alex Moura
+      templates:
+        - name: 'Generic by SNMP'
+      groups:
+        - name: 'Additional Templates'
+      items:
+        - uuid: 2e4fc537551d4b7da799bde9f016deda
+          name: 'CPU usage'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.25.3.3.1.2.196608
+          key: cpuLoad.0
+          history: 1w
+          units: '%'
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: 7c9494e53bd64fe59aff14c6b507ebf7
+          name: 'System time'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.2.1.25.1.2.0
+          key: hrSystemDate.0
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          tags:
+            - tag: Application
+              value: System
+        - uuid: f95709057bcc485cbc6d079b7d9a72ea
+          name: 'CPU average load 1 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.3.1
+          key: IaLoad.1
+          history: 1w
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: CPU
+          triggers:
+            - uuid: 5e13d1fc3d584c49bdd554b48f69a20f
+              expression: 'avg(/Additional Template SNMP UBQT UNIFI SNMP V1 HN/IaLoad.1,5m)>1'
+              name: 'Processor load is too high on {HOST.NAME}'
+              priority: AVERAGE
+            - uuid: 23d14fc8083041019fe9cca5d30d18ef
+              expression: 'avg(/Additional Template SNMP UBQT UNIFI SNMP V1 HN/IaLoad.1,5m)>3'
+              name: 'Processor load is very high on {HOST.NAME}'
+              priority: HIGH
+        - uuid: b6520b02a52c4cbf9aac60168481128d
+          name: 'CPU average load 5 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.3.2
+          key: IaLoad.2
+          history: 1w
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: a98aeef994db40c380f296b06391a397
+          name: 'CPU average load 15 min'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.2021.10.1.3.3
+          key: IaLoad.3
+          history: 1w
+          value_type: FLOAT
+          tags:
+            - tag: Application
+              value: CPU
+        - uuid: d253b3455e5b477eafc7c362e7e338a6
+          name: 'IP address'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.3.1.0
+          key: unifiApSystemIp.0
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          tags:
+            - tag: Application
+              value: 'AP interface'
+        - uuid: b2005412102e4962a728bd8a6c9ebe4e
+          name: Model
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.3.3.0
+          key: unifiApSystemModel.0
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          description: 'Informa o modelo do aparelho'
+          inventory_link: HARDWARE
+          tags:
+            - tag: Application
+              value: System
+        - uuid: f082a3824e1748aeaa4f0b21b32381fe
+          name: 'Firmware version'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.3.6.0
+          key: unifiApSystemVersion.0
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          inventory_link: SOFTWARE
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 20d4649f18fb4a71a99abebddf2e942d
+          name: 'MAC address'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.2.1.1.4.1
+          key: unifiIfMac.1
+          delay: 1h
+          history: 1w
+          trends: '0'
+          value_type: TEXT
+          inventory_link: MACADDRESS_A
+          tags:
+            - tag: Application
+              value: 'AP interface'
+        - uuid: a395afab69b0412197dcf29b3023b3a2
+          name: 'LAN traffic incoming'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.2.1.1.6.1
+          key: unifiIfRxBytes.1
+          history: 1w
+          units: Bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'AP interface'
+        - uuid: f7090d5be8d846b798b3795693ce573a
+          name: 'LAN traffic incoming errors'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.2.1.1.8.1
+          key: unifiIfRxError.1
+          history: 1w
+          units: Error(s)
+          tags:
+            - tag: Application
+              value: 'AP interface'
+        - uuid: 16ab0a758fef451996a6293eb5825ad0
+          name: 'Interface speed (Mbit/s)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.2.1.1.11.1
+          key: unifiIfSpeed.1
+          delay: 1h
+          history: 1w
+          tags:
+            - tag: Application
+              value: 'AP interface'
+        - uuid: 6d18db7fe9fa4d46a42ff927d445ca2f
+          name: 'LAN traffic outgoing'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.2.1.1.12.1
+          key: unifiIfTxBytes.1
+          history: 1w
+          units: Bps
+          preprocessing:
+            - type: CHANGE_PER_SECOND
+              parameters:
+                - ''
+          tags:
+            - tag: Application
+              value: 'AP interface'
+        - uuid: 68507280a14e433f82240fc5b218b113
+          name: 'LAN traffic outgoing errors'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.2.1.1.14.1
+          key: unifiIfTxError.1
+          history: 1w
+          units: Error(s)
+          tags:
+            - tag: Application
+              value: 'AP interface'
+        - uuid: d40faf2c086049c881e4d6f6f58be472
+          name: 'Channel utilization 2G (N/B/G)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.1.1.1.6.1
+          key: unifiRadioCuTotal.1
+          history: 1w
+          units: '%'
+          description: 'Informa o modelo do aparelho'
+          tags:
+            - tag: Application
+              value: 'Virtual interfaces'
+          triggers:
+            - uuid: dd106b46d94040558871b06ce0ba8b8d
+              expression: 'avg(/Additional Template SNMP UBQT UNIFI SNMP V1 HN/unifiRadioCuTotal.1,300s)=80'
+              name: 'Channel utilization 2G on {HOST.NAME} high'
+              priority: WARNING
+            - uuid: 5669f14148644123bdcdc275110a4280
+              expression: 'avg(/Additional Template SNMP UBQT UNIFI SNMP V1 HN/unifiRadioCuTotal.1,300s)=90'
+              name: 'Channel utilization 2G on {HOST.NAME} very high'
+              priority: AVERAGE
+        - uuid: b5a74a7a47764d9aba0a9175c013df58
+          name: 'Channel utilization 5G (N/A/AC)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.1.1.1.6.2
+          key: unifiRadioCuTotal.2
+          history: 1w
+          units: '%'
+          description: 'Informa o modelo do aparelho'
+          tags:
+            - tag: Application
+              value: 'Virtual interfaces'
+          triggers:
+            - uuid: 195d77ed7e0a4031a61169bcbb884f6a
+              expression: 'avg(/Additional Template SNMP UBQT UNIFI SNMP V1 HN/unifiRadioCuTotal.2,300s)=80'
+              name: 'Channel utilization 5G on {HOST.NAME} high'
+              priority: WARNING
+            - uuid: f271886cb1de40f5b8887875372488bc
+              expression: 'avg(/Additional Template SNMP UBQT UNIFI SNMP V1 HN/unifiRadioCuTotal.2,300s)=90'
+              name: 'Channel utilization 5G on {HOST.NAME} very high'
+              priority: AVERAGE
+        - uuid: 547c33c476fd47539bc6f342f0d1e050
+          name: 'Channel 2G (N/B/G)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.1.2.1.4.1
+          key: unifiVapChannel.1
+          history: 1w
+          status: DISABLED
+          description: 'Informa o modelo do aparelho'
+          tags:
+            - tag: Application
+              value: System
+        - uuid: 90936abb4488411ebdf7bae84d8c7d32
+          name: 'Channel 5G (N/A/AC)'
+          type: SNMP_AGENT
+          snmp_oid: .1.3.6.1.4.1.41112.1.6.1.2.1.4.5
+          key: unifiVapChannel.5
+          history: 1w
+          status: DISABLED
+          description: 'Informa o modelo do aparelho'
+          tags:
+            - tag: Application
+              value: System
+      discovery_rules:
+        - uuid: e019c170b1c947c4969dfee2478c7b62
+          name: 'Wi-Fi virtual interfaces'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#UNIFIVAPESSID},.1.3.6.1.4.1.41112.1.6.1.2.1.6, {#UNIVAPRADIO},.1.3.6.1.4.1.41112.1.6.1.2.1.9]'
+          key: unifiVapEssId
+          delay: 1h
+          item_prototypes:
+            - uuid: 3904acf5cf824a0495d7dad8e7e7a2b4
+              name: 'Wi-Fi channel $2 on $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.41112.1.6.1.2.1.4.{#SNMPINDEX}'
+              key: 'unifiVapChannel[{#UNIFIVAPESSID},{#UNIVAPRADIO}]'
+              history: 1w
+              tags:
+                - tag: Application
+                  value: 'Virtual interfaces'
+            - uuid: 0c898b232e184aa09c4b89873b732f68
+              name: 'Users $2 on $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.41112.1.6.1.2.1.8.{#SNMPINDEX}'
+              key: 'unifiVapNumStations[{#UNIFIVAPESSID},{#UNIVAPRADIO}]'
+              history: 1w
+              units: Users
+              tags:
+                - tag: Application
+                  value: 'Virtual interfaces'
+            - uuid: ffc3a02f8b08416eb3184585ccd84243
+              name: 'Traffic incoming $2 on $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.41112.1.6.1.2.1.10.{#SNMPINDEX}'
+              key: 'unifiVapRxBytes[{#UNIFIVAPESSID},{#UNIVAPRADIO}]'
+              history: 1w
+              units: Bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual interfaces'
+            - uuid: 61214e7e864449a6b879e1b5b23fba66
+              name: 'Traffic incoming errors per second $2 on $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.41112.1.6.1.2.1.13.{#SNMPINDEX}'
+              key: 'unifiVapRxErrors[{#UNIFIVAPESSID},{#UNIVAPRADIO}]'
+              history: 1w
+              units: Error/s
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual interfaces'
+            - uuid: c98654dd07534b6db758cbd2884694bb
+              name: 'Traffic outgoing $2 on $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.41112.1.6.1.2.1.16.{#SNMPINDEX}'
+              key: 'unifiVapTxBytes[{#UNIFIVAPESSID},{#UNIVAPRADIO}]'
+              history: 1w
+              units: Bps
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual interfaces'
+            - uuid: 56e42b6de1b444c89223836bf1af10df
+              name: 'Traffic outgoing errors per second $2 on $1'
+              type: SNMP_AGENT
+              snmp_oid: '.1.3.6.1.4.1.41112.1.6.1.2.1.18.{#SNMPINDEX}'
+              key: 'unifiVapTxErrors[{#UNIFIVAPESSID},{#UNIVAPRADIO}]'
+              history: 1w
+              units: Error/s
+              preprocessing:
+                - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
+              tags:
+                - tag: Application
+                  value: 'Virtual interfaces'
+          graph_prototypes:
+            - uuid: ddede1f5d3af4fc38601e8d4dee36572
+              name: 'Users {#UNIVAPRADIO} connected on {#UNIFIVAPESSID}'
+              show_work_period: 'NO'
+              show_triggers: 'NO'
+              type: STACKED
+              graph_items:
+                - color: 1A7C11
+                  item:
+                    host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+                    key: 'unifiVapNumStations[{#UNIFIVAPESSID},{#UNIVAPRADIO}]'
+      macros:
+        - macro: '{$SNMP_COMMUNITY}'
+          value: public
+        - macro: '{$SNMP_PORT}'
+          value: '161'
+  graphs:
+    - uuid: 82d5d12e6fcb4c50a9c834c1e3d78c48
+      name: 'Channel Utilization'
+      ymin_type_1: FIXED
+      ymax_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: unifiRadioCuTotal.1
+        - sortorder: '1'
+          color: F63100
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: unifiRadioCuTotal.2
+    - uuid: d8d295d3887140568454c4a86a5587a3
+      name: 'CPU load'
+      ymin_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: IaLoad.1
+        - sortorder: '1'
+          color: '000099'
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: IaLoad.2
+        - sortorder: '2'
+          color: '990000'
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: IaLoad.3
+    - uuid: 8ac1d3e70c7c4f84b1fa5006aa710908
+      name: 'CPU utilization'
+      type: STACKED
+      ymax_type_1: FIXED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: cpuLoad.0
+    - uuid: 516de2e5f0a744ba93359930ae9faa59
+      name: 'Network Traffic'
+      show_work_period: 'NO'
+      show_triggers: 'NO'
+      type: STACKED
+      graph_items:
+        - color: 1A7C11
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: unifiIfRxBytes.1
+        - sortorder: '1'
+          color: F63100
+          item:
+            host: 'Additional Template SNMP UBQT UNIFI SNMP V1 HN'
+            key: unifiIfTxBytes.1

@@ -1,0 +1,43 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: 24ff6432f4924ffeab05fc26ae57473c
+      template: 'Additional Template Module CPU Logical Zabbix Agent'
+      name: 'Additional Template Module CPU Logical Zabbix Agent'
+      description: |
+        Функционал реализован в Zabbix Agent
+        Items: Number of CPUs = system.cpu.num
+        Discovery: CPU Logical = system.cpu.discovery
+        Items prototypes: CPU {#CPU.NUMBER} utilisation = system.cpu.util["{#CPU.NUMBER}"]
+      groups:
+        - name: 'Additional Templates/Modules'
+      items:
+        - uuid: e0220f2e8c9d4bb5a00e2172e99d29e7
+          name: 'Number of CPUs'
+          type: ZABBIX_ACTIVE
+          key: system.cpu.num
+          delay: 1h
+          history: 1w
+          tags:
+            - tag: Application
+              value: CPU
+      discovery_rules:
+        - uuid: 3f3e52b7713c43baa97c250929e14250
+          name: 'CPU Logical'
+          type: ZABBIX_ACTIVE
+          key: system.cpu.discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: f916af955ebd482f9df8bb1ea2b3e943
+              name: 'CPU {#CPU.NUMBER} utilisation'
+              type: ZABBIX_ACTIVE
+              key: 'system.cpu.util["{#CPU.NUMBER}"]'
+              history: 1w
+              value_type: FLOAT
+              units: '%'
+              tags:
+                - tag: Application
+                  value: CPU

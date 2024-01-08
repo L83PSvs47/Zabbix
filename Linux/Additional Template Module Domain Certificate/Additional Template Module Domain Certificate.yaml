@@ -1,0 +1,188 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: e9fb84a6ee1541518724686ed12d66c6
+      template: 'Additional Template Module Domain Certificate'
+      name: 'Additional Template Module Domain Certificate'
+      description: 'Мониторинг сертификатов сайта. Для проверки берется DNS имя хоста.'
+      groups:
+        - name: 'Additional Templates/Modules'
+      items:
+        - uuid: b1ca57d624be4badb3f570291cc72aa8
+          name: 'Certificate days to expire'
+          type: DEPENDENT
+          key: domain.certificate.days.expire
+          delay: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''DaysToExpire'']'
+          master_item:
+            key: 'get.domain.certificate[{HOST.DNS},{$CERTIFICATE_SERVER_PORT},{$CERTIFICATE_SERVER_TYPE}]'
+          tags:
+            - tag: Application
+              value: Certificate
+          triggers:
+            - uuid: d92b07387d5b4de59ebfbce4bccc8516
+              expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<=0'
+              name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+              status: DISABLED
+              priority: DISASTER
+            - uuid: 4be532d71ab344ffadce56f499445661
+              expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<={$CERTIFICATE_DAYS_TO_EXPIRE_AVERAGE}'
+              name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: AVERAGE
+              dependencies:
+                - name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<={$CERTIFICATE_DAYS_TO_EXPIRE_HIGH}'
+            - uuid: d347ff17abcb46dabb7ca501415fed71
+              expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<={$CERTIFICATE_DAYS_TO_EXPIRE_HIGH}'
+              name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: HIGH
+              dependencies:
+                - name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<=0'
+            - uuid: abc1dfbbfd9b450980f8c63f61de383f
+              expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<={$CERTIFICATE_DAYS_TO_EXPIRE_INFO}'
+              name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: INFO
+              dependencies:
+                - name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<={$CERTIFICATE_DAYS_TO_EXPIRE_WARN}'
+            - uuid: 12a375e5cbca4884becb5fa4d0a5b521
+              expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<={$CERTIFICATE_DAYS_TO_EXPIRE_WARN}'
+              name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+              priority: WARNING
+              dependencies:
+                - name: 'Certificate {HOST.DNS} will expire in {ITEM.VALUE} days'
+                  expression: 'last(/Additional Template Module Domain Certificate/domain.certificate.days.expire)<={$CERTIFICATE_DAYS_TO_EXPIRE_AVERAGE}'
+        - uuid: 40c9701f8a3449a0b26b5a1a1110f599
+          name: 'Certificate SHA1 fingerprint'
+          type: DEPENDENT
+          key: domain.certificate.fingerprint
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Fingerprint'']'
+          master_item:
+            key: 'get.domain.certificate[{HOST.DNS},{$CERTIFICATE_SERVER_PORT},{$CERTIFICATE_SERVER_TYPE}]'
+          tags:
+            - tag: Application
+              value: Certificate
+          triggers:
+            - uuid: d052eaf1bfe54f468c593242b1e7b0e9
+              expression: '(last(/Additional Template Module Domain Certificate/domain.certificate.fingerprint,#1)<>last(/Additional Template Module Domain Certificate/domain.certificate.fingerprint,#2))=1 and length(last(/Additional Template Module Domain Certificate/domain.certificate.fingerprint))>0'
+              name: 'Certificate {HOST.DNS} fingerprint was changed'
+              priority: INFO
+        - uuid: e85033390eb34406b5cf2f197708b368
+          name: 'Certificate issuer'
+          type: DEPENDENT
+          key: domain.certificate.issuer
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Issuer'']'
+          master_item:
+            key: 'get.domain.certificate[{HOST.DNS},{$CERTIFICATE_SERVER_PORT},{$CERTIFICATE_SERVER_TYPE}]'
+          tags:
+            - tag: Application
+              value: Certificate
+          triggers:
+            - uuid: 600ca470da00423ea4685448de4ab2ad
+              expression: '(last(/Additional Template Module Domain Certificate/domain.certificate.issuer,#1)<>last(/Additional Template Module Domain Certificate/domain.certificate.issuer,#2))=1 and length(last(/Additional Template Module Domain Certificate/domain.certificate.issuer))>0'
+              name: 'Certificate {HOST.DNS} issuer was changed'
+              priority: INFO
+        - uuid: 6ca24e1c8d044b82b641f7afff9c60f0
+          name: 'Certificate serial'
+          type: DEPENDENT
+          key: domain.certificate.public.serial
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Serial'']'
+          master_item:
+            key: 'get.domain.certificate[{HOST.DNS},{$CERTIFICATE_SERVER_PORT},{$CERTIFICATE_SERVER_TYPE}]'
+          tags:
+            - tag: Application
+              value: Certificate
+          triggers:
+            - uuid: ffa8ad4a2ca4430eb3e8df39f1b45f57
+              expression: '(last(/Additional Template Module Domain Certificate/domain.certificate.public.serial,#1)<>last(/Additional Template Module Domain Certificate/domain.certificate.public.serial,#2))=1 and length(last(/Additional Template Module Domain Certificate/domain.certificate.public.serial))>0'
+              name: 'Certificate {HOST.DNS} serial was changed'
+              priority: WARNING
+        - uuid: eea618f4b6524fd89a572e04ccf6f861
+          name: 'Certificate subject'
+          type: DEPENDENT
+          key: domain.certificate.subject
+          delay: '0'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - '$[0][''Subject'']'
+          master_item:
+            key: 'get.domain.certificate[{HOST.DNS},{$CERTIFICATE_SERVER_PORT},{$CERTIFICATE_SERVER_TYPE}]'
+          tags:
+            - tag: Application
+              value: Certificate
+          triggers:
+            - uuid: 8cc28038da2748cdad26f110f934bb54
+              expression: '(last(/Additional Template Module Domain Certificate/domain.certificate.subject,#1)<>last(/Additional Template Module Domain Certificate/domain.certificate.subject,#2))=1 and length(last(/Additional Template Module Domain Certificate/domain.certificate.subject))>0'
+              name: 'Certificate {HOST.DNS} subject was changed'
+              priority: INFO
+        - uuid: c4b4e2b863594381aeb6e5bd2af81e8f
+          name: 'Get domain certificate'
+          key: 'get.domain.certificate[{HOST.DNS},{$CERTIFICATE_SERVER_PORT},{$CERTIFICATE_SERVER_TYPE}]'
+          delay: '{$CERTIFICATE_GET_INTERVAL}'
+          trends: '0'
+          value_type: TEXT
+          preprocessing:
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '{$CERTIFICATE_DISCARD_UNCHANGED}'
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+          tags:
+            - tag: Application
+              value: 'Bash raw items'
+            - tag: Application
+              value: Certificate
+          triggers:
+            - uuid: 8df70c7c55164015a8e0f96c1305761d
+              expression: 'nodata(/Additional Template Module Domain Certificate/get.domain.certificate[{HOST.DNS},{$CERTIFICATE_SERVER_PORT},{$CERTIFICATE_SERVER_TYPE}],{$CERTIFICATE_NODATA_INTERVAL})=1'
+              name: 'Certificate {HOST.DNS} has no data'
+              priority: HIGH
+      macros:
+        - macro: '{$CERTIFICATE_DAYS_TO_EXPIRE_AVERAGE}'
+          value: '35'
+        - macro: '{$CERTIFICATE_DAYS_TO_EXPIRE_HIGH}'
+          value: '30'
+        - macro: '{$CERTIFICATE_DAYS_TO_EXPIRE_INFO}'
+          value: '45'
+        - macro: '{$CERTIFICATE_DAYS_TO_EXPIRE_WARN}'
+          value: '40'
+        - macro: '{$CERTIFICATE_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$CERTIFICATE_GET_INTERVAL}'
+          value: 12h
+        - macro: '{$CERTIFICATE_NODATA_INTERVAL}'
+          value: 1d
+        - macro: '{$CERTIFICATE_SERVER_PORT}'
+          value: '443'
+        - macro: '{$CERTIFICATE_SERVER_TYPE}'
+          value: web
+          description: 'web, ftp, smtp'

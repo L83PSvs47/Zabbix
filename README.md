@@ -1,0 +1,3 @@
+# Zabbix
+Zabbix scripts and templates for Zabbix server 6.0 LTS.
+Scripts Get-HyperV.psm1 in development...

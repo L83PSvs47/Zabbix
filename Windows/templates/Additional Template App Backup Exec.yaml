@@ -1,0 +1,199 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: d35545e241ce4a358710f71959b23bfa
+      name: 'Additional Templates'
+  templates:
+    - uuid: 7e64451c63bb48868216b9a92de94994
+      template: 'Additional Template App Backup Exec'
+      name: 'Additional Template App Backup Exec'
+      description: 'Мониторинг работы сервера Symantec Backup Exec.'
+      groups:
+        - name: 'Additional Templates'
+      discovery_rules:
+        - uuid: 2ff7b53e5b664ed087eb154c4ee590ca
+          name: 'Backup Exec job discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-BackupExec,jobname,]'
+          delay: '{$BE_REQUEST_INTERVAL}'
+          description: 'Обнаружение заданий Symantec Backup Exec'
+          item_prototypes:
+            - uuid: 9c3c4922dae142d79f415e3a608203a7
+              name: 'End time {#BE.JOBNAME}'
+              type: DEPENDENT
+              key: 'be.end.time[{#BE.JOBNAME},JobUnixEndTime]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: unixtime
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''JobUnixEndTime'']'
+              master_item:
+                key: 'powershell[Get-BackupExecJob,{#BE.JOBNAME}]'
+              tags:
+                - tag: Application
+                  value: 'Backup Exec'
+                - tag: 'Backup Exec'
+                  value: Jobs
+            - uuid: a2bd51d2cb344625b878df9efbc498ef
+              name: 'Start time {#BE.JOBNAME}'
+              type: DEPENDENT
+              key: 'be.start.time[{#BE.JOBNAME},JobUnixStartTime]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              units: unixtime
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''JobUnixStartTime'']'
+              master_item:
+                key: 'powershell[Get-BackupExecJob,{#BE.JOBNAME}]'
+              tags:
+                - tag: Application
+                  value: 'Backup Exec'
+                - tag: 'Backup Exec'
+                  value: Jobs
+            - uuid: 5225af8dfbe84722a60e4653b45a4ac0
+              name: 'Status {#BE.JOBNAME}'
+              type: DEPENDENT
+              key: 'be.task.status[{#BE.JOBNAME},JobStatus]'
+              delay: '0'
+              history: 1w
+              valuemap:
+                name: 'Symantec Job Status'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''JobStatus'']'
+              master_item:
+                key: 'powershell[Get-BackupExecJob,{#BE.JOBNAME}]'
+              tags:
+                - tag: Application
+                  value: 'Backup Exec'
+                - tag: 'Backup Exec'
+                  value: Jobs
+              trigger_prototypes:
+                - uuid: 47d18546b2444971837c492fedaa8fbc
+                  expression: 'last(/Additional Template App Backup Exec/be.task.status[{#BE.JOBNAME},JobStatus])<>2 and last(/Additional Template App Backup Exec/be.task.status[{#BE.JOBNAME},JobStatus],#1:now-1d)<>2'
+                  name: 'Task failed {#BE.JOBNAME}'
+                  priority: WARNING
+                  description: 'Если два последних задания пропущены - выдавать предупреждение'
+            - uuid: 8d20685e0379422e91448446d9729d32
+              name: 'Type {#BE.JOBNAME}'
+              type: DEPENDENT
+              key: 'be.task.type[{#BE.JOBNAME},JobType]'
+              delay: '0'
+              history: 1w
+              status: DISABLED
+              discover: NO_DISCOVER
+              valuemap:
+                name: 'Symantec Job Type'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''JobType'']'
+              master_item:
+                key: 'powershell[Get-BackupExecJob,{#BE.JOBNAME}]'
+              tags:
+                - tag: Application
+                  value: 'Backup Exec'
+                - tag: 'Backup Exec'
+                  value: Jobs
+            - uuid: 00ce8a767a7e4220b06052ad007c6253
+              name: 'PowerShell get Backup Exec job {#BE.JOBNAME}'
+              type: ZABBIX_ACTIVE
+              key: 'powershell[Get-BackupExecJob,{#BE.JOBNAME}]'
+              delay: '{$BE_GET_INTERVAL}'
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$BE_DISCARD_UNCHANGED}'
+                - type: CHECK_JSON_ERROR
+                  parameters:
+                    - '$[0][''Error'']'
+              tags:
+                - tag: Application
+                  value: 'Backup Exec'
+                - tag: Application
+                  value: 'PowerShell raw items'
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+        - uuid: 8155d46ad5cc43679cf2da7b1e0f0b83
+          name: 'Backup Exec library discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-BackupExec,libraryname,]'
+          delay: '{$BE_REQUEST_INTERVAL}'
+          status: DISABLED
+          description: 'Обнаружение ленточных библиотек Symantec Backup Exec'
+          item_prototypes:
+            - uuid: 59730518481342d499dd70538324d5f7
+              name: 'PowerShell get robotic library {#BE.LIBRARYNAME} free space'
+              type: ZABBIX_ACTIVE
+              key: 'powershell[Get-BackupExecLibrary,{#BE.LIBRARYNAME}]'
+              delay: '{$BE_GET_INTERVAL}'
+              history: 1w
+              units: B
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$BE_DISCARD_UNCHANGED}'
+              tags:
+                - tag: Application
+                  value: 'Backup Exec'
+                - tag: Application
+                  value: 'PowerShell raw items'
+              trigger_prototypes:
+                - uuid: 54f5520223fd4f68b786229060fb2ac8
+                  expression: 'last(/Additional Template App Backup Exec/powershell[Get-BackupExecLibrary,{#BE.LIBRARYNAME}])<{$BE_SPACE_THRESHOLD}'
+                  name: 'Заканчивается место в библиотеке{#BE.LIBRARYNAME} (<{$BE_SPACE_THRESHOLD})'
+                  priority: AVERAGE
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+      macros:
+        - macro: '{$BE_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$BE_GET_INTERVAL}'
+          value: 1h
+        - macro: '{$BE_REQUEST_INTERVAL}'
+          value: 1d
+        - macro: '{$BE_SPACE_THRESHOLD}'
+          value: '1099511627776'
+      valuemaps:
+        - uuid: 3339f561e1844520a4decae761db71c3
+          name: 'Symantec Job Status'
+          mappings:
+            - value: '0'
+              newvalue: Error
+            - value: '1'
+              newvalue: Warning
+            - value: '2'
+              newvalue: Succeeded
+            - value: '3'
+              newvalue: idle
+            - value: '4'
+              newvalue: Canceled
+            - value: '5'
+              newvalue: Missed
+            - value: '6'
+              newvalue: Active
+        - uuid: 329a89e376294c47be41566545a0f709
+          name: 'Symantec Job Type'
+          mappings:
+            - value: '0'
+              newvalue: Full
+            - value: '1'
+              newvalue: Differential
+            - value: '2'
+              newvalue: Incremental

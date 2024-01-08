@@ -1,0 +1,393 @@
+zabbix_export:
+  version: '6.4'
+  template_groups:
+    - uuid: 8d4790c5be3145d0b57826e0de8ad741
+      name: 'Additional Templates/Modules'
+  templates:
+    - uuid: e8a769712db34ef5846d74a2c8da084f
+      template: 'Additional Template Module Microsoft AD DS Replication'
+      name: 'Additional Template Module Microsoft AD DS Replication'
+      description: 'Мониторинг репликации контроллеров домена Active Directory.'
+      groups:
+        - name: 'Additional Templates/Modules'
+      discovery_rules:
+        - uuid: 7835e502ac33465187ea2b86655fb408
+          name: 'AD DS replication discovery'
+          type: ZABBIX_ACTIVE
+          key: 'powershell[Request-ADReplication]'
+          delay: '{$ADDS_REPLICATION_REQUEST_INTERVAL}'
+          lifetime: 1d
+          item_prototypes:
+            - uuid: 72d10d306f664ae8a32b21039e6868b1
+              name: 'AD DS replication FailureCount {#REPLICATION.PARTNER}'
+              type: DEPENDENT
+              key: 'adds.replication.failure.count[{#REPLICATION.PARTNER}]'
+              delay: '0'
+              history: 1w
+              value_type: FLOAT
+              description: 'Item shows the active directory replication failure count'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''FailureCount'']'
+              master_item:
+                key: 'powershell[Get-ADReplication,{#REPLICATION.PARTNER}]'
+              tags:
+                - tag: Application
+                  value: 'AD DS replication'
+              trigger_prototypes:
+                - uuid: 40675026faf646968717eba102e47f17
+                  expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+                  name: 'Replication from {HOST.NAME} to {#REPLICATION.PARTNER} failed'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Service
+                      value: ActiveDirectory
+            - uuid: ea1ea873aafc4b0f9fdc7610cb333e53
+              name: 'AD DS replication LastError {#REPLICATION.PARTNER}'
+              type: DEPENDENT
+              key: 'adds.replication.last.error[{#REPLICATION.PARTNER}]'
+              delay: '0'
+              history: 1w
+              value_type: FLOAT
+              description: 'Item shows the active directory replication last error'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''LastError'']'
+              master_item:
+                key: 'powershell[Get-ADReplication,{#REPLICATION.PARTNER}]'
+              tags:
+                - tag: Application
+                  value: 'AD DS replication'
+            - uuid: 505eb4682bf242c3be1a0c8f3f3fabb8
+              name: 'AD DS replication LastReplicationResult {#REPLICATION.PARTNER}'
+              type: DEPENDENT
+              key: 'adds.replication.last.replication.result[{#REPLICATION.PARTNER}]'
+              delay: '0'
+              history: 1w
+              description: 'Item shows the last replication result'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - '$[0][''LastReplicationResult'']'
+              master_item:
+                key: 'powershell[Get-ADReplication,{#REPLICATION.PARTNER}]'
+              tags:
+                - tag: Application
+                  value: 'AD DS replication'
+              trigger_prototypes:
+                - uuid: ea68edfd84d14875a2a805a61f6e28ee
+                  expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.replication.result[{#REPLICATION.PARTNER}],#2)>0'
+                  recovery_mode: RECOVERY_EXPRESSION
+                  recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.replication.result[{#REPLICATION.PARTNER}],#2)=0'
+                  name: 'AD Replication LastReplicationResult on the {HOST.NAME} from the {#REPLICATION.PARTNER} > 0'
+                  priority: WARNING
+                  description: 'Trigger reports about replication failure.'
+                  manual_close: 'YES'
+                  tags:
+                    - tag: Service
+                      value: ActiveDirectory
+            - uuid: 476e3068a0064a54b7ac88346280ec31
+              name: 'PowerShell get AD DS replication status {#REPLICATION.PARTNER}'
+              type: ZABBIX_ACTIVE
+              key: 'powershell[Get-ADReplication,{#REPLICATION.PARTNER}]'
+              delay: '{$ADDS_REPLICATION_GET_INTERVAL}'
+              history: 1w
+              trends: '0'
+              value_type: TEXT
+              preprocessing:
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '{$ADDS_REPLICATION_DISCARD_UNCHANGED}'
+                - type: CHECK_JSON_ERROR
+                  parameters:
+                    - '$[0][''Error'']'
+              tags:
+                - tag: Application
+                  value: 'AD DS replication'
+                - tag: Application
+                  value: 'PowerShell raw items'
+          trigger_prototypes:
+            - uuid: 93928d8c6a4f4b4d96ac6fee9534a86a
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=1127 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '1127: While accessing the hard disk, a disk operation failed even after retries.'
+              url: 'https://support.microsoft.com/en-us/help/2025726'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: f99103ce3cc34308b69bf3c332585815
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=1256 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '1256: The remote system is not available.'
+              url: 'https://support.microsoft.com/en-us/help/2200187'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: b17c1e6d7e5a48b8ab170c1fd4628575
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=1396 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '1396: Logon Failure: The target account name is incorrect.'
+              url: 'https://support.microsoft.com/en-us/help/2183411'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 2d8cfbe4635c4fbd9b4704c441576780
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=1722 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '1722: The RPC server is unavailable'
+              url: 'https://support.microsoft.com/en-us/help/2102154'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 268db2dcf51c48a88ca63d60fc35f957
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=1753 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '1753: There are no more endpoints available from the endpoint mapper.'
+              url: 'https://support.microsoft.com/en-us/help/2089874'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: fd8e843861ad47938f52c86296483268
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=1818 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '1818: The remote procedure call was cancelled'
+              url: 'https://support.microsoft.com/en-us/help/2694215'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: f89f2af678c44799951ed9df671d1297
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=1908 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '1908: Could not find the domain controller for this domain.'
+              url: 'https://support.microsoft.com/en-us/help/2712026'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: f34d49ac28bf413ca9c9bdb8b3be550a
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8240 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8240: "There is no such object on the server"'
+              url: 'https://support.microsoft.com/en-us/help/2680976'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 1b74181fb070466cb614004a1178cb77
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8333 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8333: Directory Object Not Found'
+              url: 'https://support.microsoft.com/en-us/help/2703708'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: a6588249a51849619430ab2a04e5dae1
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8418 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8418: The replication operation failed because of a schema mismatch between the servers involved.'
+              url: 'https://support.microsoft.com/en-us/help/2734946'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 2e756e640e07417a80a8de1173f85b12
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8446 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8446: The replication operation failed to allocate memory'
+              url: 'https://support.microsoft.com/en-us/help/2693500'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 18ed48d04cbf4888a08a293d2b6cdac8
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8451 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8451: The replication operation encountered a database error'
+              url: 'https://support.microsoft.com/en-us/help/2645996'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 20a61c76209648bea4537db37187ad46
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8452 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8452: "The naming context is in the process of being removed or is not replicated from the specified server."'
+              url: 'https://support.microsoft.com/en-us/help/2023704'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 873ca525cc3a41d0a1375f9f54a37d92
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8453 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8453: "Replication access was denied"'
+              url: 'https://support.microsoft.com/en-us/help/2022387'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: ef43c25d01c740669015b0a1bd07f011
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8456 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8456 or 8457: "The source | destination server is currently rejecting replication requests"'
+              url: 'https://support.microsoft.com/en-us/help/2023007'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: a2408f29da38449e9320ce5cebb3e29e
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8457 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8456 or 8457: "The source | destination server is currently rejecting replication requests"'
+              url: 'https://support.microsoft.com/en-us/help/2023007'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 6ec4e5a1efa04b3ea7f7e7dd79c65f0d
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8464 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8464: Synchronization attempt failed'
+              url: 'https://support.microsoft.com/en-us/help/3001248'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 389576d24a6c4fba9146ecafd1388bfe
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8477 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8477: The replication request has been posted; waiting for reply'
+              url: 'https://support.microsoft.com/en-us/help/2758780'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 7fecaa25f1364f0cb8a4d63c5dd4673b
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8524 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8524: The DSA operation is unable to proceed because of a DNS lookup failure'
+              url: 'https://support.microsoft.com/en-us/help/2021446'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 5bde6f88eb3046ffbbf27a17c4032948
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8545 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8545: "Replication update could not be applied"'
+              url: 'https://support.microsoft.com/en-us/help/3110029'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: ac373b2bb4324f9c94c21f3167bf792a
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8589 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8589: The DS cannot derive a service principal name (SPN)'
+              url: 'https://support.microsoft.com/en-us/help/2703028'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: c34cf735712d470893a980565c55e7b4
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8606 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8606: "Insufficient attributes were given to create an object"'
+              url: 'https://support.microsoft.com/en-us/help/2028495'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+            - uuid: 27553f9c41cd40d581e7be2c4c08a69f
+              expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.last.error[{#REPLICATION.PARTNER}])=8614 and last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])<>0'
+              recovery_mode: RECOVERY_EXPRESSION
+              recovery_expression: 'last(/Additional Template Module Microsoft AD DS Replication/adds.replication.failure.count[{#REPLICATION.PARTNER}])=0'
+              name: '8614 The Active Directory cannot replicate with this server because the time since the last replication with this server has exceeded the tombstone lifetime'
+              url: 'https://support.microsoft.com/en-us/help/2020053'
+              priority: WARNING
+              manual_close: 'YES'
+              tags:
+                - tag: Service
+                  value: ActiveDirectory
+          graph_prototypes:
+            - uuid: f173d8c144364a478b399fbcc1292e41
+              name: 'AD Replication failure count from {HOST.NAME} to {#PARTNER}'
+              graph_items:
+                - color: 199C0D
+                  item:
+                    host: 'Additional Template Module Microsoft AD DS Replication'
+                    key: 'adds.replication.failure.count[{#REPLICATION.PARTNER}]'
+            - uuid: b40b7aba9bc6482591a8083bb059ba6a
+              name: 'AD Replication last replication result from {HOST.NAME} to {#PARTNER}'
+              graph_items:
+                - color: 199C0D
+                  item:
+                    host: 'Additional Template Module Microsoft AD DS Replication'
+                    key: 'adds.replication.last.replication.result[{#REPLICATION.PARTNER}]'
+          preprocessing:
+            - type: CHECK_JSON_ERROR
+              parameters:
+                - '$[0][''Error'']'
+      macros:
+        - macro: '{$ADDS_REPLICATION_DISCARD_UNCHANGED}'
+          value: 1d
+        - macro: '{$ADDS_REPLICATION_GET_INTERVAL}'
+          value: 15m
+        - macro: '{$ADDS_REPLICATION_REQUEST_INTERVAL}'
+          value: 1h
